@@ -1,4 +1,4 @@
-package com.kotlincsv.todoist_android
+package com.todoist_android
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
