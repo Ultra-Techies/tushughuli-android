@@ -23,6 +23,8 @@ An android application that allows users to note down their to-do lists in an or
 
 *  [Contributing](#contributing)
 
+*  [Wiki](#wiki)
+
 *  [License](#license)
 ## About the App
 The app has the following key features that a user can do:
@@ -90,6 +92,16 @@ Contributions are always welcome!
 See [contributing guidelines](https://github.com/github/docs/blob/main/CONTRIBUTING.md) for ways to get started.
 
 Please adhere to this project's `code of conduct`.
+
+1. Fork it
+2. Create your feature branch (git checkout -b my-new-feature)
+3. Commit your changes (git commit -m 'Add some feature')
+4. Push your branch (git push origin my-new-feature)
+5. Create a new Pull Request
+
+## Wiki
+
+Check out the app's wiki [here](https://github.com/Ultra-Techies/Todolist-android/wiki)
 
 
 ## License
