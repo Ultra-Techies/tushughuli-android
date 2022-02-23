@@ -21,9 +21,9 @@ class SplashActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         if(isOnline(this)){
-            //count for 3 seconds
+            //count for 1.5 seconds
             Thread(Runnable {
-                Thread.sleep(3000)
+                Thread.sleep(1500)
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
