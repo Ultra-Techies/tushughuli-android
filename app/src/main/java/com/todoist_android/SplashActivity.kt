@@ -21,6 +21,10 @@ class SplashActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         if(isOnline(this)){
+            //region: call auth endpoint and check if user is logged in, remove below thread once this is implemented
+
+            //endregion
+
             //count for 1.5 seconds
             Thread(Runnable {
                 Thread.sleep(1500)
