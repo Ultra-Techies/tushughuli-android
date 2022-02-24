@@ -30,6 +30,7 @@ class SplashActivity : AppCompatActivity() {
             }).start()
         }else{
             Snackbar.make(binding.root, "No internet connection", Snackbar.LENGTH_LONG).show()
+            binding.progressBar.visibility = android.view.View.GONE
         }
     }
 
