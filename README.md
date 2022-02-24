@@ -70,6 +70,9 @@ Run the app on your emulator or device
 - view binding
 
 - Live Data
+
+- Mockito
+
 ## To Do List
 
 - [ ] Design Screens
