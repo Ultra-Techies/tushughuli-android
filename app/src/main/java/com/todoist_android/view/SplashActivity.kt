@@ -1,4 +1,4 @@
-package com.todoist_android
+package com.todoist_android.view
 
 import android.content.Context
 import android.content.Intent
@@ -8,14 +8,15 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.databinding.ActivitySplashBinding
+import kotlinx.coroutines.*
+import java.util.concurrent.TimeUnit
 
 class SplashActivity : AppCompatActivity() {
     lateinit var binding: ActivitySplashBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -25,13 +26,15 @@ class SplashActivity : AppCompatActivity() {
 
             //endregion
 
-            //count for 1.5 seconds
-            Thread(Runnable {
-                Thread.sleep(1500)
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
-            }).start()
+            //count for 2 seconds
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(TimeUnit.SECONDS.toMillis(2))
+                withContext(Dispatchers.Main) {
+                    Log.i("TAG", "this will be called after 2 seconds")
+                    startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+                    finish()
+                }
+            }
         }else{
             Snackbar.make(binding.root, "No internet connection", Snackbar.LENGTH_LONG).show()
             binding.progressBar.visibility = android.view.View.GONE
