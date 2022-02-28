@@ -11,4 +11,8 @@ class AuthRepo (
     suspend fun login(email: String, password: String) = safeApiCall {
         authApi.login(email, password)
     }
+
+    suspend fun signup(username: String, email: String, password: String) = safeApiCall {
+        authApi.signup(username, email, password)
+    }
 }

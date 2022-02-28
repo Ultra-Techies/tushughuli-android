@@ -8,9 +8,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class TodoRemoteSource {
 
+    //Refer to: https://github.com/Ultra-Techies/backend/blob/main/endpoints/endpoints.md
+
     //TODO: rename base url
     companion object {
-        //I'm using mockapi.io to create a dummy API for testing purposes
+        //we're using mockapi.io to create a dummy API for testing purposes
         const val BASE_URL = "https://621ce943768a4e1020b93731.mockapi.io/api/v1/"
     }
 

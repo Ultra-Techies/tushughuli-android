@@ -26,7 +26,7 @@ abstract class BaseFragment<
      ): View? {
          binding = getFragmentBinding(inflater, container)
 
-         //we need our viewmodelgenerator instance to create a new viewmodel
+         //we need our viewmodel generator instance to create a new viewmodel
          val generator = ViewModelGenerator(getRepository())
          viewModel = ViewModelProvider(this, generator).get(getViewModel())
 
