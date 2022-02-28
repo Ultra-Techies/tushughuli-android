@@ -12,9 +12,7 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Todoistandroid">
-        <activity
-            android:name=".view.SignUpActivity"
-            android:exported="false" />
+
         <activity
             android:name=".ui.SplashActivity"
             android:exported="true">

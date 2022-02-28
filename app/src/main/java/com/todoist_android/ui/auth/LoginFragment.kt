@@ -7,6 +7,9 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import com.todoist_android.R
 import com.todoist_android.databinding.FragmentLoginBinding
 import com.todoist_android.data.network.APIAuthentication
 import com.todoist_android.data.network.APIResource
@@ -20,14 +23,13 @@ class LoginFragment : BaseFragment<AuthenticationViewModel, FragmentLoginBinding
 
         viewModel.loginResponse.observe(viewLifecycleOwner, Observer {
             when(it){
-
                 is APIResource.Success -> {
                     Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_LONG).show()
                     this.binding.progressbar.visibility = GONE
                 }
                 is APIResource.Error -> {
-                    Toast.makeText(requireContext(), "Login failed!", Toast.LENGTH_LONG).show()
-                    this.binding.progressbar.visibility = GONE
+                    Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_LONG).show()
+                    this.binding.progressbar.visibility = GONE;
                 }
             }
         })
@@ -40,6 +42,11 @@ class LoginFragment : BaseFragment<AuthenticationViewModel, FragmentLoginBinding
             //TODO: add validation
             viewModel.login(email, password)
         }
+
+        binding.textViewRegister.setOnClickListener {
+            Navigation.findNavController(view!!).navigate(R.id.signupFragment);
+        }
+
     }
     override fun getViewModel() = AuthenticationViewModel::class.java
 

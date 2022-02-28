@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.AuthRepo
 import com.todoist_android.data.responses.LoginResponse
+import com.todoist_android.data.responses.SignupResponse
 import kotlinx.coroutines.launch
 
 class AuthenticationViewModel(
@@ -20,10 +21,19 @@ class AuthenticationViewModel(
      ***/
 
     private val _loginResponse : MutableLiveData<APIResource<LoginResponse>> = MutableLiveData()
+    private val _signUpResponse : MutableLiveData<APIResource<SignupResponse>> = MutableLiveData()
+
     val loginResponse: LiveData<APIResource<LoginResponse>>
         get() = _loginResponse
 
+    val signUpResponse: LiveData<APIResource<SignupResponse>>
+        get() = _signUpResponse
+
     fun login(email: String, password: String)  = viewModelScope.launch {
         _loginResponse.value = authRepo.login(email, password)
+    }
+
+    fun signup(username: String, email: String, password: String) = viewModelScope.launch {
+        _signUpResponse.value = authRepo.signup(username, email, password)
     }
 }
