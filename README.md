@@ -110,4 +110,3 @@ Check out the app's wiki [here](https://github.com/Ultra-Techies/Todolist-androi
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
-
