@@ -16,7 +16,7 @@
             android:name=".view.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".view.SplashActivity"
+            android:name=".ui.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,8 +25,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.MainActivity"
-            android:exported="true"></activity>
+            android:name=".ui.home.MainActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".ui.auth.AuthActivity"
+            android:exported="true"/>
 
         <meta-data
             android:name="preloaded_fonts"
