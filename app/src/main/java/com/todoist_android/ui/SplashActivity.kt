@@ -1,4 +1,4 @@
-package com.todoist_android.view
+package com.todoist_android.ui
 
 import android.content.Context
 import android.content.Intent
@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.databinding.ActivitySplashBinding
+import com.todoist_android.ui.auth.AuthActivity
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 
@@ -31,7 +32,7 @@ class SplashActivity : AppCompatActivity() {
                 delay(TimeUnit.SECONDS.toMillis(2))
                 withContext(Dispatchers.Main) {
                     Log.i("TAG", "this will be called after 2 seconds")
-                    startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+                    startActivity(Intent(this@SplashActivity, AuthActivity::class.java))
                     finish()
                 }
             }
