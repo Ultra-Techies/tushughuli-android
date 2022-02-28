@@ -20,14 +20,13 @@ class LoginFragment : BaseFragment<AuthenticationViewModel, FragmentLoginBinding
 
         viewModel.loginResponse.observe(viewLifecycleOwner, Observer {
             when(it){
-
                 is APIResource.Success -> {
                     Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_LONG).show()
                     this.binding.progressbar.visibility = GONE
                 }
                 is APIResource.Error -> {
-                    Toast.makeText(requireContext(), "Login failed!", Toast.LENGTH_LONG).show()
-                    this.binding.progressbar.visibility = GONE
+                    Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_LONG).show()
+                    this.binding.progressbar.visibility = GONE;
                 }
             }
         })

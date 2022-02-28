@@ -20,7 +20,6 @@ class SignupFragment : BaseFragment<AuthenticationViewModel, FragmentSignupBindi
 
         viewModel.signUpResponse.observe(viewLifecycleOwner, Observer {
             when(it){
-
                 is APIResource.Success -> {
                     Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_LONG).show()
                 }
