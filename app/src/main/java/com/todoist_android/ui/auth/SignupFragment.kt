@@ -18,6 +18,18 @@ class SignupFragment : BaseFragment<AuthenticationViewModel, FragmentSignupBindi
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        viewModel.signUpResponse.observe(viewLifecycleOwner, Observer {
+            when(it){
+
+                is APIResource.Success -> {
+                    Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_LONG).show()
+                }
+                is APIResource.Error -> {
+                    Toast.makeText(requireContext(), "Signup failed!", Toast.LENGTH_LONG).show()
+                }
+            }
+        })
+
         binding.btnSignup.setOnClickListener {
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()

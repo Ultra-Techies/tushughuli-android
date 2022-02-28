@@ -8,7 +8,6 @@ import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.AuthRepo
 import com.todoist_android.data.responses.LoginResponse
 import com.todoist_android.data.responses.SignupResponse
-import com.todoist_android.data.responses.User
 import kotlinx.coroutines.launch
 
 class AuthenticationViewModel(
