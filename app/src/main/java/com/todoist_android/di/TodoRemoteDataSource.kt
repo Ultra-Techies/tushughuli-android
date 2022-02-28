@@ -1,4 +1,4 @@
-package com.todoist_android.data.network
+package com.todoist_android.di
 
 import com.todoist_android.BuildConfig
 import okhttp3.OkHttpClient
@@ -6,7 +6,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class TodoRemoteSource {
+class TodoRemoteDataSource {
 
     //Refer to: https://github.com/Ultra-Techies/backend/blob/main/endpoints/endpoints.md
 

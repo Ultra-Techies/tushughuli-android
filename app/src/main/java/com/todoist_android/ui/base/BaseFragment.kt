@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
-import com.todoist_android.data.network.TodoRemoteSource
+import com.todoist_android.di.TodoRemoteDataSource
 import com.todoist_android.data.network.repository.BaseRepo
 
 abstract class BaseFragment<
@@ -16,7 +16,7 @@ abstract class BaseFragment<
         baseRepository: BaseRepo> : Fragment() {
 
      protected lateinit var binding: viewBinding
-     protected val remoteSource = TodoRemoteSource()
+     protected val remoteSource = TodoRemoteDataSource()
     protected lateinit var viewModel: viewModel
 
      override fun onCreateView(
