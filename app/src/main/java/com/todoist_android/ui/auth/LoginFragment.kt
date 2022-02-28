@@ -2,6 +2,8 @@ package com.todoist_android.ui.auth
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -18,15 +20,20 @@ class LoginFragment : BaseFragment<AuthenticationViewModel, FragmentLoginBinding
 
         viewModel.loginResponse.observe(viewLifecycleOwner, Observer {
             when(it){
+
                 is APIResource.Success -> {
                     Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_LONG).show()
+                    this.binding.progressbar.visibility = GONE
                 }
                 is APIResource.Error -> {
                     Toast.makeText(requireContext(), "Login failed!", Toast.LENGTH_LONG).show()
+                    this.binding.progressbar.visibility = GONE
                 }
             }
         })
+        binding.progressbar.visibility = GONE
         binding.buttonLogin.setOnClickListener {
+            binding.progressbar.visibility = VISIBLE
             val email = binding.editTextTextEmailAddress.text.toString()
             val password = binding.editTextTextPassword.text.toString()
 
