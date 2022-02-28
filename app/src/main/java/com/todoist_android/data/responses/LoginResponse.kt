@@ -1,4 +1,4 @@
-package com.todoist_android.view.auth.responses
+package com.todoist_android.data.responses
 
 data class LoginResponse(
     val valid: Boolean

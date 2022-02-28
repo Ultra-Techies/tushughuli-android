@@ -6,7 +6,7 @@
 
     <!-- Login Fragment -->
     <fragment android:id="@+id/loginFragment"
-              android:name="com.todoist_android.view.auth.LoginFragment"
+              android:name="com.todoist_android.ui.auth.LoginFragment"
               android:label="fragment_login"
               tools:layout="@layout/fragment_login"/>
 

@@ -1,6 +1,7 @@
-package com.todoist_android.view.auth.repository
+package com.todoist_android.data.repository
 
-import com.todoist_android.view.auth.networkapi.APIAuthentication
+import com.todoist_android.data.network.APIAuthentication
+import com.todoist_android.data.network.repository.BaseRepo
 
 //Communicates with our external data source
 class AuthRepo (

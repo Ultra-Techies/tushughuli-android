@@ -1,4 +1,4 @@
-package com.todoist_android.view.auth.networkapi
+package com.todoist_android.data.network
 
 import okhttp3.ResponseBody
 

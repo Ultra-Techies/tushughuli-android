@@ -1,9 +1,10 @@
-package com.todoist_android.viewmodel
+package com.todoist_android.ui.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.todoist_android.view.auth.repository.AuthRepo
-import com.todoist_android.view.auth.repository.BaseRepo
+import com.todoist_android.data.network.repository.BaseRepo
+import com.todoist_android.data.repository.AuthRepo
+import com.todoist_android.ui.auth.AuthenticationViewModel
 
 //Responsible for giving us all the view models we need
 class ViewModelGenerator(

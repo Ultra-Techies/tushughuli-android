@@ -1,10 +1,9 @@
-package com.todoist_android.view.auth.repository
+package com.todoist_android.data.network.repository
 
-import com.todoist_android.view.auth.networkapi.APIResource
+import com.todoist_android.data.network.APIResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
-import java.lang.invoke.CallSite
 
 abstract class BaseRepo {
 

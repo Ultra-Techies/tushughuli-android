@@ -1,4 +1,4 @@
-package com.todoist_android.view.auth
+package com.todoist_android.ui.auth
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

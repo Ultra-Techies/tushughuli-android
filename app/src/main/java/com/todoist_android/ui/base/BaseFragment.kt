@@ -1,4 +1,4 @@
-package com.todoist_android.view.auth
+package com.todoist_android.ui.base
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,10 +7,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
-import com.todoist_android.view.auth.networkapi.TodoRemoteSource
-import com.todoist_android.view.auth.repository.BaseRepo
-import com.todoist_android.viewmodel.AuthenticationViewModel
-import com.todoist_android.viewmodel.ViewModelGenerator
+import com.todoist_android.data.network.TodoRemoteSource
+import com.todoist_android.data.network.repository.BaseRepo
 
 abstract class BaseFragment<
         viewModel: ViewModel,

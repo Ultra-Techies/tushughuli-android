@@ -1,4 +1,4 @@
-package com.todoist_android.view
+package com.todoist_android.ui
 
 import android.content.Context
 import android.content.Intent
@@ -10,7 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.databinding.ActivitySplashBinding
-import com.todoist_android.view.auth.AuthActivity
+import com.todoist_android.ui.auth.AuthActivity
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 
