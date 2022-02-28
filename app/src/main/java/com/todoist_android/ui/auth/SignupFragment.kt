@@ -7,6 +7,8 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
+import com.todoist_android.R
 import com.todoist_android.data.network.APIAuthentication
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.AuthRepo
@@ -71,6 +73,10 @@ class SignupFragment : BaseFragment<AuthenticationViewModel, FragmentSignupBindi
 
             //TODO: add validation
             viewModel.signup(username, email, password)
+        }
+
+        binding.textViewLogin.setOnClickListener {
+            Navigation.findNavController(view!!).navigate(R.id.loginFragment)
         }
     }
     override fun getViewModel() = AuthenticationViewModel::class.java
