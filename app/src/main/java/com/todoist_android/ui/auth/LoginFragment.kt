@@ -64,5 +64,10 @@ class LoginFragment : Fragment() {
             //TODO: add validation
             viewModel.login(email, password)
         }
+
+        binding.textViewRegister.setOnClickListener {
+            Navigation.findNavController(view!!).navigate(R.id.signupFragment)
+        }
+
     }
 }
