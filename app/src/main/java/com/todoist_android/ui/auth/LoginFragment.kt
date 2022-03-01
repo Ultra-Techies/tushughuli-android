@@ -17,6 +17,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
+import com.todoist_android.data.UserPreferences
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.databinding.FragmentLoginBinding
 import com.todoist_android.ui.home.MainActivity
@@ -37,6 +38,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentLoginBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
