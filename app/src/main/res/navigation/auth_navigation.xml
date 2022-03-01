@@ -11,5 +11,9 @@
               tools:layout="@layout/fragment_login"/>
 
     <!-- Register Fragment -->
+    <fragment android:id="@+id/signupFragment"
+              android:name="com.todoist_android.ui.auth.SignupFragment"
+              android:label="fragment_signup"
+              tools:layout="@layout/fragment_signup"/>
 
 </navigation>
