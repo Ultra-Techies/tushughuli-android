@@ -50,13 +50,17 @@ class LoginFragment : Fragment() {
                        is APIResource.Success -> {
                            binding.progressbar.visibility = GONE
 
+                           val userId = it.value.id
+
                            //if it.value.valid is true redirect to home
                            //else show error message
                            it.value.valid?.let {
                                if (it) {
                                    //Redirect to Home
+                                   //pass user id to home activity
                                    Intent(requireContext(), MainActivity::class.java).also {
                                        it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                       it.putExtra("userId", userId)
                                        startActivity(it)
                                    }
                                } else {
@@ -83,6 +87,8 @@ class LoginFragment : Fragment() {
         binding.progressbar.visibility = GONE
         binding.buttonLogin.setOnClickListener {
             binding.progressbar.visibility = VISIBLE
+            binding.buttonLogin.isEnabled = false
+
             val email = binding.editTextTextEmailAddress.text.toString().trim()
             val password = binding.editTextTextPassword.text.toString().trim()
 
