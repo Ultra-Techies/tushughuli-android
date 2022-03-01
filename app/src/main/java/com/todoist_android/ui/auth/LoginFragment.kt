@@ -12,11 +12,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
+import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -64,5 +67,10 @@ class LoginFragment : Fragment() {
             //TODO: add validation
             viewModel.login(email, password)
         }
+
+        binding.textViewRegister.setOnClickListener {
+            it.findNavController().navigate( R.id.action_loginFragment_to_signupFragment )
+        }
     }
+
 }
