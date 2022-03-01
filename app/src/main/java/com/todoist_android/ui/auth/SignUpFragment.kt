@@ -1,14 +1,9 @@
 package com.todoist_android.ui.auth
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.todoist_android.data.repository.AuthRepo
-import com.todoist_android.databinding.FragmentLoginBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-class SignUpFragment: Fragment(
-
-){
-
+@AndroidEntryPoint
+class SignupFragment : Fragment() {
 
 }
