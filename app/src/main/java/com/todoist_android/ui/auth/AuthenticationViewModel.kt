@@ -28,16 +28,7 @@ class AuthenticationViewModel @Inject constructor(
     val loginResponse: SharedFlow<APIResource<LoginResponse>>
         get() = _loginResponse
 
-    val signUpResponse: LiveData<APIResource<SignupResponse>>
-        get() = _signUpResponse
-
-    fun login(email: String, password: String)  = viewModelScope.launch {
-        _loginResponse.value = APIResource.Loading
-        _loginResponse.value = authRepo.login(email, password)
-    }
-
-    fun signup(username: String, email: String, password: String) = viewModelScope.launch {
-        _loginResponse.value = APIResource.Loading
-        _signUpResponse.value = authRepo.signup(username, email, password)
+    fun login(email: String, password: String) = viewModelScope.launch {
+        _loginResponse.emit(authRepo.login(email, password))
     }
 }

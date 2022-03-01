@@ -1,11 +1,11 @@
 package com.todoist_android.data.network
 
+import com.todoist_android.data.responses.LoginResponse
 import okhttp3.ResponseBody
 
 //Handle API Success and Error responses
 sealed class APIResource<out T> {
     data class Success<out T>(val value: T) : APIResource<T>()
-
     data class Error(
         val isNetworkError: Boolean,
         val errorCode: Int?,
