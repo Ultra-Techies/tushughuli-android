@@ -1,6 +1,8 @@
 package com.todoist_android.ui.auth
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -58,11 +60,34 @@ class LoginFragment : Fragment() {
         binding.progressbar.visibility = GONE
         binding.buttonLogin.setOnClickListener {
             binding.progressbar.visibility = VISIBLE
-            val email = binding.editTextTextEmailAddress.text.toString()
-            val password = binding.editTextTextPassword.text.toString()
+            val email = binding.editTextTextEmailAddress.text.toString().trim()
+            val password = binding.editTextTextPassword.text.toString().trim()
 
-            //TODO: add validation
-            viewModel.login(email, password)
+            //validate email and password
+            if (binding.editTextTextEmailAddress.text.isNullOrEmpty()){
+                binding.editTextTextEmailAddress.error ="Please Enter your Email"
+                binding.progressbar.visibility = GONE
+                binding.buttonLogin.isEnabled = true
+                return@setOnClickListener
+            }
+
+            if (!validateEmail(binding.editTextTextEmailAddress.text.toString().trim())){
+                binding.editTextTextEmailAddress.error = "Please Enter a valid Email"
+                binding.progressbar.visibility = GONE
+                binding.buttonLogin.isEnabled = true
+                return@setOnClickListener
+            }
+
+            if (binding.editTextTextPassword.text.isNullOrEmpty()){
+                binding.editTextTextPassword.error ="Please enter your password"
+                binding.progressbar.visibility = GONE
+                binding.buttonLogin.isEnabled = true
+                return@setOnClickListener
+            }
+
+            if (email.isNotEmpty() && password.isNotEmpty()){
+                viewModel.login(email, password)
+            }
         }
 
         binding.textViewRegister.setOnClickListener {

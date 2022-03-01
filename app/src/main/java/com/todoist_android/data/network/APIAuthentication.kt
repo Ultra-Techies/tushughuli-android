@@ -12,7 +12,7 @@ interface APIAuthentication {
     //Refer to: https://github.com/Ultra-Techies/backend/blob/main/endpoints/endpoints.md
 
     @FormUrlEncoded
-    @GET("/auth")
+    @POST("/auth")
     suspend fun login( //suspend because we will use coroutines for our network calls
         @Field("email") email: String,
         @Field("password") password: String
