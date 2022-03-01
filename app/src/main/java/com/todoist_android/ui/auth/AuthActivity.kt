@@ -3,7 +3,9 @@ package com.todoist_android.ui.auth
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.todoist_android.databinding.ActivityAuthBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AuthActivity : AppCompatActivity() {
     lateinit var binding: ActivityAuthBinding
 
