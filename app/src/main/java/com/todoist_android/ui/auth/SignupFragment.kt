@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.todoist_android.databinding.FragmentLoginBinding
 import com.todoist_android.databinding.FragmentSignupBinding
 import dagger.hilt.android.AndroidEntryPoint
 
