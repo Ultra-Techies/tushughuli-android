@@ -3,7 +3,7 @@ package com.todoist_android.data.di
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.todoist_android.BuildConfig
 import com.todoist_android.data.network.APIAuthentication
-import com.todoist_android.data.network.TodoRemoteSource.Companion.BASE_URL
+import com.todoist_android.view.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
