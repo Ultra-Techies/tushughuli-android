@@ -27,4 +27,6 @@
     <string name="confirm_password_two">Confirm Password</string>
     <string name="login_to_account">LOGIN TO ACCOUNT</string>
     <string name="logout">Logout</string>
+    <string name="settings">Settings</string>
+    <string name="profile">Profile</string>
 </resources>
