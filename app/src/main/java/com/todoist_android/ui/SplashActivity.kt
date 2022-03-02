@@ -8,9 +8,12 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.lifecycle.asLiveData
 import com.google.android.material.snackbar.Snackbar
+import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivitySplashBinding
 import com.todoist_android.ui.auth.AuthActivity
+import com.todoist_android.ui.home.MainActivity
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 
@@ -23,19 +26,36 @@ class SplashActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         if(isOnline(this)){
-            //region: call auth endpoint and check if user is logged in, remove below thread once this is implemented
+            //region: check if user token or id is present in shared preferences
+            val userPreferences = UserPreferences(this)
+            userPreferences.todoToken.asLiveData().observe(this) {
+                if (!it.isNullOrEmpty()) {
+                    Log.d("SplashActivity", "token is not null or empty")
+                    val userId: Int = it.toString().toInt()
+
+                    //count for 2 seconds then start the main activity passing the userId
+                    GlobalScope.launch(Dispatchers.Main) {
+                        delay(TimeUnit.SECONDS.toMillis(2))
+                        Intent(this@SplashActivity, MainActivity::class.java).also {
+                            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            it.putExtra("userId", userId)
+                            startActivity(it)
+                        }
+                        finish()
+                    }
+                } else {
+
+                    GlobalScope.launch(Dispatchers.Main) {
+                        delay(TimeUnit.SECONDS.toMillis(2))
+                        Log.i("TAG", "this will be called after 2 seconds")
+                        startActivity(Intent(this@SplashActivity, AuthActivity::class.java))
+                        finish()
+                    }
+                }
+            }
 
             //endregion
 
-            //count for 2 seconds
-            CoroutineScope(Dispatchers.IO).launch {
-                delay(TimeUnit.SECONDS.toMillis(2))
-                withContext(Dispatchers.Main) {
-                    Log.i("TAG", "this will be called after 2 seconds")
-                    startActivity(Intent(this@SplashActivity, AuthActivity::class.java))
-                    finish()
-                }
-            }
         }else{
             Snackbar.make(binding.root, "No internet connection", Snackbar.LENGTH_LONG).show()
             binding.progressBar.visibility = android.view.View.GONE

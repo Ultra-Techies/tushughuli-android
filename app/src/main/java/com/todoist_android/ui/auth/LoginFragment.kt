@@ -7,7 +7,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -18,6 +17,7 @@ import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
+import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.FragmentLoginBinding
 import com.todoist_android.ui.home.MainActivity
 import com.todoist_android.view.validateEmail
@@ -30,13 +30,17 @@ class LoginFragment : Fragment() {
 
     private val viewModel: AuthenticationViewModel by viewModels()
     private lateinit var binding: FragmentLoginBinding
+    protected lateinit var userPreferences: UserPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        userPreferences = UserPreferences(requireContext())
         binding = FragmentLoginBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
@@ -57,8 +61,15 @@ class LoginFragment : Fragment() {
                            //else show error message
                            it.value.valid?.let {
                                if (it) {
-                                   //Redirect to Home
-                                   //pass user id to home activity
+                                   //save user token or id
+                                   /**
+                                    * userPreferences.saveToken(it.value.accessToken)
+                                    * This would be the best approach once backend is able
+                                    * to give as an access token on successful login
+                                    */
+                                   userPreferences.saveToken(userId.toString())
+
+                                   //Redirect to Home pass user id to home activity
                                    Intent(requireContext(), MainActivity::class.java).also {
                                        it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                                        it.putExtra("userId", userId)
