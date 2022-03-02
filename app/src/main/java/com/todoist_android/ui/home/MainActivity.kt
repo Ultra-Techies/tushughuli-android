@@ -16,6 +16,6 @@ class MainActivity : AppCompatActivity() {
         //Receiving data from the previous activity
         val userId = intent.getIntExtra("userId", 0)
 
-        Toast.makeText(this, "Welcome $userId", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Welcome back $userId", Toast.LENGTH_LONG).show()
     }
 }
