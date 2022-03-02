@@ -7,6 +7,28 @@
               android:orientation="vertical"
     tools:context=".ui.home.MainActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+        <androidx.appcompat.widget.Toolbar
+                app:layout_collapseMode="pin"
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/white"
+                android:padding="0dp"
+                android:elevation="4dp"
+                android:titleTextColor="@color/black"
+                android:layout_alignParentTop="true"
+                android:fitsSystemWindows="true"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
