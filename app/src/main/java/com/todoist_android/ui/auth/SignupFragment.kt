@@ -41,6 +41,7 @@ class SignupFragment : Fragment() {
                 viewModel.signupResponse.collect {
                     when(it){
                         is APIResource.Success->{
+                            Toast.makeText(requireContext(),"Signup successful! Please login",Toast.LENGTH_LONG).show()
                             binding.progressbarTwo.visibility = View.GONE
                             view.findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
                         }
@@ -61,10 +62,10 @@ class SignupFragment : Fragment() {
 
             binding.progressbarTwo.visibility = View.VISIBLE
 
-            val userName = binding.etUsername.text.toString()
-            val userEmail = binding.etEmail.text.toString()
-            val userPassword = binding.etPassword.text.toString()
-            val confirmPassword = binding.etConfirmPassword.text.toString()
+            val userName = binding.etUsername.text.trim().toString()
+            val userEmail = binding.etEmail.text.trim().toString()
+            val userPassword = binding.etPassword.text.trim().toString()
+            val confirmPassword = binding.etConfirmPassword.text.trim().toString()
 
 
             if (binding.etUsername.text.isNullOrEmpty()){
@@ -82,7 +83,7 @@ class SignupFragment : Fragment() {
                 binding.progressbarTwo.visibility = View.GONE
                 return@setOnClickListener
             }
-            if (!validateEmail(binding.etEmail.text.toString())){
+            if (!validateEmail(binding.etEmail.text.trim().toString())){
                 binding.etEmail.error = "Please Enter a valid Email"
                 binding.progressbarTwo.visibility = View.GONE
                 return@setOnClickListener
@@ -100,7 +101,6 @@ class SignupFragment : Fragment() {
 
             }
             if(userPassword.trim() != confirmPassword.trim()){
-
                 binding.etConfirmPassword.error ="Passwords do not match"
                 binding.progressbarTwo.visibility = View.GONE
                 return@setOnClickListener
