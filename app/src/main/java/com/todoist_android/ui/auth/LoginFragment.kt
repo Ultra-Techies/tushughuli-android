@@ -1,5 +1,6 @@
 package com.todoist_android.ui.auth
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,14 +13,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.findNavController
+import androidx.navigation.Navigation
+import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.databinding.FragmentLoginBinding
+import com.todoist_android.ui.home.MainActivity
+import com.todoist_android.view.validateEmail
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -45,12 +48,35 @@ class LoginFragment : Fragment() {
                viewModel.loginResponse.collect {
                    when (it) {
                        is APIResource.Success -> {
-                           Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_LONG).show()
                            binding.progressbar.visibility = GONE
+
+                           val userId = it.value.id
+
+                           //if it.value.valid is true redirect to home
+                           //else show error message
+                           it.value.valid?.let {
+                               if (it) {
+                                   //Redirect to Home
+                                   //pass user id to home activity
+                                   Intent(requireContext(), MainActivity::class.java).also {
+                                       it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                       it.putExtra("userId", userId)
+                                       startActivity(it)
+                                   }
+                               } else {
+                                   binding.buttonLogin.isEnabled = true
+                                   Snackbar.make(binding.root, "Account does not exist", Snackbar.LENGTH_LONG).show()
+                               }
+                           }
                        }
                        is APIResource.Error -> {
-                           Toast.makeText(requireContext(), "Login failed!", Toast.LENGTH_LONG).show()
+                           Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
                            binding.progressbar.visibility = GONE
+                           binding.buttonLogin.isEnabled = true
+                       }
+                       is APIResource.Loading -> {
+                           binding.progressbar.visibility = VISIBLE
+                           binding.buttonLogin.isEnabled = false
                        }
                    }
                }
@@ -61,16 +87,41 @@ class LoginFragment : Fragment() {
         binding.progressbar.visibility = GONE
         binding.buttonLogin.setOnClickListener {
             binding.progressbar.visibility = VISIBLE
-            val email = binding.editTextTextEmailAddress.text.toString()
-            val password = binding.editTextTextPassword.text.toString()
+            binding.buttonLogin.isEnabled = false
 
-            //TODO: add validation
-            viewModel.login(email, password)
+            val email = binding.editTextTextEmailAddress.text.toString().trim()
+            val password = binding.editTextTextPassword.text.toString().trim()
+
+            //validate email and password
+            if (binding.editTextTextEmailAddress.text.isNullOrEmpty()){
+                binding.editTextTextEmailAddress.error ="Please Enter your Email"
+                binding.progressbar.visibility = GONE
+                binding.buttonLogin.isEnabled = true
+                return@setOnClickListener
+            }
+
+            if (!validateEmail(binding.editTextTextEmailAddress.text.toString().trim())){
+                binding.editTextTextEmailAddress.error = "Please Enter a valid Email"
+                binding.progressbar.visibility = GONE
+                binding.buttonLogin.isEnabled = true
+                return@setOnClickListener
+            }
+
+            if (binding.editTextTextPassword.text.isNullOrEmpty()){
+                binding.editTextTextPassword.error ="Please enter your password"
+                binding.progressbar.visibility = GONE
+                binding.buttonLogin.isEnabled = true
+                return@setOnClickListener
+            }
+
+            if (email.isNotEmpty() && password.isNotEmpty()){
+                viewModel.login(email, password)
+            }
         }
 
         binding.textViewRegister.setOnClickListener {
-            it.findNavController().navigate( R.id.action_loginFragment_to_signupFragment )
+            Navigation.findNavController(view!!).navigate(R.id.signupFragment)
         }
-    }
 
+    }
 }

@@ -12,5 +12,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //Receiving data from the previous activity
+        val userId = intent.getIntExtra("userId", 0)
+
+        Toast.makeText(this, "Welcome $userId", Toast.LENGTH_LONG).show()
     }
 }
