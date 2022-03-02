@@ -41,14 +41,15 @@ class SignupFragment : Fragment() {
                 viewModel.signupResponse.collect {
                     when(it){
                         is APIResource.Success->{
-                            view.findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
                             binding.progressbarTwo.visibility = View.GONE
-                            Toast.makeText(requireContext(),it.toString(),Toast.LENGTH_SHORT).show()
-                            Log.d("message",it.toString())
+                            view.findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
                         }
                         is APIResource.Error ->{
-                            Toast.makeText(requireContext(),"Registration Failed",Toast.LENGTH_SHORT).show()
                             binding.progressbarTwo.visibility = View.GONE
+                            Toast.makeText(requireContext(),it.errorBody.toString(),Toast.LENGTH_SHORT).show()
+                        }
+                        is APIResource.Loading -> {
+                            binding.progressbarTwo.visibility = View.VISIBLE
                         }
                     }
                 }
@@ -68,33 +69,40 @@ class SignupFragment : Fragment() {
 
             if (binding.etUsername.text.isNullOrEmpty()){
                 binding.etUsername.error = "Please Enter Your User Name"
+                binding.progressbarTwo.visibility = View.GONE
                 return@setOnClickListener
             }
             if (userName.trim().length<= 2){
                 binding.etUsername.error ="Enter a Name with more than two words"
+                binding.progressbarTwo.visibility = View.GONE
                 return@setOnClickListener
             }
             if (binding.etEmail.text.isNullOrEmpty()){
                 binding.etEmail.error ="Please Enter your Email"
+                binding.progressbarTwo.visibility = View.GONE
                 return@setOnClickListener
             }
             if (!validateEmail(binding.etEmail.text.toString())){
                 binding.etEmail.error = "Please Enter a valid Email"
+                binding.progressbarTwo.visibility = View.GONE
                 return@setOnClickListener
             }
             if (binding.etPassword.text.isNullOrEmpty()){
                 binding.etPassword.error ="Please enter your password"
+                binding.progressbarTwo.visibility = View.GONE
                 return@setOnClickListener
             }
 
             if (binding.etConfirmPassword.text.isNullOrEmpty()){
                 binding.etConfirmPassword.error ="Confirm your Password"
+                binding.progressbarTwo.visibility = View.GONE
                 return@setOnClickListener
 
             }
             if(userPassword.trim() != confirmPassword.trim()){
 
                 binding.etConfirmPassword.error ="Passwords do not match"
+                binding.progressbarTwo.visibility = View.GONE
                 return@setOnClickListener
             }
 
