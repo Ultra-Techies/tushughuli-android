@@ -46,7 +46,7 @@ class SignupFragment : Fragment() {
                         }
                         is APIResource.Error ->{
                             binding.progressbarTwo.visibility = View.GONE
-                            Toast.makeText(requireContext(),it.errorBody.toString(),Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(),it.errorBody.toString(),Toast.LENGTH_LONG).show()
                         }
                         is APIResource.Loading -> {
                             binding.progressbarTwo.visibility = View.VISIBLE
