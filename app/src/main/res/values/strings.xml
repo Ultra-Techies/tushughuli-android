@@ -26,4 +26,5 @@
     <string name="register_new_account">Register new account</string>
     <string name="confirm_password_two">Confirm Password</string>
     <string name="login_to_account">LOGIN TO ACCOUNT</string>
+    <string name="logout">Logout</string>
 </resources>
