@@ -10,8 +10,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.todoist_android.R
 import com.todoist_android.databinding.ActivityMainBinding
-import com.todoist_android.ui.auth.AuthActivity
-
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
