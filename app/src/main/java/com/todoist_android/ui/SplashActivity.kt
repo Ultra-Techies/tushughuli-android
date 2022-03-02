@@ -8,7 +8,6 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.asLiveData
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.data.repository.UserPreferences
@@ -33,7 +32,6 @@ class SplashActivity : AppCompatActivity() {
                 if (!it.isNullOrEmpty()) {
                     Log.d("SplashActivity", "token is not null or empty")
                     val userId: Int = it.toString().toInt()
-                    Toast.makeText(this, "Token: $userId", Toast.LENGTH_SHORT).show()
                     Intent(this, MainActivity::class.java).also {
                         it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         it.putExtra("userId", userId)
