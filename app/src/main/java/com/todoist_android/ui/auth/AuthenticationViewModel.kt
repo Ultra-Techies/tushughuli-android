@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.AuthRepo
 import com.todoist_android.data.responses.LoginResponse
+import com.todoist_android.data.responses.SignupResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,10 +27,19 @@ class AuthenticationViewModel @Inject constructor(
     // use kotlin flows instead of live data
     private val _loginResponse = MutableSharedFlow<APIResource<LoginResponse>>()
 
+    private  val _signupResponse = MutableSharedFlow<APIResource<SignupResponse>>()
+
     val loginResponse: SharedFlow<APIResource<LoginResponse>>
         get() = _loginResponse
 
     fun login(email: String, password: String) = viewModelScope.launch {
         _loginResponse.emit(authRepo.login(email, password))
     }
+
+    val signupResponse: SharedFlow<APIResource<SignupResponse>> get() = _signupResponse
+
+    fun signUp(username: String,password: String,email:String ) = viewModelScope.launch {
+        _signupResponse.emit(authRepo.signup(username,password,email))
+    }
+
 }
