@@ -2,20 +2,16 @@ package com.todoist_android.data.network
 
 import com.todoist_android.data.responses.LoginResponse
 import com.todoist_android.data.responses.SignupResponse
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface APIAuthentication {
 
     //Refer to: https://github.com/Ultra-Techies/backend/blob/main/endpoints/endpoints.md
 
-    @FormUrlEncoded
-    @POST("/auth")
+    @GET("/auth")
     suspend fun login( //suspend because we will use coroutines for our network calls
-        @Field("email") email: String,
-        @Field("password") password: String
+        @Query("email") email: String,
+        @Query("password") password: String
     ) : LoginResponse
 
     @FormUrlEncoded
