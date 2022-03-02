@@ -32,21 +32,24 @@ class SplashActivity : AppCompatActivity() {
                 if (!it.isNullOrEmpty()) {
                     Log.d("SplashActivity", "token is not null or empty")
                     val userId: Int = it.toString().toInt()
-                    Intent(this, MainActivity::class.java).also {
-                        it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        it.putExtra("userId", userId)
-                        startActivity(it)
-                    }
-                    finish()
-                } else {
-                    //count for 2 seconds
-                    CoroutineScope(Dispatchers.IO).launch {
+
+                    //count for 2 seconds then start the main activity passing the userId
+                    GlobalScope.launch(Dispatchers.Main) {
                         delay(TimeUnit.SECONDS.toMillis(2))
-                        withContext(Dispatchers.Main) {
-                            Log.i("TAG", "this will be called after 2 seconds")
-                            startActivity(Intent(this@SplashActivity, AuthActivity::class.java))
-                            finish()
+                        Intent(this@SplashActivity, MainActivity::class.java).also {
+                            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            it.putExtra("userId", userId)
+                            startActivity(it)
                         }
+                        finish()
+                    }
+                } else {
+
+                    GlobalScope.launch(Dispatchers.Main) {
+                        delay(TimeUnit.SECONDS.toMillis(2))
+                        Log.i("TAG", "this will be called after 2 seconds")
+                        startActivity(Intent(this@SplashActivity, AuthActivity::class.java))
+                        finish()
                     }
                 }
             }
