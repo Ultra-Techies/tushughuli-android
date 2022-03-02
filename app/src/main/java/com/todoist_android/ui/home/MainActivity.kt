@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
-        title = ""
+        title = "Hi username"
 
         //Receiving data from the previous activity
         val userId = intent.getIntExtra("userId", 0)
