@@ -14,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
@@ -120,7 +121,7 @@ class LoginFragment : Fragment() {
         }
 
         binding.textViewRegister.setOnClickListener {
-            Navigation.findNavController(view!!).navigate(R.id.signupFragment)
+            it.findNavController().navigate( R.id.action_loginFragment_to_signupFragment )
         }
 
     }

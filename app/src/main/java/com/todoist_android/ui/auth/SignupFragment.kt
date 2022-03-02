@@ -29,7 +29,7 @@ class SignupFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-       binding = FragmentSignupBinding.inflate(layoutInflater,container,false)
+        binding = FragmentSignupBinding.inflate(layoutInflater,container,false)
         return binding.root
     }
 
