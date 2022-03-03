@@ -37,8 +37,6 @@ open class BottomSheetFragment : BottomSheetDialogFragment() {
     ): View {
         binding = FragmentBottomsheetBinding.inflate(layoutInflater, container, false)
         return binding.root
-
-
     }
     companion object {
         const val TAG = "ModalBottomSheet"
@@ -59,72 +57,11 @@ open class BottomSheetFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.editTextTaskName.showKeyboard()
         binding.tvDatePicker.setOnClickListener {
-            // Date Picker
-            val calendarConstraintBuilder =
-                CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now())
-
-            val materialDateBuilder =
-                MaterialDatePicker.Builder.datePicker()
-                    .setTitleText("SELECT DATE ")
-                    .setCalendarConstraints(calendarConstraintBuilder.build())
-
-            val materialDatePicker = materialDateBuilder.build()
-            materialDatePicker.show(requireActivity().supportFragmentManager, "tag")
-            materialDatePicker.addOnPositiveButtonClickListener {
-                // Respond to positive button click.
-                dateTime = materialDatePicker.headerText
-            }
-
+           datePicker()
         }
         binding.ivReminder.setOnClickListener {
-            val picker =
-                MaterialTimePicker.Builder()
-                    .setTitleText("Select Appointment time")
-                    .setTimeFormat(TimeFormat.CLOCK_12H)
-                    .setHour(12)
-                    .setMinute(10)
-                    .build()
-            picker.show(requireActivity().supportFragmentManager, "tag")
-            picker.addOnPositiveButtonClickListener {
-                val pickedHour: Int = picker.hour
-                val pickedMinute: Int = picker.minute
-
-                val formattedTime: String = when {
-                    pickedHour > 12 -> {
-                        if (pickedMinute < 10) {
-                            "${picker.hour - 12}:0${picker.minute} pm"
-                        } else {
-                            "${picker.hour - 12}:${picker.minute} pm"
-                        }
-                    }
-                    pickedHour == 12 -> {
-                        if (pickedMinute < 10) {
-                            "${picker.hour}:0${picker.minute} pm"
-                        } else {
-                            "${picker.hour}:${picker.minute} pm"
-                        }
-                    }
-                    pickedHour == 0 -> {
-                        if (pickedMinute < 10) {
-                            "${picker.hour + 12}:0${picker.minute} am"
-                        } else {
-                            "${picker.hour + 12}:${picker.minute} am"
-                        }
-                    }
-                    else -> {
-                        if (pickedMinute < 10) {
-                            "${picker.hour}:0${picker.minute} am"
-                        } else {
-                            "${picker.hour}:${picker.minute} am"
-                        }
-                    }
-                }
-
-                dateTime = "$dateTime at $formattedTime"
-
-            }
+           timePicker()
         }
-
         binding.ivFlag.setOnClickListener { it ->
             val popup = PopupMenu(requireContext(), it)
             popup.inflate(R.menu.set_status_menu)
@@ -143,6 +80,73 @@ open class BottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         binding.tvEnd.setOnClickListener { dismiss() }
+    }
+
+    private fun datePicker(){
+        // Date Picker
+        val calendarConstraintBuilder =
+            CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now())
+
+        val materialDateBuilder =
+            MaterialDatePicker.Builder.datePicker()
+                .setTitleText("SELECT DATE ")
+                .setCalendarConstraints(calendarConstraintBuilder.build())
+
+        val materialDatePicker = materialDateBuilder.build()
+        materialDatePicker.show(requireActivity().supportFragmentManager, "tag")
+        materialDatePicker.addOnPositiveButtonClickListener {
+            // Respond to positive button click.
+            dateTime = materialDatePicker.headerText
+        }
+    }
+
+    private fun timePicker(){
+        val picker =
+            MaterialTimePicker.Builder()
+                .setTitleText("Select Appointment time")
+                .setTimeFormat(TimeFormat.CLOCK_12H)
+                .setHour(12)
+                .setMinute(10)
+                .build()
+        picker.show(requireActivity().supportFragmentManager, "tag")
+        picker.addOnPositiveButtonClickListener {
+            val pickedHour: Int = picker.hour
+            val pickedMinute: Int = picker.minute
+
+            val formattedTime: String = when {
+                pickedHour > 12 -> {
+                    if (pickedMinute < 10) {
+                        "${picker.hour - 12}:0${picker.minute} pm"
+                    } else {
+                        "${picker.hour - 12}:${picker.minute} pm"
+                    }
+                }
+                pickedHour == 12 -> {
+                    if (pickedMinute < 10) {
+                        "${picker.hour}:0${picker.minute} pm"
+                    } else {
+                        "${picker.hour}:${picker.minute} pm"
+                    }
+                }
+                pickedHour == 0 -> {
+                    if (pickedMinute < 10) {
+                        "${picker.hour + 12}:0${picker.minute} am"
+                    } else {
+                        "${picker.hour + 12}:${picker.minute} am"
+                    }
+                }
+                else -> {
+                    if (pickedMinute < 10) {
+                        "${picker.hour}:0${picker.minute} am"
+                    } else {
+                        "${picker.hour}:${picker.minute} am"
+                    }
+                }
+            }
+
+            dateTime = "$dateTime at $formattedTime"
+
+        }
     }
 
     override fun onDestroy() {
