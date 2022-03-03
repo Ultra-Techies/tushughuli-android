@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.profile -> {
                 Intent(this, ProfileActivity::class.java).also {
-                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     it.putExtra("userId", userId)
                     startActivity(it)
                 }
