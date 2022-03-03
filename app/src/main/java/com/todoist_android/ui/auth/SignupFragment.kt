@@ -1,7 +1,6 @@
 package com.todoist_android.ui.auth
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.databinding.FragmentSignupBinding
@@ -49,17 +49,21 @@ class SignupFragment : Fragment() {
                                     binding.progressbarTwo.visibility = View.GONE
                                     view.findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
                                 }else{
-                                    Toast.makeText(context,"Signup Failed",Toast.LENGTH_SHORT).show()
+                                    Snackbar.make(binding.root,"Signup Failed",Snackbar.LENGTH_SHORT).show()
+                                    binding.progressbarTwo.visibility = View.GONE
+                                    binding.btnSignup.isEnabled = true
                                 }
                             }
 
                         }
                         is APIResource.Error ->{
                             binding.progressbarTwo.visibility = View.GONE
-                            Toast.makeText(requireContext(),it.errorBody.toString(),Toast.LENGTH_LONG).show()
+                            binding.btnSignup.isEnabled = true
+                            Snackbar.make(binding.root,it.errorBody.toString(),Snackbar.LENGTH_SHORT).show()
                         }
                         is APIResource.Loading -> {
                             binding.progressbarTwo.visibility = View.VISIBLE
+                            binding.btnSignup.isEnabled = false
                         }
                     }
                 }
@@ -70,6 +74,7 @@ class SignupFragment : Fragment() {
         binding.btnSignup.setOnClickListener {
 
             binding.progressbarTwo.visibility = View.VISIBLE
+            binding.btnSignup.isEnabled = false
 
             val userName = binding.etUsername.text.trim().toString()
             val userEmail = binding.etEmail.text.trim().toString()
@@ -80,38 +85,45 @@ class SignupFragment : Fragment() {
             if (binding.etUsername.text.isNullOrEmpty()){
                 binding.etUsername.error = "Please Enter Your User Name"
                 binding.progressbarTwo.visibility = View.GONE
+                binding.btnSignup.isEnabled = true
                 return@setOnClickListener
             }
             if (userName.trim().length<= 2){
                 binding.etUsername.error ="Enter a Name with more than two words"
                 binding.progressbarTwo.visibility = View.GONE
+                binding.btnSignup.isEnabled = true
                 return@setOnClickListener
             }
             if (binding.etEmail.text.isNullOrEmpty()){
                 binding.etEmail.error ="Please Enter your Email"
                 binding.progressbarTwo.visibility = View.GONE
+                binding.btnSignup.isEnabled = true
                 return@setOnClickListener
             }
             if (!validateEmail(binding.etEmail.text.trim().toString())){
                 binding.etEmail.error = "Please Enter a valid Email"
                 binding.progressbarTwo.visibility = View.GONE
+                binding.btnSignup.isEnabled = true
                 return@setOnClickListener
             }
             if (binding.etPassword.text.isNullOrEmpty()){
                 binding.etPassword.error ="Please enter your password"
                 binding.progressbarTwo.visibility = View.GONE
+                binding.btnSignup.isEnabled = true
                 return@setOnClickListener
             }
 
             if (binding.etConfirmPassword.text.isNullOrEmpty()){
                 binding.etConfirmPassword.error ="Confirm your Password"
                 binding.progressbarTwo.visibility = View.GONE
+                binding.btnSignup.isEnabled = true
                 return@setOnClickListener
 
             }
             if(userPassword.trim() != confirmPassword.trim()){
                 binding.etConfirmPassword.error ="Passwords do not match"
                 binding.progressbarTwo.visibility = View.GONE
+                binding.btnSignup.isEnabled = true
                 return@setOnClickListener
             }
 
