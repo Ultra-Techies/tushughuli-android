@@ -14,5 +14,23 @@
         <!-- Customize your theme here. -->
         <item name="windowActionBar">true</item>
         <item name="windowNoTitle">true</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
+
+
     </style>
+
+
+    <style name="buttonTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="theme">@style/buttonTheme</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+
 </resources>
