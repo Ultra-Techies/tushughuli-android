@@ -11,9 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import com.todoist_android.R
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivityMainBinding
-import com.todoist_android.ui.SplashActivity
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
