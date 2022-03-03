@@ -79,7 +79,7 @@ open class BottomSheetFragment : BottomSheetDialogFragment() {
             popup.show()
         }
 
-        binding.tvEnd.setOnClickListener { dismiss() }
+        binding.tvEndTask.setOnClickListener { dismiss() }
     }
 
     private fun datePicker(){
@@ -150,8 +150,8 @@ open class BottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     override fun onDestroy() {
-        val imm= requireContext(). getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(binding.editTextTaskName.windowToken, 0)
+        val closeKeyboard= requireContext(). getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        closeKeyboard.hideSoftInputFromWindow(binding.editTextTaskName.windowToken, 0)
         super.onDestroy()
     }
 
