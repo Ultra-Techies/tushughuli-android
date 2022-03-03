@@ -1,6 +1,5 @@
 package com.todoist_android.ui.home
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -8,16 +7,26 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.todoist_android.R
+import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivityMainBinding
+import com.todoist_android.ui.SplashActivity
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        userPreferences = UserPreferences(this)
 
         setSupportActionBar(binding.toolbar)
         title = "Hi username"
@@ -52,9 +61,7 @@ class MainActivity : AppCompatActivity() {
                     setTitle("Logout?")
                     setMessage("Are you sure you want to logout?")
                     setPositiveButton("Yes") { _, _ ->
-                        //clear preferences then move to auth activity with clear flag
-
-                        finish()
+                        performLogout()
                     }
                     setNegativeButton("No") { dialog, which ->
                         dialog.dismiss()
@@ -63,6 +70,15 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    fun performLogout() = lifecycleScope.launch {
+        userPreferences.clearToken()
+        Intent(this@MainActivity, SplashActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }.also {
+            startActivity(it)
         }
     }
 }
