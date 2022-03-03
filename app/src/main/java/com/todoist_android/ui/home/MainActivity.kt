@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var userPreferences: UserPreferences
+    var userId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +47,11 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.profile -> {
-                startActivity(Intent(this, ProfileActivity::class.java))
+                Intent(this, ProfileActivity::class.java).also {
+                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    it.putExtra("userId", userId)
+                    startActivity(it)
+                }
                 true
             }
 

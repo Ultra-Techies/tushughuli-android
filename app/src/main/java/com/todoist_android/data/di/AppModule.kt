@@ -1,8 +1,9 @@
 package com.todoist_android.data.di
 
+import androidx.viewbinding.BuildConfig
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import com.todoist_android.BuildConfig
 import com.todoist_android.data.network.APIAuthentication
+import com.todoist_android.data.network.UserApi
 import com.todoist_android.view.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -46,4 +47,11 @@ object AppModule {
     @Provides
     fun apiService(retrofit: Retrofit): APIAuthentication = retrofit.create(APIAuthentication::class.java)
 
+    @Singleton
+    @Provides
+    fun provideUserApi(
+        retrofit: Retrofit
+    ): UserApi {
+        return retrofit.create(UserApi::class.java)
+    }
 }
