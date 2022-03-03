@@ -6,7 +6,8 @@ import javax.inject.Inject
 
 //Communicates with our external data source
 class AuthRepo @Inject constructor  (
-    private val authApi: APIAuthentication
+    private val authApi: APIAuthentication,
+    private val userPrefs: UserPreferences
 ) : BaseRepo() {
 
     suspend fun login(email: String, password: String) = safeApiCall {
@@ -15,5 +16,9 @@ class AuthRepo @Inject constructor  (
 
     suspend fun signup(username: String, email: String, password: String) = safeApiCall {
         authApi.signup(username, email, password)
+    }
+
+    suspend fun saveToken(token: String) {
+        userPrefs.saveToken(token)
     }
 }

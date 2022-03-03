@@ -1,34 +1,41 @@
 package com.todoist_android.data.repository
 
 import android.content.Context
-import androidx.datastore.DataStore
-import androidx.datastore.preferences.Preferences
-import androidx.datastore.preferences.createDataStore
-import androidx.datastore.preferences.edit
-import androidx.datastore.preferences.preferencesKey
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import androidx.datastore.preferences.preferencesDataStore
+import javax.inject.Inject
 
-class UserPreferences (context: Context) {
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "todo_data_store")
+
+class UserPreferences @Inject constructor(@ApplicationContext context: Context) {
 
     private val applicationContext = context.applicationContext
-    private val dataStore: DataStore<Preferences> = applicationContext.createDataStore(
-        name = "todo_data_store"
-    )
 
     val todoToken: Flow<String?>
-        get() = dataStore.data.map { preferences ->
+        get() = applicationContext.dataStore.data.map { preferences ->
             preferences[TOKEN]
         }
 
     suspend fun saveToken(todoToken: String) {
-        dataStore.edit {
+        applicationContext.dataStore.edit {
             it[TOKEN] = todoToken
         }
     }
 
+    suspend fun clearToken() {
+        applicationContext.dataStore.edit { preferences ->
+            preferences.clear()
+        }
+    }
+
     companion object {
-        private val TOKEN = preferencesKey<String>("token")
+        private val TOKEN = stringPreferencesKey("token")
     }
 
 }

@@ -36,4 +36,7 @@
     <string name="add">ADD</string>
     <string name="created">Created</string>
     <string name="in_progress">In Progress</string>
+    <string name="logout">Logout</string>
+    <string name="settings">Settings</string>
+    <string name="profile">Profile</string>
 </resources>

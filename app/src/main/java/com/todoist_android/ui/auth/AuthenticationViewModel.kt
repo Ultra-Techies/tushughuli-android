@@ -9,12 +9,11 @@ import com.todoist_android.data.responses.SignupResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthenticationViewModel @Inject constructor(
+open class AuthenticationViewModel @Inject constructor(
     private val authRepo: AuthRepo
 ) : ViewModel() {
 
@@ -42,4 +41,7 @@ class AuthenticationViewModel @Inject constructor(
         _signupResponse.emit(authRepo.signup(username,password,email))
     }
 
+    fun saveAuthToken(token: String) = viewModelScope.launch {
+        authRepo.saveToken(token)
+    }
 }
