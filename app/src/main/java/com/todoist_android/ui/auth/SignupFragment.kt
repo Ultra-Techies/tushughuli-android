@@ -41,9 +41,18 @@ class SignupFragment : Fragment() {
                 viewModel.signupResponse.collect {
                     when(it){
                         is APIResource.Success->{
-                            Toast.makeText(requireContext(),"Signup successful! Please login",Toast.LENGTH_LONG).show()
-                            binding.progressbarTwo.visibility = View.GONE
-                            view.findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
+                            //check in response if username_valid is true and created is true
+                            it.value.let {
+                                if(it.username_valid && it.created){
+
+                                    Toast.makeText(requireContext(),"Signup successful! Please login",Toast.LENGTH_LONG).show()
+                                    binding.progressbarTwo.visibility = View.GONE
+                                    view.findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
+                                }else{
+                                    Toast.makeText(context,"Signup Failed",Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
                         }
                         is APIResource.Error ->{
                             binding.progressbarTwo.visibility = View.GONE

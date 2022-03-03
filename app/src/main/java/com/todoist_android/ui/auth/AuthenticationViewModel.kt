@@ -42,4 +42,7 @@ class AuthenticationViewModel @Inject constructor(
         _signupResponse.emit(authRepo.signup(username,password,email))
     }
 
+    fun saveAuthToken(token: String) = viewModelScope.launch {
+        authRepo.saveToken(token)
+    }
 }
