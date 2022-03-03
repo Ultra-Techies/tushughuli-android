@@ -1,6 +1,5 @@
 package com.todoist_android.data.network
 
-import com.todoist_android.data.responses.LoginResponse
 import okhttp3.ResponseBody
 
 //Handle API Success and Error responses

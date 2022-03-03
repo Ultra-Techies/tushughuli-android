@@ -14,7 +14,6 @@ import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivitySplashBinding
 import com.todoist_android.ui.auth.AuthActivity
 import com.todoist_android.ui.home.MainActivity
-import com.todoist_android.ui.home.ProfileActivity
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 

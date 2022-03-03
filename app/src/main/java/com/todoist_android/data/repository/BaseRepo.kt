@@ -1,7 +1,6 @@
 package com.todoist_android.data.network.repository
 
 import android.util.Log
-import android.widget.Toast
 import com.todoist_android.data.network.APIResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
