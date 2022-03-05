@@ -32,9 +32,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
             android:layout_below="@id/appbar"
-            android:id="@+id/rcvMain"
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="60dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

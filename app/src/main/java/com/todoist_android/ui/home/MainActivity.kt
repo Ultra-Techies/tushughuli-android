@@ -43,18 +43,18 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Welcome back $userId", Toast.LENGTH_LONG).show()
 
         //Mock data
-        for (header in 0..100) {
+        for (header in 0..3) {
             objects.add("Header - $header")
-            for (item in 1..3) {
+            for (item in 1..10) {
                 objects.add(item)
             }
         }
 
         //Setup RecyclerView
-        binding.rcvMain?.adapter = MainAdapter(objects)
-        binding.rcvMain?.layoutManager = LinearLayoutManager(this)
-        binding.rcvMain?.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        binding.rcvMain?.addItemDecoration(StickyHeaderItemDecoration())
+        binding.recyclerView.adapter = MainAdapter(objects)
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        binding.recyclerView.addItemDecoration(StickyHeaderItemDecoration())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
