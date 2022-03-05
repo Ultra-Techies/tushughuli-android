@@ -2,7 +2,6 @@ package com.todoist_android.ui.home
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -46,10 +45,10 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentBottomsheetBinding
     private val viewModel: BottomSheetViewModel by viewModels()
-    var dueDate: String? = todayDate()
-    var userId : String? = null
+    private var dueDate: String? = todayDate()
+    private var userId : String? = null
 
-    var taskStatus = "created"
+    private var taskStatus = "created"
     private var dateTime = "Today"
         set(value) {
             binding.tvDatePicker.text = value
@@ -129,8 +128,6 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 status = taskStatus,
                 due_date = dueDate.toString(),
             )
-            Log.d("tag", taskRequest.toString())
-            Log.d("clickec", "clicked")
 
             addTasks(taskRequest)
 
@@ -156,6 +153,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
     private fun addTasks(taskRequest: AddTaskRequest) {
         binding.root.hideKeyboard()
+        binding.pbBottomSheet.visibility = VISIBLE
         Snackbar.make(dialog?.window!!.decorView, "Adding your task...", Snackbar.LENGTH_LONG).show()
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -179,7 +177,6 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                         }
                         is APIResource.Loading -> {
                             binding.pbBottomSheet.visibility = VISIBLE
-                            Log.e("---->", "loading")
                         }
                     }
                 }
