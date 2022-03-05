@@ -1,34 +1,61 @@
 package com.todoist_android.ui.home
 
 import android.app.Dialog
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.PopupMenu
+import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.todoist_android.R
+import com.todoist_android.data.network.APIResource
+import com.todoist_android.data.repository.UserPreferences
+import com.todoist_android.data.requests.AddTaskRequest
 import com.todoist_android.databinding.FragmentBottomsheetBinding
+import com.todoist_android.view.hideKeyboard
 import com.todoist_android.view.showKeyboard
+import com.todoist_android.view.todayDate
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
+import javax.inject.Inject
 
 
-open class BottomSheetFragment : BottomSheetDialogFragment() {
+@AndroidEntryPoint
+class BottomSheetFragment : BottomSheetDialogFragment() {
+    @Inject lateinit var prefs: UserPreferences
+
     private lateinit var binding: FragmentBottomsheetBinding
-    // default date is today
+    private val viewModel: BottomSheetViewModel by viewModels()
+    var dueDate: String? = todayDate()
+    var userId : String? = null
+
+    var taskStatus = "created"
     private var dateTime = "Today"
         set(value) {
             binding.tvDatePicker.text = value
             field = value
         }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,6 +65,7 @@ open class BottomSheetFragment : BottomSheetDialogFragment() {
         binding = FragmentBottomsheetBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
+
     companion object {
         const val TAG = "ModalBottomSheet"
     }
@@ -55,23 +83,29 @@ open class BottomSheetFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.pbBottomSheet.visibility = GONE
+
+        getUserId()
         binding.editTextTaskName.showKeyboard()
+
+
         binding.tvDatePicker.setOnClickListener {
-           datePicker()
+            datePicker()
         }
         binding.ivReminder.setOnClickListener {
-           timePicker()
+            timePicker()
         }
         binding.ivFlag.setOnClickListener { it ->
             val popup = PopupMenu(requireContext(), it)
             popup.inflate(R.menu.set_status_menu)
             popup.setOnMenuItemClickListener {
-                when(it.itemId) {
+                when (it.itemId) {
                     R.id.item_created -> {
-
+                        taskStatus = "created"
                     }
                     R.id.item_progress -> {
-
+                        taskStatus = "progress"
                     }
                 }
                 true
@@ -79,10 +113,82 @@ open class BottomSheetFragment : BottomSheetDialogFragment() {
             popup.show()
         }
 
+        binding.buttonAddTask.setOnClickListener {
+
+            if (binding.editTextTaskName.text.isNullOrEmpty()) {
+                binding.editTextTaskName.error = "Please enter a Task"
+                return@setOnClickListener
+            }
+
+            val description = binding.editTextTaskName.text.trim().toString()
+
+            val taskRequest = AddTaskRequest(
+                id = userId,
+                title = description,
+                description = description,
+                status = taskStatus,
+                due_date = dueDate.toString(),
+            )
+            Log.d("tag", taskRequest.toString())
+            Log.d("clickec", "clicked")
+
+            addTasks(taskRequest)
+
+
+        }
+
         binding.tvEndTask.setOnClickListener { dismiss() }
     }
 
-    private fun datePicker(){
+    private fun getUserId() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED){
+                prefs.todoToken.collectLatest {  todoId ->
+                    todoId?.let {
+                        userId = todoId
+                    } ?: kotlin.run {
+                        Toast.makeText(requireActivity(), "Unable to find user id", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+         }
+    }
+
+    private fun addTasks(taskRequest: AddTaskRequest) {
+        binding.root.hideKeyboard()
+        Snackbar.make(dialog?.window!!.decorView, "Adding your task...", Snackbar.LENGTH_LONG).show()
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.addTasks(taskRequest).collect {
+                    when (it) {
+                        is APIResource.Success -> {
+                            binding.pbBottomSheet.visibility = GONE
+                           Snackbar.make( dialog?.window!!.decorView, "Task added successfully", Snackbar.LENGTH_SHORT )
+                               .show()
+
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                delay( 1000 )
+                                dismiss()
+                            }
+                        }
+
+                        is APIResource.Error -> {
+                            binding.pbBottomSheet.visibility = GONE
+                            Snackbar.make( dialog?.window!!.decorView, it.errorBody.toString(), Snackbar.LENGTH_SHORT )
+                                .show()
+                        }
+                        is APIResource.Loading -> {
+                            binding.pbBottomSheet.visibility = VISIBLE
+                            Log.e("---->", "loading")
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    private fun datePicker() {
         // Date Picker
         val calendarConstraintBuilder =
             CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now())
@@ -94,13 +200,17 @@ open class BottomSheetFragment : BottomSheetDialogFragment() {
 
         val materialDatePicker = materialDateBuilder.build()
         materialDatePicker.show(requireActivity().supportFragmentManager, "tag")
-        materialDatePicker.addOnPositiveButtonClickListener {
+        materialDatePicker.addOnPositiveButtonClickListener { timeInMilliseconds ->
             // Respond to positive button click.
             dateTime = materialDatePicker.headerText
+
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            calendar.timeInMillis = timeInMilliseconds
+            dueDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
         }
     }
 
-    private fun timePicker(){
+    private fun timePicker() {
         val picker =
             MaterialTimePicker.Builder()
                 .setTitleText("Select Appointment time")
@@ -150,8 +260,7 @@ open class BottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     override fun onDestroy() {
-        val closeKeyboard= requireContext(). getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        closeKeyboard.hideSoftInputFromWindow(binding.editTextTaskName.windowToken, 0)
+        binding.root.hideKeyboard()
         super.onDestroy()
     }
 
