@@ -2,19 +2,27 @@ package com.todoist_android.ui.home
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import com.todoist_android.R
+import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivityMainBinding
 import com.todoist_android.ui.SplashActivity
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -26,6 +34,8 @@ class MainActivity : AppCompatActivity() {
 
     //Adapter Items
     private val objects = arrayListOf<Any>()
+
+    private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +50,22 @@ class MainActivity : AppCompatActivity() {
         //Receiving data from the previous activity
         val userId = intent.getIntExtra("userId", 0)
 
-        Toast.makeText(this, "Welcome back $userId", Toast.LENGTH_LONG).show()
+        viewModel.getTasks(userId.toString())
+
+        viewModel.task.observe(this, Observer {
+            when (it) {
+                is APIResource.Success -> {
+                    Log.d("MainActivity", "Tasks: ${it}")
+                }
+                is APIResource.Loading -> {
+                    Log.d("MainActivity", "Loading...")
+                }
+                is APIResource.Error -> {
+                    Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
+                    Log.d("MainActivity", "Error: ${it.toString()}")
+                }
+            }
+        })
 
         //Mock data in header - In Progress, Created, Done
         for (header in 0..2) {
