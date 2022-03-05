@@ -13,11 +13,12 @@ import com.todoist_android.R
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivityMainBinding
 import com.todoist_android.ui.SplashActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
