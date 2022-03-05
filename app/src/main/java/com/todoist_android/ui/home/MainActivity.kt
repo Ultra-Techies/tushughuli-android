@@ -48,6 +48,15 @@ class MainActivity : AppCompatActivity() {
         //Receiving data from the previous activity
         val userId = intent.getIntExtra("userId", 0)
 
+        //if userId is 0, then the user is not logged in
+        if (userId == 0) {
+            val intent = Intent(this, SplashActivity::class.java)
+            startActivity(intent)
+            finish()
+        } else {
+            this.userId = userId
+        }
+
         viewModel.getTasks(userId.toString())
 
         viewModel.task.observe(this, Observer {
