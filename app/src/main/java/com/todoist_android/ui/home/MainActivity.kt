@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.todoist_android.R
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivityMainBinding
@@ -21,6 +23,9 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var userPreferences: UserPreferences
     var userId: Int = 0
+
+    //Adapter Items
+    private val objects = arrayListOf<Any>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +41,20 @@ class MainActivity : AppCompatActivity() {
         val userId = intent.getIntExtra("userId", 0)
 
         Toast.makeText(this, "Welcome back $userId", Toast.LENGTH_LONG).show()
+
+        //Mock data
+        for (header in 0..100) {
+            objects.add("Header - $header")
+            for (item in 1..3) {
+                objects.add(item)
+            }
+        }
+
+        //Setup RecyclerView
+        binding.rcvMain?.adapter = MainAdapter(objects)
+        binding.rcvMain?.layoutManager = LinearLayoutManager(this)
+        binding.rcvMain?.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        binding.rcvMain?.addItemDecoration(StickyHeaderItemDecoration())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
