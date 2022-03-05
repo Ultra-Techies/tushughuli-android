@@ -42,9 +42,18 @@ class MainActivity : AppCompatActivity() {
 
         Toast.makeText(this, "Welcome back $userId", Toast.LENGTH_LONG).show()
 
-        //Mock data
-        for (header in 0..3) {
-            objects.add("Header - $header")
+        //Mock data in header - In Progress, Created, Done
+        for (header in 0..2) {
+            //objects.add("Header - $header")
+            if(header == 0) {
+                objects.add("In Progress")
+            }
+            if (header == 1) {
+                objects.add("Created")
+            }
+            if (header == 2) {
+                objects.add("Done")
+            }
             for (item in 1..10) {
                 objects.add(item)
             }
