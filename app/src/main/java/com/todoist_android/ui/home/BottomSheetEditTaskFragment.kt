@@ -22,9 +22,9 @@ import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.FragmentBottomsheetEditTaskBinding
 import com.todoist_android.ui.hideKeyboard
 import com.todoist_android.ui.showKeyboard
-import com.todoist_android.view.pickDate
-import com.todoist_android.view.pickTime
-import com.todoist_android.view.popupMenu
+import com.todoist_android.ui.pickDate
+import com.todoist_android.ui.pickTime
+import com.todoist_android.ui.popupMenu
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest

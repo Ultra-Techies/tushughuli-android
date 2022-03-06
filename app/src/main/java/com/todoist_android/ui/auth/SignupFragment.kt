@@ -15,7 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.databinding.FragmentSignupBinding
-import com.todoist_android.view.validateEmail
+import com.todoist_android.ui.validateEmail
 import dagger.hilt.android.AndroidEntryPoint
 
 

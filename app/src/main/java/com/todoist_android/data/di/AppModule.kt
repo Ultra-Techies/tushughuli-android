@@ -4,7 +4,7 @@ import androidx.viewbinding.BuildConfig
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.todoist_android.data.network.APIAuthentication
 import com.todoist_android.data.network.UserApi
-import com.todoist_android.view.BASE_URL
+import com.todoist_android.ui.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
