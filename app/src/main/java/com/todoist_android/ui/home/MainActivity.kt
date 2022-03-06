@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.todoist_android.R
+import com.todoist_android.data.models.TodoModel
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivityMainBinding
 import com.todoist_android.ui.SplashActivity
@@ -46,6 +47,11 @@ class MainActivity : AppCompatActivity() {
         binding.buttonNewTask.setOnClickListener {
             val modalBottomSheet = BottomSheetFragment()
             modalBottomSheet.show(supportFragmentManager, BottomSheetFragment.TAG)
+        }
+
+        binding.btnTask.setOnClickListener {
+            val editBottomSheet = BottomSheetEditTaskFragment.newInstance()
+            editBottomSheet.show(supportFragmentManager,BottomSheetEditTaskFragment.TAG)
         }
     }
 
