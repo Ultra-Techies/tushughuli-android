@@ -1,5 +1,6 @@
 package com.todoist_android.data.repository
 
+import com.todoist_android.data.models.TodoModel
 import com.todoist_android.data.network.APIAuthentication
 import com.todoist_android.data.network.repository.BaseRepo
 import com.todoist_android.data.requests.AddTaskRequest
@@ -11,5 +12,9 @@ private val authApi: APIAuthentication
 {
     suspend fun addTasks(taskRequest: AddTaskRequest) = safeApiCall{
         authApi.addTasks(taskRequest)
+    }
+
+    suspend fun editTasks(editTasksRequest: TodoModel) = safeApiCall {
+        authApi.editTasks(editTasksRequest)
     }
 }
