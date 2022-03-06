@@ -1,5 +1,6 @@
 package com.todoist_android.data.network
 
+import com.todoist_android.data.models.TodoModel
 import com.todoist_android.data.requests.AddTaskRequest
 import com.todoist_android.data.responses.AddTasksResponse
 import com.todoist_android.data.responses.LoginResponse
@@ -27,4 +28,8 @@ interface APIAuthentication {
 
     @POST("/tasks")
     suspend fun addTasks(@Body tasksRequest: AddTaskRequest): AddTasksResponse
+
+    @POST("tasks")
+    suspend fun editTasks(@Body editTasksRequest: TodoModel): TodoModel
+
 }
