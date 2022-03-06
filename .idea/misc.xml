@@ -17,7 +17,8 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.29435897435897435" />
         <entry key="app/src/main/res/layout/add_new_task_bottom_sheet.xml" value="0.2989583333333333" />
-        <entry key="app/src/main/res/layout/fragment_bottomsheet.xml" value="0.16111111111111112" />
+        <entry key="app/src/main/res/layout/fragment_bottomsheet.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_bottomsheet_edit_task.xml" value="0.2989583333333333" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.2989583333333333" />
         <entry key="app/src/main/res/layout/fragment_signup.xml" value="0.2989583333333333" />
         <entry key="app/src/main/res/menu/set_status_menu.xml" value="0.284375" />
