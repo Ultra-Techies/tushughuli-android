@@ -32,4 +32,6 @@ abstract class BaseRepo {
             }
         }
     }
+
+    //handle array responses
 }
