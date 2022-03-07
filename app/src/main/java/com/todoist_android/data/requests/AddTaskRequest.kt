@@ -5,5 +5,6 @@ data class AddTaskRequest(
     var title: String?,
     var description: String?,
     var due_date: String?,
+    var reminder: String?,
     var status: String?
 )

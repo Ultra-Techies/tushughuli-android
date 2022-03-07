@@ -44,10 +44,14 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentBottomsheetBinding
     private val viewModel: BottomSheetViewModel by viewModels()
     private var dueDate: String? = todayDate()
+    private var reminder: String? = null
+    private var reminderTime: String? = null
+    private var selectedTime: String? = null
     private var userId: String? = null
     private var status = "created"
 
-    private var dateTime = "Today"
+
+    private var dateTime = " "
         set(value) {
             binding.tvDatePicker.text = value
             field = value
@@ -90,16 +94,34 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         binding.tvDatePicker.setOnClickListener {
             pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
                 dateTime = selectedText
-
                 val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                 calendar.timeInMillis = timeInMilliseconds
                 dueDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
+
+
+                pickTime(childFragmentManager) { selectTime ->
+                    selectedTime = selectTime
+                    dateTime = "$dateTime at  $selectTime"
+
+                }
             }
+
+
         }
 
         binding.ivReminder.setOnClickListener {
-            pickTime(childFragmentManager) { selectTime ->
-                dateTime = "$dateTime at  $selectTime"
+
+            pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
+               // dateTime = selectedText
+                reminder = selectedText
+                val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                calendar.timeInMillis = timeInMilliseconds
+                reminder = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
+
+                pickTime(childFragmentManager) { selectTime ->
+                  //  dateTime = "$dateTime at  $selectTime"
+                    reminderTime = selectTime
+                }
             }
         }
         binding.ivFlag.setOnClickListener { view ->
@@ -127,9 +149,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 title = title,
                 description = description,
                 status = status,
-                due_date = dueDate.toString(),
+                reminder = "$reminder $reminderTime ",
+                due_date = "$dueDate $selectedTime"
             )
 
+            Log.d("task request",taskRequest.toString())
             addTasks(taskRequest)
 
 
