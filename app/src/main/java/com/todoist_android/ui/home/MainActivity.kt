@@ -50,9 +50,9 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         title = "Hi username"
 
         //Receiving data from the previous activity
-        loggedInUserId = intent.getIntExtra("userId", 0)
+        val loggedInUserId = intent.getIntExtra("userId", 0)
 
-//        //if userId is 0, then the user is not logged in
+        //if userId is 0, then the user is not logged in
         if (loggedInUserId == 0) {
             val intent = Intent(this, SplashActivity::class.java)
             startActivity(intent)
