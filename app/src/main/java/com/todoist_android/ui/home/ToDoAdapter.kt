@@ -13,7 +13,8 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = objects[position]
         if (holder is ViewHolder && item is TasksResponseItem) {
-            holder.tv.text = item.title
+            holder.duetime.text = "Time Remaining"
+            holder.tv.text = item.title + " " + item.status
             //show status_icon
             if (item.status == "created") {
                 holder.status_icon.setImageResource(R.drawable.black_circle)
@@ -25,7 +26,7 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
                 holder.status_icon.setImageResource(R.drawable.done_circle)
             }
             else {
-                holder.status_icon.visibility = View.GONE
+                holder.status_icon.visibility = View.INVISIBLE
             }
 
         } else if (holder is HeaderViewHolder && item is String) {
@@ -56,5 +57,6 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val tv = v.tv
         val status_icon = v.status_icon
+        val duetime = v.duetime
     }
 }

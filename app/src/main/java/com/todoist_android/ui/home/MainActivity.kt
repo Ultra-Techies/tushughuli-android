@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +21,7 @@ import com.todoist_android.databinding.ActivityMainBinding
 import com.todoist_android.ui.SplashActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 import kotlin.reflect.typeOf
 
@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     var userId: Int = 0
 
     private val objects = arrayListOf<Any>()
+    private val finalObjects = arrayListOf<Any>()
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -70,32 +71,39 @@ class MainActivity : AppCompatActivity() {
                 is APIResource.Success -> {
                     Log.d("MainActivity", "Tasks: ${it}")
 
-                    //loop through the tasks and add them to the recycler view if status is progress
-                    objects.add("In Progress")
                     it.value.forEach {
-                        if (it.status == "progress") {
-                            objects.add(it)
+                        objects.add(it)
+                    }
+                    //sort objects by it.status (progress, created, completed)
+                    objects.sortBy {
+                        when (it) {
+                            is TasksResponseItem -> it.status
+                            else -> "progress"
+                        }
+                    }
+                    objects.reverse()
+
+                    //loop through the objects, if the item's status changes from current status
+                    //add it to the finalObjects then add string to finalObjects
+                    //then set the current status to the new status
+                    var currentStatus = ""
+                    objects.forEach {
+                        if (it is TasksResponseItem) {
+                            if (it.status != currentStatus) {
+                                finalObjects.add(it.status.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+                                currentStatus = it.status
+                            }
+                            else {
+                                finalObjects.add(it)
+                            }
+                        } else {
+                            finalObjects.add(it)
                         }
                     }
 
-                    //loop through the tasks and add them to the recycler view if status is created
-                    objects.add("Created")
-                    it.value.forEach {
-                        if (it.status == "created") {
-                            objects.add(it)
-                        }
-                    }
-
-                    //loop through the tasks and add them to the recycler view if status is completed
-                    objects.add("Done")
-                    it.value.forEach {
-                        if (it.status == "completed") {
-                            objects.add(it)
-                        }
-                    }
 
                     //Setup RecyclerView
-                    binding.recyclerView.adapter = ToDoAdapter(objects)
+                    binding.recyclerView.adapter = ToDoAdapter(finalObjects)
                     binding.recyclerView.layoutManager = LinearLayoutManager(this)
                     binding.recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
                     binding.recyclerView.addItemDecoration(StickyHeaderItemDecoration())
