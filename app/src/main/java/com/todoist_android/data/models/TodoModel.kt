@@ -20,8 +20,8 @@ data class TodoModel(
             id = 123,
             title = "Do homework",
             description ="Do homework",
-            reminder ="2:00 pm",
-            due_date =" 12/04/2022",
+            reminder ="11/04/2022 1.15 pm",
+            due_date =" 12/04/2022 2:10 pm",
             todoId =1,
             status ="created"
 

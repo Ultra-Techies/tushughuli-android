@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.data.models.TodoModel
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
+import com.todoist_android.data.requests.DeleteTaskRequest
 import com.todoist_android.databinding.FragmentBottomsheetEditTaskBinding
 import com.todoist_android.ui.hideKeyboard
 import com.todoist_android.ui.showKeyboard
@@ -29,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.junit.jupiter.api.TestInstance
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -40,6 +42,10 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
     lateinit var prefs: UserPreferences
 
     private lateinit var todoModel: TodoModel
+    private var selectedReminderDate: String? =null
+    private var selectedDueTime: String? = null
+    private var selectedReminderTime: String? = null
+    private var status = "created"
 
 
     companion object {
@@ -112,14 +118,22 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
         binding.editTextEditTask.showKeyboard()
 
         binding.ivEditReminder.setOnClickListener{
-            pickTime(childFragmentManager){selectTime ->
-                dueDate = "$dueDate at  $selectTime"
-                editDueDate.text = dueDate
+            pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
+                selectedReminderDate = selectedText
+                val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                calendar.timeInMillis = timeInMilliseconds
+               selectedReminderDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
+
+                pickTime(childFragmentManager) { selectTime ->
+                  selectedReminderTime = selectTime
+                }
             }
         }
-//        binding.ivEditFlag.setOnClickListener {view->
-//            popupMenu(requireContext(),view)
-//        }
+       binding.ivEditFlag.setOnClickListener {view->
+           popupMenu(requireContext(), view) { statusSelected ->
+               status = statusSelected
+           }
+        }
 
         binding.tvEditDatePicker.setOnClickListener {
             pickDate(childFragmentManager){selectedText,timeInMilliseconds->
@@ -127,7 +141,13 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
                 val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                 calendar.timeInMillis = timeInMilliseconds
                 dueDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
-                editDueDate.text = dueDate
+
+
+                pickTime(childFragmentManager) { selectTime ->
+                    selectedDueTime = selectTime
+                    editDueDate.text = "$dueDate $selectedDueTime"
+
+                }
 
             }
 
@@ -138,6 +158,15 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
                 taskStatus = statusSelected
 
             }
+        }
+
+        binding.tvDeleteTask.setOnClickListener {
+            val deleteTaskRequest = DeleteTaskRequest(
+                id = 1,
+            )
+
+            deleteTask(deleteTaskRequest)
+
         }
 
         binding.buttonEditTask.setOnClickListener {
@@ -158,7 +187,7 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
                 id=123,
                 title = editedTitle,
                 description = editedDescription,
-                due_date = dueDate,
+                due_date = "$dueDate $selectedDueTime",
                 reminder = reminder,
                 status = taskStatus
             )
@@ -206,6 +235,31 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
 
 
         }
+    private fun deleteTask(deleteTaskRequest: DeleteTaskRequest){
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.deleteTasks(deleteTaskRequest).collect{
+                    when (it){
+                        is APIResource.Success->{
+                            Snackbar.make(dialog?.window!!.decorView,"Task deleted successfully",Snackbar.LENGTH_SHORT)
+                                .show()
+                            Log.d("task",deleteTaskRequest.toString())
+                        }
+                        is APIResource.Error ->{
+                            Snackbar.make( dialog?.window!!.decorView, it.errorBody.toString(), Snackbar.LENGTH_SHORT )
+                                .show()
+                        }
+                        is APIResource.Loading ->{
+
+                        }
+                    }
+
+
+                }
+            }
+        }
+
+    }
 
 
     private fun getUserId(){
