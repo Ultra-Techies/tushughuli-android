@@ -25,13 +25,13 @@ import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
-
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var binding: ActivityMainBinding
 
     @Inject
     lateinit var userPreferences: UserPreferences
+
     var userId: Int = 0
 
     private val objects = arrayListOf<Any>()
@@ -61,11 +61,20 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             this.userId = userId
         }
 
-        binding.swipeContainer.post(Runnable {
+        binding.swipeContainer.setOnRefreshListener(this)
+        binding.swipeContainer.setColorSchemeResources(
+            R.color.colorPrimary,
+            android.R.color.holo_green_dark,
+            android.R.color.holo_orange_dark,
+            android.R.color.holo_blue_dark
+        )
+
+        binding.swipeContainer.post {
             binding.swipeContainer.isRefreshing = true
             fetchTasks()
-        })
+        }
 
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
         viewModel.task.observe(this, Observer { it ->
             when (it) {
                 is APIResource.Success -> {
@@ -110,7 +119,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
                     //Setup RecyclerView
                     binding.recyclerView.adapter = ToDoAdapter(finalObjects)
-                    binding.recyclerView.layoutManager = LinearLayoutManager(this)
                     binding.recyclerView.addItemDecoration(StickyHeaderItemDecoration())
                 }
                 is APIResource.Loading -> {
@@ -137,8 +145,17 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         }
     }
 
-    private fun fetchTasks() {
+    override fun onResume() {
+        super.onResume()
+        fetchTasks()
+    }
 
+    override fun onRefresh() {
+        fetchTasks()
+    }
+
+    private fun fetchTasks() {
+        Log.d("MainActivity", "Fetching tasks...")
         //TODO: Remove this, for testing purposes only
         viewModel.getTasks("")
 
@@ -194,9 +211,5 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         }.also {
             startActivity(it)
         }
-    }
-
-    override fun onRefresh() {
-        fetchTasks()
     }
 }

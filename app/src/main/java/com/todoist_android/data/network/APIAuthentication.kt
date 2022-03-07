@@ -24,7 +24,4 @@ interface APIAuthentication {
         @Field("password") password: String
     ) : SignupResponse
 
-
-    @POST("/tasks")
-    suspend fun addTasks(@Body tasksRequest: AddTaskRequest): AddTasksResponse
 }
