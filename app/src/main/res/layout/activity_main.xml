@@ -52,17 +52,14 @@
 
     <Button
         android:id="@+id/buttonNewTask"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@color/colorPrimary"
         android:fontFamily="@font/noto_sans"
         android:padding="10dp"
         android:text="@string/add_new_task"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_alignParentBottom="true"/>
 
 
 </RelativeLayout>
