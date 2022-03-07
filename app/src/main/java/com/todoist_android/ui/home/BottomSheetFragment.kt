@@ -135,11 +135,12 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 return@setOnClickListener
             }
 
+            val title = binding.editTextTaskTitle.text.trim().toString()
             val description = binding.editTextTaskName.text.trim().toString()
 
             val taskRequest = AddTaskRequest(
                 id = userId,
-                title = description,
+                title = title,
                 description = description,
                 status = status,
                 reminder = "$reminder $reminderTime",
