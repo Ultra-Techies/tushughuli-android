@@ -1,13 +1,12 @@
 package com.todoist_android.ui.home
 
-
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.todoist_android.R
 import com.todoist_android.data.repository.UserPreferences
@@ -38,8 +37,6 @@ class MainActivity : AppCompatActivity() {
 
         //Receiving data from the previous activity
         val userId = intent.getIntExtra("userId", 0)
-
-
 
         Toast.makeText(this, "Welcome back $userId", Toast.LENGTH_LONG).show()
 
