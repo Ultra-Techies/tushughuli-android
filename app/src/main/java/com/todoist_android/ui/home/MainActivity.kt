@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     @Inject
     lateinit var userPreferences: UserPreferences
 
-    var userId: Int = 0
+    var loggedInUserId: Int = 0
 
     private val objects = arrayListOf<Any>()
     private val finalObjects = arrayListOf<Any>()
@@ -50,15 +50,15 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         title = "Hi username"
 
         //Receiving data from the previous activity
-        val userId = intent.getIntExtra("userId", 0)
+        loggedInUserId = intent.getIntExtra("userId", 0)
 
-        //if userId is 0, then the user is not logged in
-        if (userId == 0) {
+//        //if userId is 0, then the user is not logged in
+        if (loggedInUserId == 0) {
             val intent = Intent(this, SplashActivity::class.java)
             startActivity(intent)
             finish()
-        } else {
-            this.userId = userId
+        }else {
+            this.loggedInUserId = loggedInUserId
         }
 
         binding.swipeContainer.setOnRefreshListener(this)
@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             R.id.profile -> {
                 Intent(this, ProfileActivity::class.java).also {
                     it.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    it.putExtra("userId", userId)
+                    it.putExtra("userId", loggedInUserId)
                     startActivity(it)
                 }
                 true
