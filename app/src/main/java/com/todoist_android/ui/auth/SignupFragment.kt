@@ -17,7 +17,7 @@ import com.todoist_android.data.network.APIResource
 import com.todoist_android.databinding.FragmentSignupBinding
 import com.todoist_android.view.validateEmail
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
+
 
 @AndroidEntryPoint
 class SignupFragment : Fragment() {

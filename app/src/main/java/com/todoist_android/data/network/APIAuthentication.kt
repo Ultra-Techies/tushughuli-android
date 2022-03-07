@@ -1,5 +1,7 @@
 package com.todoist_android.data.network
 
+import com.todoist_android.data.requests.AddTaskRequest
+import com.todoist_android.data.responses.AddTasksResponse
 import com.todoist_android.data.responses.LoginResponse
 import com.todoist_android.data.responses.SignupResponse
 import retrofit2.http.*
@@ -21,4 +23,8 @@ interface APIAuthentication {
         @Field("email") email: String,
         @Field("password") password: String
     ) : SignupResponse
+
+
+    @POST("/tasks")
+    suspend fun addTasks(@Body tasksRequest: AddTaskRequest): AddTasksResponse
 }

@@ -1,32 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-              android:orientation="vertical"
-    tools:context=".ui.home.MainActivity">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:context=".ui.home.MainActivity">
+
 
     <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/appbar"
-            >
+    >
 
         <androidx.appcompat.widget.Toolbar
-                app:layout_collapseMode="pin"
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/white"
-                android:padding="0dp"
-                android:elevation="4dp"
-                android:titleTextColor="@color/black"
-                android:layout_alignParentTop="true"
-                android:fitsSystemWindows="true"
-                android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-        </androidx.appcompat.widget.Toolbar>
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentTop="true"
+            android:background="@color/white"
+            android:elevation="4dp"
+            android:fitsSystemWindows="true"
+            android:padding="0dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            android:titleTextColor="@color/black"
+            app:layout_collapseMode="pin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"></androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -47,4 +50,17 @@
                 app:layout_constraintTop_toTopOf="parent"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <Button
+        android:id="@+id/buttonNewTask"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/colorPrimary"
+        android:fontFamily="@font/noto_sans"
+        android:padding="10dp"
+        android:text="@string/add_new_task"
+        android:textSize="18sp"
+        android:layout_alignParentBottom="true"/>
+
+
 </RelativeLayout>
+
