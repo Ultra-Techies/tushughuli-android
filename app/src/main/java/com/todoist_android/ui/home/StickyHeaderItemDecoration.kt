@@ -11,8 +11,8 @@ class StickyHeaderItemDecoration : RecyclerView.ItemDecoration() {
         val topChild = parent.getChildAt(0) ?: return
         val topChildPosition = parent.getChildAdapterPosition(topChild)
         val header = createHeaderView(topChildPosition, parent)
-                ?: createPreviousHeaderView(topChildPosition, parent)
-                ?: return
+            ?: createPreviousHeaderView(topChildPosition, parent)
+            ?: return
         makeViewFullLayout(header, parent)
         val nextHeader = findNextHeaderView(parent)
         val dx = if (nextHeader != null) {
@@ -35,7 +35,7 @@ class StickyHeaderItemDecoration : RecyclerView.ItemDecoration() {
         val adapter = parent.adapter ?: return null
         val viewType = adapter.getItemViewType(position)
         val holder = adapter.onCreateViewHolder(parent, viewType) as? StickyViewHolder
-                ?: return null
+            ?: return null
         adapter.onBindViewHolder(holder, position)
         return holder.itemView ?: null
     }

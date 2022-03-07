@@ -14,7 +14,7 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
         val item = objects[position]
         if (holder is ViewHolder && item is TasksResponseItem) {
             holder.duetime.text = "Time Remaining"
-            holder.tv.text = item.title + " " + item.status
+            holder.tv.text = item.title
             //show status_icon
             if (item.status == "created") {
                 holder.status_icon.setImageResource(R.drawable.black_circle)
@@ -26,11 +26,16 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
                 holder.status_icon.setImageResource(R.drawable.done_circle)
             }
             else {
-                holder.status_icon.visibility = View.INVISIBLE
+                holder.status_icon.setImageResource(R.drawable.grey_circle)
             }
 
         } else if (holder is HeaderViewHolder && item is String) {
             holder.tv.text = item
+        }
+
+        holder.itemView.setOnClickListener {
+            Toast.makeText(holder.itemView.context, "Clicked", Toast.LENGTH_SHORT).show()
+            //TODO: trigger bottom sheet edit/delete task
         }
     }
 

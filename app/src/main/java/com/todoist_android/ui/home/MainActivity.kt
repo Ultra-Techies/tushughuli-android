@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
@@ -23,10 +24,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
-import kotlin.reflect.typeOf
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     lateinit var binding: ActivityMainBinding
 
     @Inject
@@ -60,16 +60,18 @@ class MainActivity : AppCompatActivity() {
             this.userId = userId
         }
 
-        //TODO: Remove this, for testing purposes only
-        viewModel.getTasks("")
-
-        //TODO: remove above code and use the below code once API is ready
-        //viewModel.getTasks(userId.toString())
+        binding.swipeContainer.post(Runnable {
+            binding.swipeContainer.isRefreshing = true
+            fetchTasks()
+        })
 
         viewModel.task.observe(this, Observer { it ->
             when (it) {
                 is APIResource.Success -> {
                     Log.d("MainActivity", "Tasks: ${it}")
+
+                    binding.swipeContainer.isRefreshing = false
+                    binding.recyclerView.removeItemDecoration(StickyHeaderItemDecoration())
 
                     it.value.forEach {
                         objects.add(it)
@@ -90,33 +92,61 @@ class MainActivity : AppCompatActivity() {
                     objects.forEach {
                         if (it is TasksResponseItem) {
                             if (it.status != currentStatus) {
-                                finalObjects.add(it.status.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+                                if(it.status.isBlank()){
+                                    finalObjects.add("Unknown Status")
+                                }else {
+                                    finalObjects.add(it.status.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+                                }
                                 currentStatus = it.status
+                                finalObjects.add(it)
                             }
                             else {
                                 finalObjects.add(it)
                             }
-                        } else {
-                            finalObjects.add(it)
                         }
                     }
-
 
                     //Setup RecyclerView
                     binding.recyclerView.adapter = ToDoAdapter(finalObjects)
                     binding.recyclerView.layoutManager = LinearLayoutManager(this)
-                    binding.recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
                     binding.recyclerView.addItemDecoration(StickyHeaderItemDecoration())
                 }
                 is APIResource.Loading -> {
                     Log.d("MainActivity", "Loading...")
+                    binding.swipeContainer.isRefreshing = true
+
+                    //clear finalObjects and objects
+                    finalObjects.clear()
+                    objects.clear()
+
+                    binding.recyclerView.adapter?.notifyDataSetChanged()
                 }
                 is APIResource.Error -> {
+                    binding.swipeContainer.isRefreshing = false
                     Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
                     Log.d("MainActivity", "Error: ${it.toString()}")
                 }
             }
         })
+
+        // SwipeRefreshLayout
+        binding.swipeContainer.setOnRefreshListener(this)
+        binding.swipeContainer.setColorSchemeResources(
+            R.color.colorPrimary,
+            android.R.color.holo_green_dark,
+            android.R.color.holo_orange_dark,
+            android.R.color.holo_blue_dark
+        )
+    }
+
+    private fun fetchTasks() {
+
+        //TODO: Remove this, for testing purposes only
+        viewModel.getTasks("")
+
+        //TODO: remove above code above and use the below code once API is ready
+        //viewModel.getTasks(userId.toString())
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -166,5 +196,9 @@ class MainActivity : AppCompatActivity() {
         }.also {
             startActivity(it)
         }
+    }
+
+    override fun onRefresh() {
+        fetchTasks()
     }
 }
