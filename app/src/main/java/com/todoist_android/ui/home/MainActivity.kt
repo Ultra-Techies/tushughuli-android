@@ -5,7 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -89,6 +91,17 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
                     it.value.forEach {
                         objects.add(it)
+                    }
+
+                    if(objects.size == 0) {
+                        //binding.recyclerView.visibility = GONE
+                        binding.emptyTag.visibility = VISIBLE
+                        binding.emptyIcon.visibility = VISIBLE
+
+                    } else {
+                        //binding.recyclerView.visibility = VISIBLE
+                        binding.emptyTag.visibility = GONE
+                        binding.emptyIcon.visibility = GONE
                     }
                     //sort objects by it.status (progress, created, completed)
                     objects.sortBy {
