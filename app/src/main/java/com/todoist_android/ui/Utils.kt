@@ -11,6 +11,9 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.todoist_android.R
 import java.text.SimpleDateFormat
+import android.view.inputmethod.InputMethodManager
+import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
+import android.widget.EditText
 import java.util.*
 
 

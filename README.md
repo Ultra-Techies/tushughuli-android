@@ -59,9 +59,9 @@ Run the app on your emulator or device
 
 ## Dependencies
 
-- Retrofit
+- Retrofit/Gson
 
-- Glide/Picasso
+- Picasso
 
 - HILT
 
@@ -70,6 +70,8 @@ Run the app on your emulator or device
 - view binding
 
 - Live Data
+
+- Jetpack DataStore
 
 - Mockito
 

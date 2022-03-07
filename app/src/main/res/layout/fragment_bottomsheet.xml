@@ -72,6 +72,36 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_taskTitle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="vertical"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/grey_rectangle"
+        app:layout_constraintBottom_toTopOf="@id/ll_greybackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <EditText
+            android:id="@+id/et_task_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:gravity="start"
+            android:hint="@string/task_title"
+            android:inputType="text"
+            android:padding="10dp"
+            android:textSize="14sp"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="234dp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
         android:id="@+id/ll_greybackground"
         android:layout_width="match_parent"
         android:layout_height="100dp"
@@ -89,9 +119,7 @@
             android:id="@+id/editTextTaskName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:autofillHints="Task name"
             android:background="@android:color/transparent"
-            android:ems="10"
             android:gravity="start"
             android:hint="@string/task_name"
             android:inputType="textMultiLine"
@@ -151,6 +179,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:padding="5dp"
+        android:visibility="gone"
         android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toTopOf="@id/buttonAddTask"
         app:layout_constraintEnd_toEndOf="parent"

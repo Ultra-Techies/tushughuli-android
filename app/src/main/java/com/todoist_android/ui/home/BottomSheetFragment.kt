@@ -47,10 +47,8 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     private var reminder: String? = null
     private var reminderTime: String? = null
     private var selectedTime: String? = null
-    private var userId: String? = null
+    private var loggedInUserId: String? = null
     private var status = "created"
-
-
     private var dateTime = " "
         set(value) {
             binding.tvDatePicker.text = value
@@ -106,24 +104,21 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 }
             }
 
-
         }
 
         binding.ivReminder.setOnClickListener {
-
             pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
-               // dateTime = selectedText
                 reminder = selectedText
                 val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                 calendar.timeInMillis = timeInMilliseconds
                 reminder = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
 
                 pickTime(childFragmentManager) { selectTime ->
-                  //  dateTime = "$dateTime at  $selectTime"
                     reminderTime = selectTime
                 }
             }
         }
+
         binding.ivFlag.setOnClickListener { view ->
             popupMenu(requireContext(), view) { statusSelected ->
                 status = statusSelected
@@ -145,8 +140,8 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             val title = binding.editTextTaskTitle.text.trim().toString()
 
             val taskRequest = AddTaskRequest(
-                id = userId,
                 title = title,
+                id = loggedInUserId,
                 description = description,
                 status = status,
                 reminder = "$reminder $reminderTime ",
@@ -167,7 +162,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 prefs.todoToken.collectLatest { todoId ->
                     todoId?.let {
-                        userId = todoId
+                        loggedInUserId = todoId
                     } ?: kotlin.run {
                         Toast.makeText(
                             requireActivity(),
@@ -199,6 +194,13 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                                 .show()
                             Log.d("task", taskRequest.toString())
 
+                            Snackbar.make(
+                                dialog?.window!!.decorView,
+                                "Task added successfully",
+                                Snackbar.LENGTH_SHORT
+                            )
+                                .show()
+                            Log.d("task request", taskRequest.toString())
                             viewLifecycleOwner.lifecycleScope.launch {
                                 delay(1000)
                                 dismiss()
