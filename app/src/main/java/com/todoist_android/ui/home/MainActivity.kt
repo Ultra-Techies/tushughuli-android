@@ -94,12 +94,10 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     }
 
                     if(objects.size == 0) {
-                        //binding.recyclerView.visibility = GONE
                         binding.emptyTag.visibility = VISIBLE
                         binding.emptyIcon.visibility = VISIBLE
 
                     } else {
-                        //binding.recyclerView.visibility = VISIBLE
                         binding.emptyTag.visibility = GONE
                         binding.emptyIcon.visibility = GONE
                     }
