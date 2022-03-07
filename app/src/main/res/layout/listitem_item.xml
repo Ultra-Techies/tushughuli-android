@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
+<LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:orientation="horizontal"
         android:padding="20dp"
-        tools:text="Item"/>
+>
+
+    <ImageView
+        android:id="@+id/status_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:src="@drawable/yellow_circle" />
+
+    <TextView
+
+            android:id="@+id/tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_marginLeft="10dp"
+            tools:text="Item"/>
+
+</LinearLayout>

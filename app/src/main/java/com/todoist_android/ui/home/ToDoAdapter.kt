@@ -14,6 +14,17 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
         val item = objects[position]
         if (holder is ViewHolder && item is TasksResponseItem) {
             holder.tv.text = item.title
+            //if status is created then set status_icon
+            if (item.status == "created") {
+                holder.status_icon.setImageResource(R.drawable.black_circle)
+            }
+            if (item.status == "progress") {
+                holder.status_icon.setImageResource(R.drawable.yellow_circle)
+            }
+            if (item.status == "completed") {
+                holder.status_icon.setImageResource(R.drawable.done_circle)
+            }
+
         } else if (holder is HeaderViewHolder && item is String) {
             holder.tv.text = item
         }
@@ -41,5 +52,6 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
 
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val tv = v.tv
+        val status_icon = v.status_icon
     }
 }
