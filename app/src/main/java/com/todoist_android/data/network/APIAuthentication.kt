@@ -2,7 +2,9 @@ package com.todoist_android.data.network
 
 import com.todoist_android.data.models.TodoModel
 import com.todoist_android.data.requests.AddTaskRequest
+import com.todoist_android.data.requests.DeleteTaskRequest
 import com.todoist_android.data.responses.AddTasksResponse
+import com.todoist_android.data.responses.DeleteTaskResponse
 import com.todoist_android.data.responses.LoginResponse
 import com.todoist_android.data.responses.SignupResponse
 import retrofit2.http.*
@@ -29,7 +31,10 @@ interface APIAuthentication {
     @POST("/tasks")
     suspend fun addTasks(@Body tasksRequest: AddTaskRequest): AddTasksResponse
 
-    @POST("tasks")
+    @POST("/tasks")
     suspend fun editTasks(@Body editTasksRequest: TodoModel): TodoModel
+
+    @DELETE("/tasks")
+    suspend fun deleteTasks(@Body deleteTaskRequest:DeleteTaskRequest): DeleteTaskResponse
 
 }
