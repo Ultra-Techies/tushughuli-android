@@ -9,7 +9,7 @@ import com.todoist_android.data.requests.DeleteTaskRequest
 import javax.inject.Inject
 
 class TasksRepo@Inject constructor(
-private val authApi: APIAuthentication
+private val authApi: APIAuthentication,
 private val taskApi: TaskApi
 ): BaseRepo()
 {

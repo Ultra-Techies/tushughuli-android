@@ -126,8 +126,8 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         binding.buttonAddTask.setOnClickListener {
-            if (binding.editTextTaskTitle.text.isNullOrEmpty()) {
-                binding.editTextTaskTitle.error = "Please enter a Task Title"
+            if (binding.etTaskTitle.text.isNullOrEmpty()) {
+                binding.etTaskTitle.error = "Please enter a Task Title"
                 return@setOnClickListener
             }
 
@@ -137,7 +137,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             }
 
             val description = binding.editTextTaskName.text.trim().toString()
-            val title = binding.editTextTaskTitle.text.trim().toString()
+            val title = binding.etTaskTitle.text.trim().toString()
 
             val taskRequest = AddTaskRequest(
                 title = title,
