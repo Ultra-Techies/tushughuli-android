@@ -16,7 +16,6 @@ abstract class BaseRepo {
             try {
                 Log.d("BaseRepo", "safeApiCall: apicall.invoke()")
                 val response = apiCall.invoke()
-
                 Log.d("BaseRepo", "safeApiCall: apicall.success")
                 APIResource.Success(response)
             } catch (throwable: Throwable) {

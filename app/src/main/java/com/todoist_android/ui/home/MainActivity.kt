@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -16,11 +17,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
+import com.todoist_android.data.responses.TasksResponseItem
 import com.todoist_android.databinding.ActivityMainBinding
 import com.todoist_android.ui.SplashActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.reflect.typeOf
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -30,7 +33,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var userPreferences: UserPreferences
     var userId: Int = 0
 
-    //Adapter Items
     private val objects = arrayListOf<Any>()
 
     private val viewModel by viewModels<MainViewModel>()
@@ -57,12 +59,46 @@ class MainActivity : AppCompatActivity() {
             this.userId = userId
         }
 
-        viewModel.getTasks(userId.toString())
+        //TODO: Remove this, for testing purposes only
+        viewModel.getTasks("")
 
-        viewModel.task.observe(this, Observer {
+        //TODO: remove above code and use the below code once API is ready
+        //viewModel.getTasks(userId.toString())
+
+        viewModel.task.observe(this, Observer { it ->
             when (it) {
                 is APIResource.Success -> {
                     Log.d("MainActivity", "Tasks: ${it}")
+
+                    //loop through the tasks and add them to the recycler view if status is progress
+                    objects.add("In Progress")
+                    it.value.forEach {
+                        if (it.status == "progress") {
+                            objects.add(it)
+                        }
+                    }
+
+                    //loop through the tasks and add them to the recycler view if status is created
+                    objects.add("Created")
+                    it.value.forEach {
+                        if (it.status == "created") {
+                            objects.add(it)
+                        }
+                    }
+
+                    //loop through the tasks and add them to the recycler view if status is completed
+                    objects.add("Done")
+                    it.value.forEach {
+                        if (it.status == "completed") {
+                            objects.add(it)
+                        }
+                    }
+
+                    //Setup RecyclerView
+                    binding.recyclerView.adapter = ToDoAdapter(objects)
+                    binding.recyclerView.layoutManager = LinearLayoutManager(this)
+                    binding.recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+                    binding.recyclerView.addItemDecoration(StickyHeaderItemDecoration())
                 }
                 is APIResource.Loading -> {
                     Log.d("MainActivity", "Loading...")
@@ -73,29 +109,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-
-        //Mock data in header - In Progress, Created, Done
-        for (header in 0..2) {
-            //objects.add("Header - $header")
-            if(header == 0) {
-                objects.add("In Progress")
-            }
-            if (header == 1) {
-                objects.add("Created")
-            }
-            if (header == 2) {
-                objects.add("Done")
-            }
-            for (item in 1..10) {
-                objects.add(item)
-            }
-        }
-
-        //Setup RecyclerView
-        binding.recyclerView.adapter = MainAdapter(objects)
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        binding.recyclerView.addItemDecoration(StickyHeaderItemDecoration())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

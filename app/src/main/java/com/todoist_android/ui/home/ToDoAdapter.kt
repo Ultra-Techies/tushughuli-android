@@ -4,16 +4,18 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.todoist_android.R
+import com.todoist_android.data.responses.TasksResponseItem
 import kotlinx.android.synthetic.main.listitem_item.view.*
 
-class MainAdapter(private val objects: ArrayList<Any>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = objects[position]
-        if (holder is HeaderViewHolder && item is String) {
-            holder.tv?.text = item
-        } else if (holder is ViewHolder && item is Int) {
-            holder.tv?.text = "$item"
+        if (holder is ViewHolder && item is TasksResponseItem) {
+            holder.tv.text = item.title
+        } else if (holder is HeaderViewHolder && item is String) {
+            holder.tv.text = item
         }
     }
 
@@ -30,7 +32,7 @@ class MainAdapter(private val objects: ArrayList<Any>) : RecyclerView.Adapter<Re
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (objects[position] is Int) 1 else 0
+        return if (objects[position] is TasksResponseItem) 1 else 0
     }
 
     inner class HeaderViewHolder(v: View) : StickyViewHolder(v) {
