@@ -49,6 +49,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         setSupportActionBar(binding.toolbar)
         title = "Hi username"
 
+        var currentStatus = ""
+
         //Receiving data from the previous activity
         val loggedInUserId = intent.getIntExtra("userId", 0)
 
@@ -71,7 +73,9 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
         binding.swipeContainer.post {
             binding.swipeContainer.isRefreshing = true
-            fetchTasks()
+            finalObjects.clear()
+            objects.clear()
+            currentStatus = ""
         }
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
@@ -98,7 +102,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     //loop through the objects, if the item's status changes from current status
                     //add it to the finalObjects then add string to finalObjects
                     //then set the current status to the new status
-                    var currentStatus = ""
+                    currentStatus = ""
                     objects.forEach {
                         if (it is TasksResponseItem) {
                             if (it.status != currentStatus) {
@@ -113,6 +117,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                             }
                             else {
                                 finalObjects.add(it)
+                                currentStatus = it.status
                             }
                         }
                     }
@@ -128,10 +133,12 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     //clear finalObjects and objects
                     finalObjects.clear()
                     objects.clear()
+                    currentStatus = ""
 
                     binding.recyclerView.adapter?.notifyDataSetChanged()
                 }
                 is APIResource.Error -> {
+                    currentStatus = ""
                     binding.swipeContainer.isRefreshing = false
                     Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
                     Log.d("MainActivity", "Error: ${it.toString()}")
