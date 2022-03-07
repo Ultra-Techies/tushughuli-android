@@ -47,10 +47,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     private var reminder: String? = null
     private var reminderTime: String? = null
     private var selectedTime: String? = null
-    private var userId: String? = null
-
+    private var loggedInUserId: String? = null
     private var status = "created"
-    private var dateTime = "Today"
+    private var dateTime = " "
         set(value) {
             binding.tvDatePicker.text = value
             field = value
@@ -108,47 +107,48 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         }
         binding.ivReminder.setOnClickListener {
             pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
-                // dateTime = selectedText
                 reminder = selectedText
                 val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                 calendar.timeInMillis = timeInMilliseconds
                 reminder = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
 
                 pickTime(childFragmentManager) { selectTime ->
-                    //  dateTime = "$dateTime at  $selectTime"
                     reminderTime = selectTime
                 }
             }
-
         }
         binding.ivFlag.setOnClickListener { view ->
             popupMenu(requireContext(), view) { statusSelected ->
                 status = statusSelected
             }
-
         }
 
         binding.buttonAddTask.setOnClickListener {
+            if (binding.etTaskTitle.text.isNullOrEmpty()) {
+                binding.etTaskTitle.error = "Please enter a Task Title"
+                return@setOnClickListener
+            }
 
             if (binding.editTextTaskName.text.isNullOrEmpty()) {
                 binding.editTextTaskName.error = "Please enter a Task"
                 return@setOnClickListener
             }
 
-            val title = binding.editTextTaskTitle.text.trim().toString()
             val description = binding.editTextTaskName.text.trim().toString()
+            val title = binding.etTaskTitle.text.trim().toString()
 
             val taskRequest = AddTaskRequest(
-                id = userId,
+                id = loggedInUserId,
                 title = title,
                 description = description,
                 status = status,
-                reminder = "$reminder $reminderTime",
-                due_date = "$dueDate $selectedTime",
+                reminder = "$reminder $reminderTime ",
+                due_date = "$dueDate $selectedTime"
+            )
 
-                )
-
+            Log.d("task request",taskRequest.toString())
             addTasks(taskRequest)
+
 
         }
 
@@ -160,7 +160,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 prefs.todoToken.collectLatest { todoId ->
                     todoId?.let {
-                        userId = todoId
+                        loggedInUserId = todoId
                     } ?: kotlin.run {
                         Toast.makeText(
                             requireActivity(),

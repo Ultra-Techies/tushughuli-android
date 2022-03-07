@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             val intent = Intent(this, SplashActivity::class.java)
             startActivity(intent)
             finish()
-        } else {
+        }else {
             this.loggedInUserId = loggedInUserId
         }
 
