@@ -6,11 +6,15 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -33,6 +37,9 @@ class SettingsActivity : AppCompatActivity() {
     @Inject
     lateinit var userPreferences: UserPreferences
 
+    var loggedInUserId: Int = 0
+    var profile_photo: String = "http://placeimg.com/640/480/any.jpg"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
@@ -43,7 +50,18 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         title = ""
-        val userId = intent.getIntExtra("userId", 0)
+
+        val loggedInUserId = intent.getIntExtra("userId", 0)
+
+        //if userId is 0, then the user is not logged in
+        if (loggedInUserId == 0) {
+            val intent = Intent(this, SplashActivity::class.java)
+            startActivity(intent)
+            finish()
+        }else {
+            this.loggedInUserId = loggedInUserId
+        }
+
         userPreferences = UserPreferences(this)
 
         binding.toolbar.setNavigationOnClickListener {
@@ -51,10 +69,12 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         //Get user data
-        viewModel.getUser(userId.toString())
+        viewModel.getUser(loggedInUserId.toString())
         viewModel.user.observe(this, Observer {
             when (it) {
                 is APIResource.Success -> {
+                    disableInput(false)
+
                     binding.etUsername.setText(it.value.username)
                     binding.etEmail.setText(it.value.email)
                     Picasso.get()
@@ -78,10 +98,12 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 is APIResource.Loading -> {
                     Log.d("SettingsActivity", "Loading...")
+                    disableInput(true)
                 }
                 is APIResource.Error -> {
                     Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
                     Log.d("SettingsActivity", "Error: ${it.toString()}")
+                    disableInput(true)
                 }
             }
         })
@@ -102,6 +124,27 @@ class SettingsActivity : AppCompatActivity() {
             }
         })
 
+        //update user observe
+        this.lifecycleScope.launchWhenStarted {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.editUserResponse.collect {
+                    when(it){
+                        is APIResource.Success->{
+                            disableInput(false)
+                            Snackbar.make(binding.root, "User updated", Snackbar.LENGTH_SHORT).show()
+                        }
+                        is APIResource.Error ->{
+                            disableInput(true)
+                            Snackbar.make(binding.root,it.errorBody.toString(),Snackbar.LENGTH_SHORT).show()
+                        }
+                        is APIResource.Loading -> {
+                            disableInput(true)
+                        }
+                    }
+                }
+            }
+        }
+
         binding.appNotifications.isChecked = false
         binding.appNotifications.setOnCheckedChangeListener { _, isChecked ->
             binding.appNotifications.isChecked = isChecked
@@ -112,13 +155,26 @@ class SettingsActivity : AppCompatActivity() {
                 .setTitle("Delete Account")
                 .setMessage("Are you sure you want to delete your account?")
                 .setPositiveButton("Yes") { dialog, which ->
-                    viewModel.deleteUser(userId.toString())
+                    viewModel.deleteUser(loggedInUserId.toString())
                 }
                 .setNegativeButton("No") { dialog, which ->
                     dialog.dismiss()
                 }
                 .show()
         }
+    }
+
+    private fun disableInput(b: Boolean) {
+        binding.etEmail.isFocusable = !b
+        binding.etEmail.isFocusableInTouchMode = !b
+
+        binding.etUsername.isFocusable = !b
+        binding.etUsername.isFocusableInTouchMode = !b
+
+        binding.etPassword.isFocusable = b
+        binding.etPassword.isFocusableInTouchMode = !b
+
+        binding.appNotifications.isEnabled = !b
     }
 
     fun performDelete() = lifecycleScope.launch {
@@ -131,6 +187,31 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    fun saveUserDetails() = lifecycleScope.launch {
+            val username = binding.etUsername.text.toString()
+            val email = binding.etEmail.text.toString()
+            val password = binding.etPassword.text.toString()
+            //val profilePhoto = binding.userProfilePhoto.drawable.toBitmap()
+
+            if (username.isEmpty()) {
+                binding.etUsername.error = "Username is required"
+            }
+
+            if (email.isEmpty()) {
+                binding.etEmail.error = "Email is required"
+            }
+
+            //TODO: backend should handle if any of the paramaters goes back as empty
+            viewModel.updateUser(
+                loggedInUserId.toString(),
+                username,
+                password,
+                email,
+                display_name = username,
+                profile_photo
+            )
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.settings_menu, menu)
@@ -140,10 +221,9 @@ class SettingsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.saveDetails -> {
-                //save details
+                saveUserDetails()
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }

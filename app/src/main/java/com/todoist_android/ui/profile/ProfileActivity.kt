@@ -67,6 +67,7 @@ class ProfileActivity : AppCompatActivity() {
         viewModel.user.observe(this, Observer {
             when (it) {
                 is APIResource.Success -> {
+                    Log.d("ProfileActivity", "profile: ${it.value.profile_photo}")
                     binding.tvUsername.text = it.value.display_name
                     binding.tvEmail.text = it.value.email
                     Picasso.get()
