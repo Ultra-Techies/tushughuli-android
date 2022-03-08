@@ -11,9 +11,6 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.todoist_android.R
 import java.text.SimpleDateFormat
-import android.view.inputmethod.InputMethodManager
-import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
-import android.widget.EditText
 import java.util.*
 
 
@@ -75,16 +72,16 @@ fun pickTime(supportFragmentManager: FragmentManager, onTimeSelected: (String) -
         var formattedTime: String = when {
             pickedHour > 12 -> {
                 if (pickedMinute < 10) {
-                    "${picker.hour - 12}:0${picker.minute} pm"
+                    "${picker.hour - 12}:0${picker.minute} PM"
                 } else {
-                    "${picker.hour - 12}:${picker.minute} pm"
+                    "${picker.hour - 12}:${picker.minute} PM"
                 }
             }
             pickedHour == 12 -> {
                 if (pickedMinute < 10) {
-                    "${picker.hour}:0${picker.minute} pm"
+                    "${picker.hour}:0${picker.minute} PM"
                 } else {
-                    "${picker.hour}:${picker.minute} pm"
+                    "${picker.hour}:${picker.minute} PM"
                 }
             }
             pickedHour == 0 -> {
@@ -124,6 +121,28 @@ fun popupMenu(context: Context, view: View, statusSelected: (String) -> Unit) {
     }
     popup.show()
 }
+
+
+fun popupMenuTwo(context: Context, view: View, statusSelected: (String) -> Unit) {
+    val popup = PopupMenu(context, view)
+    popup.inflate(R.menu.set_full_status_menu)
+    popup.setOnMenuItemClickListener {
+        when (it.itemId) {
+            R.id.item_created_two -> {
+                statusSelected("created")
+            }
+            R.id.item_progress_two -> {
+                statusSelected("progress")
+            }
+            R.id.item_completed ->{
+                statusSelected("Completed")
+            }
+        }
+        true
+    }
+    popup.show()
+}
+
 
 
 
