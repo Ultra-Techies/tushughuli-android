@@ -14,7 +14,7 @@ interface UserApi {
         @Query("id") id: String,
     ) : UserResponse
 
-    @PUT("/user/1")
+    @PUT("/user/1") //TODO: change to user and remove 1 (we're using MockAPI that only allows us to update user by using id in the url)
     suspend fun editUser(
         @Query("id") id: String,
         @Query("username") username: String,
@@ -24,7 +24,7 @@ interface UserApi {
         @Query("profile_photo") profile_photo: String
     ) : UserResponse
 
-    @DELETE("/user")
+    @DELETE("/user/2")
     suspend fun deleteUser(
         @Query("id") id: String,
     ) : UserDeleteResponse

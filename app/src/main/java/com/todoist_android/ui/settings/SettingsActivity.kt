@@ -118,8 +118,13 @@ class SettingsActivity : AppCompatActivity() {
                     Log.d("SettingsActivity", "Deleting...")
                 }
                 is APIResource.Error -> {
-                    Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
-                    Log.d("SettingsActivity", "Error: ${it.toString()}")
+                    if(it.errorCode == 404) {
+                        Toast.makeText(this, "User not found", Toast.LENGTH_LONG).show()
+                        performDelete()
+                    } else {
+                        Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
+                        Log.d("SettingsActivity", "Error: ${it.toString()}")
+                    }
                 }
             }
         })
@@ -178,7 +183,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     fun performDelete() = lifecycleScope.launch {
-        Toast.makeText(this@SettingsActivity, "User deleted", Toast.LENGTH_SHORT).show()
         userPreferences.clearToken()
         Intent(this@SettingsActivity, SplashActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
