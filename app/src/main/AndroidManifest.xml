@@ -14,7 +14,7 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.Todoistandroid">
         <activity
-                android:name=".ui.home.ProfileActivity"
+                android:name=".ui.profile.ProfileActivity"
                 android:exported="true"/>
         <activity
                 android:name=".ui.SplashActivity"

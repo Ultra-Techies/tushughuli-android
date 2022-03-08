@@ -1,4 +1,4 @@
-package com.todoist_android.ui.home
+package com.todoist_android.ui.profile
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

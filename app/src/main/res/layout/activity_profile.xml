@@ -4,7 +4,7 @@
                 android:id="@+id/activity_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context=".ui.home.ProfileActivity">
+                tools:context=".ui.profile.ProfileActivity">
 
     <androidx.appcompat.widget.Toolbar
             app:layout_collapseMode="pin"

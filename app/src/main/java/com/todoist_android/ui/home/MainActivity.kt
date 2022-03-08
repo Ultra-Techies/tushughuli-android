@@ -22,11 +22,12 @@ import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.responses.TasksResponseItem
 import com.todoist_android.databinding.ActivityMainBinding
 import com.todoist_android.ui.SplashActivity
+import com.todoist_android.ui.profile.ProfileActivity
+import com.todoist_android.ui.settings.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -201,10 +202,10 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                 true
             }
 
-//            R.id.action_settings -> {
-//                startActivity(Intent(this, SettingsActivity::class.java))
-//                true
-//            }
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
 
             R.id.action_logout -> {
                 val alertDialog = AlertDialog.Builder(this)
