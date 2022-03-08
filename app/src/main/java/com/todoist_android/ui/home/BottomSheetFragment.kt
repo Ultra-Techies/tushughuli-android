@@ -2,7 +2,6 @@ package com.todoist_android.ui.home
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -21,11 +20,12 @@ import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.requests.AddTaskRequest
 import com.todoist_android.databinding.FragmentBottomsheetBinding
+import com.todoist_android.ui.formartDate
 import com.todoist_android.ui.hideKeyboard
-import com.todoist_android.ui.showKeyboard
 import com.todoist_android.ui.pickDate
 import com.todoist_android.ui.pickTime
 import com.todoist_android.ui.popupMenu
+import com.todoist_android.ui.showKeyboard
 import com.todoist_android.ui.todayDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -85,20 +85,20 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
         binding.pbBottomSheet.visibility = GONE
 
-        getUserId()
+        getLoggedInUserId()
         binding.editTextTaskName.showKeyboard()
 
-
         binding.tvDatePicker.setOnClickListener {
+
             pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
                 dateTime = selectedText
                 val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                 calendar.timeInMillis = timeInMilliseconds
-                dueDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
-
+                dueDate = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
 
                 pickTime(childFragmentManager) { selectTime ->
-                    selectedTime = selectTime
+                    // format to HH:mm:ss
+                    selectedTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
                     dateTime = "$dateTime at  $selectTime"
 
                 }
@@ -111,10 +111,10 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 reminder = selectedText
                 val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                 calendar.timeInMillis = timeInMilliseconds
-                reminder = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
+                reminder = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
 
                 pickTime(childFragmentManager) { selectTime ->
-                    reminderTime = selectTime
+                    reminderTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
                 }
             }
         }
@@ -144,20 +144,16 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 id = loggedInUserId,
                 description = description,
                 status = status,
-                reminder = "$reminder $reminderTime ",
-                due_date = "$dueDate $selectedTime"
+                reminder = "${reminder ?: " "} ${reminderTime ?: " "}",
+                due_date = "${dueDate ?: " "} ${selectedTime ?: " "}"
             )
-
-            Log.d("task request",taskRequest.toString())
             addTasks(taskRequest)
-
-
         }
 
         binding.tvEndTask.setOnClickListener { dismiss() }
     }
 
-    private fun getUserId() {
+    private fun getLoggedInUserId() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 prefs.todoToken.collectLatest { todoId ->
@@ -192,21 +188,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                                 Snackbar.LENGTH_SHORT
                             )
                                 .show()
-                            Log.d("task", taskRequest.toString())
-
-                            Snackbar.make(
-                                dialog?.window!!.decorView,
-                                "Task added successfully",
-                                Snackbar.LENGTH_SHORT
-                            )
-                                .show()
-                            Log.d("task request", taskRequest.toString())
                             viewLifecycleOwner.lifecycleScope.launch {
                                 delay(1000)
                                 dismiss()
                             }
                         }
-
                         is APIResource.Error -> {
                             binding.pbBottomSheet.visibility = GONE
                             Snackbar.make(
