@@ -163,10 +163,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             modalBottomSheet.show(supportFragmentManager, BottomSheetFragment.TAG)
         }
 
-        binding.btnTask.setOnClickListener {
-            val editBottomSheet = BottomSheetEditTaskFragment.newInstance()
-            editBottomSheet.show(supportFragmentManager,BottomSheetEditTaskFragment.TAG)
-        }
     }
 
     override fun onResume() {

@@ -5,27 +5,11 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class TodoModel(
-    var id: Int? = null,
     var title: String? = null,
     var description: String? = null,
     var reminder: String? = null,
     var due_date: String?= null,
-    var todoId: Int? = null,
+    var id: String? = null,
     var status: String? = null
 
-) : Parcelable{
-
-    fun getSampleTodo(): TodoModel{
-        return TodoModel(
-            id = 123,
-            title = "Do homework",
-            description ="Do homework",
-            reminder ="11/04/2022 1.15 pm",
-            due_date =" 12/04/2022 2:10 pm",
-            todoId =1,
-            status ="created"
-
-        )
-    }
-
-}
+):Parcelable

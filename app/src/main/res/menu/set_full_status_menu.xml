@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/created"
+        android:id="@+id/item_created_two"/>
+
+    <item android:title="@string/in_progress"
+        android:id="@+id/item_progress_two"/>
+
+    <item android:title="Completed"
+        android:id="@+id/item_completed"/>
+
+</menu>
