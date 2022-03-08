@@ -52,4 +52,5 @@
     <string name="error_task_title">Please enter a Task Title</string>
     <string name="error_task_description">Please enter a Task Description</string>
     <string name="delete_account">DELETE ACCOUNT</string>
+    <string name="save">Save</string>
 </resources>

@@ -10,4 +10,6 @@ class UserRepo @Inject constructor(
 
     suspend fun getUser(id: String) = safeApiCall { api.getUser(id) }
 
+    suspend fun deleteUser(id: String) = safeApiCall { api.deleteUser(id) }
+
 }
