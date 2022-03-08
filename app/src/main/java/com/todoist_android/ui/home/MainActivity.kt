@@ -203,7 +203,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             }
 
             R.id.action_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
+                Intent(this, SettingsActivity::class.java).also {
+                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    it.putExtra("userId", loggedInUserId)
+                    startActivity(it)
+                }
                 true
             }
 
