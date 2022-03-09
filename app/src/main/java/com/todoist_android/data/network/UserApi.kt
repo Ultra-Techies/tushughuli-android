@@ -24,7 +24,7 @@ interface UserApi {
         @Query("profile_photo") profile_photo: String
     ) : UserResponse
 
-    @DELETE("/user/2")
+    @DELETE("/user/1")
     suspend fun deleteUser(
         @Query("id") id: String,
     ) : UserDeleteResponse

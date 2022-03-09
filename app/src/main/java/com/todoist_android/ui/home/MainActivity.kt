@@ -14,7 +14,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
 import com.todoist_android.data.models.TodoModel
 import com.todoist_android.data.network.APIResource
@@ -97,12 +96,10 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     }
 
                     if(objects.size == 0) {
-                        binding.emptyTag.visibility = VISIBLE
-                        binding.emptyIcon.visibility = VISIBLE
+                        showEmptyState(VISIBLE)
 
                     } else {
-                        binding.emptyTag.visibility = GONE
-                        binding.emptyIcon.visibility = GONE
+                        showEmptyState(GONE)
                     }
                     //sort objects by it.status (progress, created, completed)
                     objects.sortBy {
@@ -155,6 +152,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     currentStatus = ""
                     binding.swipeContainer.isRefreshing = false
                     binding.root.handleApiError(it)
+                    showEmptyState(VISIBLE)
                     Log.d("MainActivity", "Error: ${it.toString()}")
                 }
             }
@@ -165,6 +163,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             modalBottomSheet.show(supportFragmentManager, BottomSheetFragment.TAG)
         }
 
+    }
+
+    private fun showEmptyState(visible: Int) {
+        binding.emptyTag.visibility = visible
+        binding.emptyIcon.visibility = visible
     }
 
     override fun onResume() {
