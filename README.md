@@ -35,7 +35,17 @@ The app has the following key features that a user can do:
 - View tasks that are done
 - View profile
 ## General Preview
-Screenshots Coming soon...
+
+## General Preview
+<a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/Todolist-android/main/design/Todolist%20Wire%20frame%20-%20Splash%20Screen.jpg height="550"  ></a>
+<a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/Todolist-android/main/design/Todolist%20Wire%20frame%20-%20Login.jpg height="550"  ></a>
+<a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/Todolist-android/main/design/Todolist%20Wire%20frame%20-%20Sign%20up.jpg height="550"  ></a>
+<a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/Todolist-android/main/design/Todolist%20Wire%20frame%20-%20Main%20Screen.jpg height="550"  ></a>
+<a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/Todolist-android/main/design/Todolist%20Wire%20frame%20-%20Profile.jpg height="550"  ></a>
+<a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/Todolist-android/main/design/Todolist%20Wire%20frame%20-%20Settings%20Screen.jpg height="550"  ></a>
+<a href="url"><img src= height="550"  ></a>
+<a href="url"><img src= height="550"  ></a>
+
 ## Permissions
 
 You need to allow the following permissions before running the app:
