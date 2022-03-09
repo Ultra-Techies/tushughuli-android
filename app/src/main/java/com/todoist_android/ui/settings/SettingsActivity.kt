@@ -10,10 +10,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.*
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Callback
@@ -23,11 +20,17 @@ import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivitySettingsBinding
 import com.todoist_android.ui.SplashActivity
+import com.todoist_android.ui.auth.AuthActivity
+import com.todoist_android.ui.home.MainActivity
 import com.todoist_android.ui.profile.ProfileActivity
 import com.todoist_android.view.handleApiError
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Exception
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -149,9 +152,21 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        binding.appNotifications.isChecked = false
+        //fetch notifications state from shared preferences
+        userPreferences.notificationState.asLiveData().observe(this) {
+            Log.d("SettingsActivity", "notification state: $it")
+            if (!it.isNullOrEmpty()) {
+                val notificationState: Boolean = it.toString().toBoolean()
+                binding.appNotifications.isChecked = notificationState
+
+            } else {
+                binding.appNotifications.isChecked = false
+            }
+        }
+
         binding.appNotifications.setOnCheckedChangeListener { _, isChecked ->
             binding.appNotifications.isChecked = isChecked
+            viewModel.saveNotificationState(isChecked)
         }
 
         binding.buttonDeleteAccount.setOnClickListener {

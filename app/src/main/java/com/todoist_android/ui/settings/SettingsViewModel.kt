@@ -57,4 +57,8 @@ class SettingsViewModel @Inject constructor(private val repository: UserRepo) : 
                 )
             )
     }
+
+    fun saveNotificationState(state: Boolean) = viewModelScope.launch {
+        repository.saveNotificationState(state)
+    }
 }
