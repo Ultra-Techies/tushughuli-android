@@ -36,7 +36,6 @@ The app has the following key features that a user can do:
 - View profile
 ## General Preview
 
-## General Preview
 <a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/Todolist-android/main/design/Todolist%20Wire%20frame%20-%20Splash%20Screen.jpg height="550"  ></a>
 <a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/Todolist-android/main/design/Todolist%20Wire%20frame%20-%20Login.jpg height="550"  ></a>
 <a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/Todolist-android/main/design/Todolist%20Wire%20frame%20-%20Sign%20up.jpg height="550"  ></a>
