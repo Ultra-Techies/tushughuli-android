@@ -6,13 +6,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.lifecycle.*
-import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -21,10 +18,7 @@ import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivitySettingsBinding
 import com.todoist_android.ui.SplashActivity
-import com.todoist_android.ui.auth.AuthActivity
-import com.todoist_android.ui.home.MainActivity
-import com.todoist_android.ui.profile.ProfileActivity
-import com.todoist_android.view.handleApiError
+import com.todoist_android.ui.handleApiError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope

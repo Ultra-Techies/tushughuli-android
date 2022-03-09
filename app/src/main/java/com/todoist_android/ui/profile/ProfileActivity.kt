@@ -16,7 +16,7 @@ import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivityProfileBinding
 import com.todoist_android.ui.SplashActivity
-import com.todoist_android.view.handleApiError
+import com.todoist_android.ui.handleApiError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.lang.Exception
