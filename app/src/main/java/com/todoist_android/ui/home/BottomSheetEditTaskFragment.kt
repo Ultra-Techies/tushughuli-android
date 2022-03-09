@@ -1,5 +1,6 @@
 package com.todoist_android.ui.home
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
+import com.todoist_android.R
 import com.todoist_android.data.models.TodoModel
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
@@ -25,7 +27,6 @@ import com.todoist_android.ui.formartDate
 import com.todoist_android.ui.hideKeyboard
 import com.todoist_android.ui.pickDate
 import com.todoist_android.ui.pickTime
-import com.todoist_android.ui.popupMenu
 import com.todoist_android.ui.popupMenuTwo
 import com.todoist_android.ui.showKeyboard
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,11 +39,15 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
+class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickListener {
     @Inject
     lateinit var prefs: UserPreferences
 
+    private lateinit var binding: FragmentBottomsheetEditTaskBinding
+    private val viewModel: EditTaskBottomSheetViewModel by viewModels()
+
     private lateinit var todoModel: TasksResponseItem
+
     private var selectedReminderDate: String? = null
     private var selectedDueTime: String? = null
     private var selectedReminderTime: String? = null
@@ -50,11 +55,9 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
     private var newDueDate: String? = null
     private var taskReminder: String? = null
     private var taskStatus = "created"
-
+    private var userId: String? = null
 
     companion object {
-        const val TAG = "EditBottomSheet"
-
         fun newInstance(item: TasksResponseItem): BottomSheetEditTaskFragment {
             val bundle = Bundle()
             bundle.apply {
@@ -66,9 +69,6 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private val viewModel: EditTaskBottomSheetViewModel by viewModels()
-    private lateinit var binding: FragmentBottomsheetEditTaskBinding
-    private var userId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,131 +97,23 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        todoModel.apply {
-            title?.let {
-                binding.editTextEditTitle.setText( it )
-            }
+        setText()
 
-            description?.let {
-                binding.editTextEditTask.setText(it)
-            }
-
-            due_date?.let {
-                dueDate = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
-                binding.tvEditDatePicker.text = dueDate
-            }
-
-            reminder?.let {
-                taskReminder = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
-            }
-
-            status?.let {
-                taskStatus = it
-            }
-        }
-
-
-        var editedDescription = binding.editTextEditTask.text.trim().toString()
-        var editedTitle = binding.editTextEditTitle.text.trim().toString()
-
-        binding.pbEditBottomSheet.visibility = GONE
+        setUpGlobalVariables()
 
         getLoggedInUserId()
 
-        binding.editTextEditTask.showKeyboard()
+        setOnClickListeners()
 
-        binding.ivEditReminder.setOnClickListener {
-            pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
-                selectedReminderDate = selectedText
-                val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                calendar.timeInMillis = timeInMilliseconds
-                selectedReminderDate =
-                    SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
+    }
 
-                pickTime(childFragmentManager) { selectTime ->
-
-                    selectedReminderTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
-                    Log.d("selectedReminderDate", selectedReminderTime.toString())
-                    taskReminder = "$selectedReminderDate $selectedReminderTime"
-                }
-
-            }
-        }
-        binding.ivEditFlag.setOnClickListener { view ->
-            popupMenu(requireContext(), view) { statusSelected ->
-                taskStatus = statusSelected
-            }
-        }
-
-        binding.tvEditDatePicker.setOnClickListener {
-            pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
-                newDueDate = selectedText
-                val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                calendar.timeInMillis = timeInMilliseconds
-                newDueDate =
-                    SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
-
-
-                pickTime(childFragmentManager) { selectTime ->
-                    selectedDueTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
-                    binding.tvEditDatePicker.text = "$newDueDate $selectedDueTime"
-                    dueDate = "$newDueDate $selectedDueTime"
-                }
-
-
-            }
-
-        }
-
-        binding.ivEditFlag.setOnClickListener { view ->
-            popupMenuTwo(requireContext(), view) { statusSelected ->
-                taskStatus = statusSelected
-
-            }
-        }
-
-        binding.tvDeleteTask.setOnClickListener {
-            val deleteTaskRequest = TodoModel(
-                id = todoModel.id,
-                title = editedTitle,
-                description = editedDescription,
-                due_date = dueDate ?: " ",
-                reminder = taskReminder ?: " ",
-                status = taskStatus
-            )
-
-            deleteTask(deleteTaskRequest)
-        }
-
-        binding.buttonEditTask.setOnClickListener {
-            // validate
-            if (binding.editTextEditTitle.text.isNullOrEmpty()) {
-                binding.editTextEditTask.error = "Please enter a Task Title"
-                return@setOnClickListener
-            }
-
-            if (binding.editTextEditTask.text.isNullOrEmpty()) {
-                binding.editTextEditTitle.error = "Please enter a Task"
-                return@setOnClickListener
-            }
-            var editedDescription = binding.editTextEditTask.text.trim().toString()
-            var editedTitle = binding.editTextEditTitle.text.trim().toString()
-
-            val editTasksRequest = TodoModel(
-                id = todoModel.id,
-                title = editedTitle,
-                description = editedDescription,
-                due_date = dueDate,
-                reminder = taskReminder,
-                status = taskStatus
-            )
-
-            editTask(editTasksRequest)
-
-        }
-        binding.tvCloseEditTask.setOnClickListener {
-            dismiss()
-        }
+    private fun setOnClickListeners(){
+        binding.ivEditReminder.setOnClickListener(this)
+        binding.ivEditFlag.setOnClickListener(this)
+        binding.tvEditDatePicker.setOnClickListener(this)
+        binding.tvDeleteTask.setOnClickListener(this)
+        binding.buttonEditTask.setOnClickListener(this)
+        binding.tvCloseEditTask.setOnClickListener(this)
     }
 
     private fun editTask(editTasksRequest: TodoModel) {
@@ -265,8 +157,6 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
                 }
             }
         }
-
-
     }
 
     private fun deleteTask(deleteTaskRequest: TodoModel) {
@@ -281,11 +171,10 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
                         is APIResource.Success -> {
                             Snackbar.make(
                                 dialog?.window!!.decorView,
-                                "Task deleted successfully",
+                                getString(R.string.task_deleted),
                                 Snackbar.LENGTH_SHORT
                             )
                                 .show()
-                            Log.d("task", deleteTaskRequest.toString())
                             viewLifecycleOwner.lifecycleScope.launch {
                                 delay(1000)
                                 dismiss()
@@ -311,6 +200,38 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
 
     }
 
+    private fun setText() {
+        todoModel.apply {
+            title?.let {
+                binding.editTextEditTitle.setText(it)
+            }
+
+            description?.let {
+                binding.editTextEditTask.setText(it)
+            }
+
+            due_date?.let {
+                dueDate = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
+                binding.tvEditDatePicker.text = dueDate
+            }
+
+            reminder?.let {
+                taskReminder = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
+            }
+
+            status?.let {
+                taskStatus = it
+            }
+        }
+
+    }
+
+    private fun setUpGlobalVariables() {
+        binding.pbEditBottomSheet.visibility = GONE
+        binding.editTextEditTask.showKeyboard()
+
+    }
+
 
     private fun getLoggedInUserId() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -321,7 +242,7 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
                     } ?: kotlin.run {
                         Toast.makeText(
                             requireActivity(),
-                            "Unable to find user id",
+                            getString(R.string.unable_to_find_user_id),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -329,6 +250,107 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
                 }
             }
         }
+    }
+
+
+    override fun onClick(view: View?) {
+        when (view) {
+            binding.buttonEditTask -> submitEditedTask()
+            binding.ivEditReminder -> selectNewReminderDate()
+            binding.ivEditFlag -> selectNewTaskStatus()
+            binding.tvEditDatePicker -> selectNewDueDate()
+            binding.tvDeleteTask -> deleteTask()
+            binding.tvCloseEditTask -> closeBottomSheet()
+        }
+
+    }
+
+
+    private fun submitEditedTask() {
+        // validate
+        if (binding.editTextEditTitle.text.isNullOrEmpty()) {
+            binding.editTextEditTask.error = "Please enter a Task Title"
+            return
+        }
+
+        if (binding.editTextEditTask.text.isNullOrEmpty()) {
+            binding.editTextEditTitle.error = "Please enter a Task"
+            return
+        }
+
+        val editTasksRequest = TodoModel(
+            id = todoModel.id,
+            title = binding.editTextEditTitle.text.trim().toString(),
+            description = binding.editTextEditTask.text.trim().toString(),
+            due_date = dueDate,
+            reminder = taskReminder,
+            status = taskStatus
+        )
+
+        editTask(editTasksRequest)
+    }
+
+    private fun selectNewReminderDate() {
+        pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
+            selectedReminderDate = selectedText
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            calendar.timeInMillis = timeInMilliseconds
+            selectedReminderDate =
+                SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
+
+            pickTime(childFragmentManager) { selectTime ->
+
+                selectedReminderTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
+                Log.d("selectedReminderDate", selectedReminderTime.toString())
+                taskReminder = "$selectedReminderDate $selectedReminderTime"
+            }
+
+        }
+    }
+
+    private fun selectNewTaskStatus() {
+            popupMenuTwo(requireContext(), binding.ivEditFlag ){ statusSelected ->
+                taskStatus = statusSelected
+
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun selectNewDueDate() {
+        pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
+            newDueDate = selectedText
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            calendar.timeInMillis = timeInMilliseconds
+            newDueDate =
+                SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
+
+
+            pickTime(childFragmentManager) { selectTime ->
+                selectedDueTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
+                binding.tvEditDatePicker.text = "$newDueDate $selectedDueTime"
+                dueDate = "$newDueDate $selectedDueTime"
+            }
+
+
+        }
+
+    }
+
+    private fun deleteTask() {
+        val deleteTaskRequest = TodoModel(
+            id = todoModel.id,
+            title = binding.editTextEditTitle.text.trim().toString(),
+            description = binding.editTextEditTask.text.trim().toString(),
+            due_date = dueDate ?: " ",
+            reminder = taskReminder ?: " ",
+            status = taskStatus
+        )
+
+        deleteTask(deleteTaskRequest)
+    }
+
+    private fun closeBottomSheet() {
+        dismiss()
     }
 
     override fun onDestroy() {

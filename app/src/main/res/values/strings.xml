@@ -46,4 +46,6 @@
     <string name="edit_task">EDIT TASK</string>
     <string name="task_title">Task title</string>
     <string name="due_date">Due Date</string>
+    <string name="unable_to_find_user_id">Unable to find user id</string>
+    <string name="task_deleted">Task deleted successfully</string>
 </resources>

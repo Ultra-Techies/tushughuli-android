@@ -40,10 +40,8 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
         }
 
         holder.itemView.tv.setOnClickListener {
-            val dialog = BottomSheetEditTaskFragment.newInstance(item as TasksResponseItem)
-            //The fragment that you want to open for example
-            val editBottomSheetFragment = (holder.itemView.context as AppCompatActivity).supportFragmentManager.beginTransaction()
-            dialog.show(editBottomSheetFragment, BottomSheetEditTaskFragment.TAG)
+            val bottomSheetEditTaskFragment = BottomSheetEditTaskFragment.newInstance(item as TasksResponseItem)
+            bottomSheetEditTaskFragment.show( (holder.itemView.context as AppCompatActivity).supportFragmentManager, "edit_task" )
         }
     }
 

@@ -37,12 +37,13 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class BottomSheetFragment : BottomSheetDialogFragment() {
+class BottomSheetFragment : BottomSheetDialogFragment(), View.OnClickListener {
     @Inject
     lateinit var prefs: UserPreferences
 
     private lateinit var binding: FragmentBottomsheetBinding
     private val viewModel: BottomSheetViewModel by viewModels()
+
     private var dueDate: String? = todayDate()
     private var reminder: String? = null
     private var reminderTime: String? = null
@@ -65,6 +66,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         return binding.root
     }
 
+
     companion object {
         const val TAG = "ModalBottomSheet"
     }
@@ -83,74 +85,26 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.pbBottomSheet.visibility = GONE
+        globalVariables()
 
         getLoggedInUserId()
+
+        setOnClickListeners()
+
+    }
+
+
+    private fun setOnClickListeners() {
+        binding.tvDatePicker.setOnClickListener(this)
+        binding.ivReminder.setOnClickListener(this)
+        binding.ivFlag.setOnClickListener(this)
+        binding.buttonAddTask.setOnClickListener(this)
+        binding.tvEndTask.setOnClickListener(this)
+    }
+
+    private fun globalVariables() {
+        binding.pbBottomSheet.visibility = GONE
         binding.editTextTaskName.showKeyboard()
-
-        binding.tvDatePicker.setOnClickListener {
-
-            pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
-                dateTime = selectedText
-                val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                calendar.timeInMillis = timeInMilliseconds
-                dueDate = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
-
-                pickTime(childFragmentManager) { selectTime ->
-                    // format to HH:mm:ss
-                    selectedTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
-                    dateTime = "$dateTime at  $selectTime"
-
-                }
-            }
-
-        }
-
-        binding.ivReminder.setOnClickListener {
-            pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
-                reminder = selectedText
-                val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                calendar.timeInMillis = timeInMilliseconds
-                reminder = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
-
-                pickTime(childFragmentManager) { selectTime ->
-                    reminderTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
-                }
-            }
-        }
-
-        binding.ivFlag.setOnClickListener { view ->
-            popupMenu(requireContext(), view) { statusSelected ->
-                status = statusSelected
-            }
-        }
-
-        binding.buttonAddTask.setOnClickListener {
-            if (binding.etTaskTitle.text.isNullOrEmpty()) {
-                binding.etTaskTitle.error = "Please enter a Task Title"
-                return@setOnClickListener
-            }
-
-            if (binding.editTextTaskName.text.isNullOrEmpty()) {
-                binding.editTextTaskName.error = "Please enter a Task"
-                return@setOnClickListener
-            }
-
-            val description = binding.editTextTaskName.text.trim().toString()
-            val title = binding.etTaskTitle.text.trim().toString()
-
-            val taskRequest = AddTaskRequest(
-                title = title,
-                id = loggedInUserId,
-                description = description,
-                status = status,
-                reminder = "${reminder ?: " "} ${reminderTime ?: " "}",
-                due_date = "${dueDate ?: " "} ${selectedTime ?: " "}"
-            )
-            addTasks(taskRequest)
-        }
-
-        binding.tvEndTask.setOnClickListener { dismiss() }
     }
 
     private fun getLoggedInUserId() {
@@ -170,6 +124,85 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             }
         }
     }
+
+    override fun onClick(view: View) {
+        when (view) {
+            binding.tvDatePicker -> selectDueDate()
+            binding.ivReminder -> selectReminderDate()
+            binding.ivFlag -> selectStatus()
+            binding.buttonAddTask -> addNewTask()
+            binding.tvEndTask -> closeAddTaskBottomSheet()
+        }
+    }
+
+    private fun selectDueDate() {
+        pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
+            dateTime = selectedText
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            calendar.timeInMillis = timeInMilliseconds
+            dueDate = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
+
+            pickTime(childFragmentManager) { selectTime ->
+                // format to HH:mm:ss
+                selectedTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
+                dateTime = "$dateTime at  $selectTime"
+
+            }
+        }
+    }
+
+
+    private fun selectReminderDate() {
+        pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
+            reminder = selectedText
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            calendar.timeInMillis = timeInMilliseconds
+            reminder = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
+
+            pickTime(childFragmentManager) { selectTime ->
+                reminderTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
+            }
+        }
+    }
+
+
+    private fun selectStatus() {
+        popupMenu(requireContext(), binding.ivFlag) { statusSelected ->
+            status = statusSelected
+        }
+    }
+
+
+    private fun addNewTask() {
+        if (binding.etTaskTitle.text.isNullOrEmpty()) {
+            binding.etTaskTitle.error = "Please enter a Task Title"
+            return
+        }
+
+        if (binding.editTextTaskName.text.isNullOrEmpty()) {
+            binding.editTextTaskName.error = "Please enter a Task"
+            return
+        }
+
+        val description = binding.editTextTaskName.text.trim().toString()
+        val title = binding.etTaskTitle.text.trim().toString()
+
+        val taskRequest = AddTaskRequest(
+            title = title,
+            id = loggedInUserId,
+            description = description,
+            status = status,
+            reminder = "${reminder ?: " "} ${reminderTime ?: " "}",
+            due_date = "${dueDate ?: " "} ${selectedTime ?: " "}"
+        )
+        addTasks(taskRequest)
+    }
+
+
+    private fun closeAddTaskBottomSheet() {
+        dismiss()
+    }
+
 
     private fun addTasks(taskRequest: AddTaskRequest) {
         binding.root.hideKeyboard()
@@ -211,6 +244,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         }
 
     }
+
 
     override fun onDestroy() {
         binding.root.hideKeyboard()
