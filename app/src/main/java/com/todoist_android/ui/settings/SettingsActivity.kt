@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.lifecycle.*
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -54,6 +55,7 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         title = ""
+        binding.progressbar.isVisible = false
 
         val loggedInUserId = intent.getIntExtra("userId", 0)
 
@@ -78,6 +80,7 @@ class SettingsActivity : AppCompatActivity() {
             when (it) {
                 is APIResource.Success -> {
                     disableInput(false)
+                    binding.progressbar.isVisible = false
 
                     binding.etUsername.setText(it.value.username)
                     binding.etEmail.setText(it.value.email)
@@ -103,11 +106,13 @@ class SettingsActivity : AppCompatActivity() {
                 is APIResource.Loading -> {
                     Log.d("SettingsActivity", "Loading...")
                     disableInput(true)
+                    binding.progressbar.isVisible = true
                 }
                 is APIResource.Error -> {
                     binding.root.handleApiError(it)
                     Log.d("SettingsActivity", "Error: ${it.toString()}")
                     disableInput(true)
+                    binding.progressbar.isVisible = false
                 }
             }
         })
@@ -117,11 +122,14 @@ class SettingsActivity : AppCompatActivity() {
             when (it) {
                 is APIResource.Success -> {
                     performDelete()
+                    binding.progressbar.isVisible = false
                 }
                 is APIResource.Loading -> {
                     Log.d("SettingsActivity", "Deleting...")
+                    binding.progressbar.isVisible = true
                 }
                 is APIResource.Error -> {
+                    binding.progressbar.isVisible = false
                     binding.root.handleApiError(it)
                     if(it.errorCode == 404) {
                         performDelete()
@@ -137,14 +145,17 @@ class SettingsActivity : AppCompatActivity() {
                     when(it){
                         is APIResource.Success->{
                             disableInput(false)
+                            binding.progressbar.isVisible = false
                             Snackbar.make(binding.root, "User updated", Snackbar.LENGTH_SHORT).show()
                         }
                         is APIResource.Error ->{
                             binding.root.handleApiError(it)
                             disableInput(true)
+                            binding.progressbar.isVisible = false
                         }
                         is APIResource.Loading -> {
                             disableInput(true)
+                            binding.progressbar.isVisible = true
                         }
                     }
                 }
@@ -205,6 +216,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     fun saveUserDetails() = lifecycleScope.launch {
+            binding.progressbar.isVisible = true
             val username = binding.etUsername.text.toString()
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
