@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserRepo
-import com.todoist_android.data.responses.SignupResponse
 import com.todoist_android.data.responses.UserDeleteResponse
 import com.todoist_android.data.responses.UserResponse
 import dagger.hilt.android.lifecycle.HiltViewModel

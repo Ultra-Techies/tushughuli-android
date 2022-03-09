@@ -142,7 +142,6 @@ class SettingsActivity : AppCompatActivity() {
                         is APIResource.Error ->{
                             binding.root.handleApiError(it)
                             disableInput(true)
-                            Snackbar.make(binding.root,it.errorBody.toString(),Snackbar.LENGTH_SHORT).show()
                         }
                         is APIResource.Loading -> {
                             disableInput(true)
