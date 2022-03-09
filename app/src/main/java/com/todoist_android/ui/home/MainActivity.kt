@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
+import com.todoist_android.data.models.TodoModel
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.responses.TasksResponseItem
@@ -117,7 +118,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     objects.forEach {
                         if (it is TasksResponseItem) {
                             if (it.status != currentStatus) {
-                                if(it.status.isBlank()){
+                                if(it.status!!.isBlank()){
                                     finalObjects.add("Unknown Status")
                                 }else {
                                     finalObjects.add(it.status.replaceFirstChar { if (it.isLowerCase()) it.titlecase(
@@ -161,6 +162,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             val modalBottomSheet = BottomSheetFragment()
             modalBottomSheet.show(supportFragmentManager, BottomSheetFragment.TAG)
         }
+
     }
 
     override fun onResume() {

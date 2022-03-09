@@ -39,6 +39,15 @@
     <string name="logout">Logout</string>
     <string name="settings">Settings</string>
     <string name="profile">Profile</string>
+    <string name="edit_this_task">Edit this task?</string>
+    <string name="_12_08_2022">12/08/2022</string>
+    <string name="delete">Delete</string>
+    <string name="save">SAVE</string>
+    <string name="edit_task">EDIT TASK</string>
     <string name="task_title">Task title</string>
     <string name="due_date">Due Date</string>
+    <string name="unable_to_find_user_id">Unable to find user id</string>
+    <string name="task_deleted">Task deleted successfully</string>
+    <string name="error_task_title">Please enter a Task Title</string>
+    <string name="error_task_description">Please enter a Task Description</string>
 </resources>

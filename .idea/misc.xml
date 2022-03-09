@@ -3,12 +3,6 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/drawable/black_circle.xml" value="0.21614583333333334" />
-        <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/drawable/done_circle.xml" value="0.21614583333333334" />
-        <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/drawable/green_circle.xml" value="0.1" />
-        <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/drawable/grey_circle.xml" value="0.21614583333333334" />
-        <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/drawable/grey_rectangle.xml" value="0.1" />
-        <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/drawable/yellow_circle.xml" value="0.21614583333333334" />
         <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.1285140562248996" />
         <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/layout-w936dp/activity_login.xml" value="0.1290983606557377" />
         <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/layout/activity_auth.xml" value="0.17119565217391305" />
@@ -19,17 +13,16 @@
         <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/layout/fragment_login.xml" value="0.2" />
         <entry key="app/src/main/res/drawable/grey_rectangle.xml" value="0.11" />
         <entry key="app/src/main/res/drawable/teal_rectangle.xml" value="0.11" />
-        <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/layout/fragment_signup.xml" value="0.967741935483871" />
-        <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/layout/listitem_header.xml" value="0.182518115942029" />
-        <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/layout/listitem_item.xml" value="0.18" />
-        <entry key="..\:/Users/Malcom Miyare/OneDrive/Documents/Git/Work/Todoist-android/app/src/main/res/menu/main_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_auth.xml" value="0.196875" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.29435897435897435" />
         <entry key="app/src/main/res/layout/add_new_task_bottom_sheet.xml" value="0.2989583333333333" />
-        <entry key="app/src/main/res/layout/fragment_bottomsheet.xml" value="0.16111111111111112" />
+        <entry key="app/src/main/res/layout/fragment_bottomsheet.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_bottomsheet_edit_task.xml" value="0.2989583333333333" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.2989583333333333" />
         <entry key="app/src/main/res/layout/fragment_signup.xml" value="0.2989583333333333" />
+        <entry key="app/src/main/res/layout/listitem_item.xml" value="0.17395833333333333" />
+        <entry key="app/src/main/res/menu/set_full_status_menu.xml" value="0.15104166666666666" />
         <entry key="app/src/main/res/menu/set_status_menu.xml" value="0.284375" />
       </map>
     </option>

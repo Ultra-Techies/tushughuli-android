@@ -78,6 +78,18 @@
                 android:visibility="gone" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btnTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="392dp"
+        android:text="@string/edit_task"
+        app:layout_constraintBottom_toTopOf="@+id/buttonNewTask"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Button
         android:id="@+id/buttonNewTask"
         android:layout_width="match_parent"

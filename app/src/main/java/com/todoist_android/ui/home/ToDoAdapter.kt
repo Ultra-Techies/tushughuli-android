@@ -1,10 +1,11 @@
 package com.todoist_android.ui.home
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import com.todoist_android.R
 import com.todoist_android.data.responses.TasksResponseItem
 import kotlinx.android.synthetic.main.listitem_item.view.*
@@ -36,6 +37,11 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
         holder.itemView.setOnClickListener {
             Toast.makeText(holder.itemView.context, "Clicked", Toast.LENGTH_SHORT).show()
             //TODO: trigger bottom sheet edit/delete task
+        }
+
+        holder.itemView.tv.setOnClickListener {
+            val bottomSheetEditTaskFragment = BottomSheetEditTaskFragment.newInstance(item as TasksResponseItem)
+            bottomSheetEditTaskFragment.show( (holder.itemView.context as AppCompatActivity).supportFragmentManager, "edit_task" )
         }
     }
 

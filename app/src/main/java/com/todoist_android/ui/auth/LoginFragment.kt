@@ -18,9 +18,8 @@ import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.databinding.FragmentLoginBinding
 import com.todoist_android.ui.home.MainActivity
-import com.todoist_android.view.validateEmail
+import com.todoist_android.ui.validateEmail
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint

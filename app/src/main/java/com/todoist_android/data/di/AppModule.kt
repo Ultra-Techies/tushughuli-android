@@ -1,11 +1,11 @@
 package com.todoist_android.data.di
 
-import androidx.viewbinding.BuildConfig
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.todoist_android.BuildConfig
 import com.todoist_android.data.network.APIAuthentication
 import com.todoist_android.data.network.TaskApi
 import com.todoist_android.data.network.UserApi
-import com.todoist_android.view.BASE_URL
+import com.todoist_android.ui.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +22,7 @@ import javax.inject.Singleton
 object AppModule {
 
     @Provides
+    @Singleton
     fun providesOkhttp(): OkHttpClient {
         val okhhtp = OkHttpClient.Builder()
 

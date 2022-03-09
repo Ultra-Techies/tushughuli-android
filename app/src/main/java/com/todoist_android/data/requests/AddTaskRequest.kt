@@ -1,10 +1,10 @@
 package com.todoist_android.data.requests
 
 data class AddTaskRequest(
-    var id: String?,
-    var title: String?,
-    var description: String?,
-    var due_date: String?,
-    val reminder: String,
-    var status: String?
+    var id: String? = null,
+    var title: String? = null,
+    var description: String? = null,
+    var due_date: String? = null,
+    var reminder: String? = null,
+    var status: String? = null
 )

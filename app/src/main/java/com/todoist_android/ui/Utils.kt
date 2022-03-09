@@ -1,12 +1,7 @@
-package com.todoist_android.view
+package com.todoist_android.ui
 
 import android.content.Context
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
-import android.widget.EditText
-import java.util.*
 import android.widget.PopupMenu
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.datepicker.CalendarConstraints
@@ -16,30 +11,18 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.todoist_android.R
 import java.text.SimpleDateFormat
-
+import java.util.*
 
 
 const val BASE_URL = "https://621ce943768a4e1020b93731.mockapi.io/api/v1/"
 
 private const val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
 
+
 fun validateEmail(email: String): Boolean {
     return email.matches(emailPattern.toRegex())
 }
 
-fun EditText.showKeyboard() {
-    if (requestFocus()) {
-        (context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
-            .showSoftInput(this, SHOW_IMPLICIT)
-        setSelection(text.length)
-    }
-}
-
-fun View.hideKeyboard() {
-    val closeKeyboard =
-        this.context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-    closeKeyboard.hideSoftInputFromWindow(this.windowToken, 0)
-}
 
 fun todayDate(): String {
     val todayDate = Calendar.getInstance().time
@@ -52,9 +35,10 @@ fun formartDate(date: String, originalFormat: String, expectedFormat: String): S
         val originalDateTime = SimpleDateFormat(originalFormat, Locale.getDefault()).parse(date)
         SimpleDateFormat(expectedFormat, Locale.getDefault()).format(originalDateTime!!)
     } catch (e: Exception) {
-        date;
+        date
     }
 }
+
 fun pickDate(supportFragmentManager: FragmentManager, onSelected: (String, Long) -> Unit) {
     val calendarConstraintBuilder =
         CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now())
@@ -88,16 +72,16 @@ fun pickTime(supportFragmentManager: FragmentManager, onTimeSelected: (String) -
         var formattedTime: String = when {
             pickedHour > 12 -> {
                 if (pickedMinute < 10) {
-                    "${picker.hour - 12}:0${picker.minute} pm"
+                    "${picker.hour - 12}:0${picker.minute} PM"
                 } else {
-                    "${picker.hour - 12}:${picker.minute} pm"
+                    "${picker.hour - 12}:${picker.minute} PM"
                 }
             }
             pickedHour == 12 -> {
                 if (pickedMinute < 10) {
-                    "${picker.hour}:0${picker.minute} pm"
+                    "${picker.hour}:0${picker.minute} PM"
                 } else {
-                    "${picker.hour}:${picker.minute} pm"
+                    "${picker.hour}:${picker.minute} PM"
                 }
             }
             pickedHour == 0 -> {
@@ -137,6 +121,28 @@ fun popupMenu(context: Context, view: View, statusSelected: (String) -> Unit) {
     }
     popup.show()
 }
+
+
+fun popupMenuTwo(context: Context, view: View, statusSelected: (String) -> Unit) {
+    val popup = PopupMenu(context, view)
+    popup.inflate(R.menu.set_full_status_menu)
+    popup.setOnMenuItemClickListener {
+        when (it.itemId) {
+            R.id.item_created_two -> {
+                statusSelected("created")
+            }
+            R.id.item_progress_two -> {
+                statusSelected("progress")
+            }
+            R.id.item_completed ->{
+                statusSelected("Completed")
+            }
+        }
+        true
+    }
+    popup.show()
+}
+
 
 
 
