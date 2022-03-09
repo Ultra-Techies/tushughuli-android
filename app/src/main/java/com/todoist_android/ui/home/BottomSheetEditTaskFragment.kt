@@ -48,8 +48,8 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
     private var selectedReminderTime: String? = null
     private var dueDate: String? = null
     private var newDueDate: String? = null
-    private var reminder: String? = null
-    private var status = "created"
+    private var taskReminder: String? = null
+    private var taskStatus = "created"
 
 
     companion object {
@@ -73,7 +73,6 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         todoModel = arguments?.getParcelable("data")!!
-//        Log.d("get Task",todoModel.toString())
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -98,24 +97,29 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        todoModel.apply {
+            title?.let {
+                binding.editTextEditTitle.setText( it )
+            }
 
-        var editTitle = todoModel.title
-        var editTitleTask = binding.editTextEditTitle
-        editTitleTask.setText(editTitle)
+            description?.let {
+                binding.editTextEditTask.setText(it)
+            }
 
-        var editTask = todoModel.description
-        var editDescriptionTask = binding.editTextEditTask
-        editDescriptionTask.setText(editTask)
+            due_date?.let {
+                dueDate = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
+                binding.tvEditDatePicker.text = dueDate
+            }
 
-        var dueDateFromBackend = todoModel.due_date
-        dueDate = formartDate(dueDateFromBackend, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
-        var editDueDate = binding.tvEditDatePicker
-        editDueDate.text = dueDate
+            reminder?.let {
+                taskReminder = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
+            }
 
-        var savedReminderDate = todoModel.reminder
-        reminder = formartDate(savedReminderDate, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
+            status?.let {
+                taskStatus = it
+            }
+        }
 
-        var taskStatus = todoModel.status
 
         var editedDescription = binding.editTextEditTask.text.trim().toString()
         var editedTitle = binding.editTextEditTitle.text.trim().toString()
@@ -138,14 +142,14 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
 
                     selectedReminderTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
                     Log.d("selectedReminderDate", selectedReminderTime.toString())
-                    reminder = "$selectedReminderDate $selectedReminderTime"
+                    taskReminder = "$selectedReminderDate $selectedReminderTime"
                 }
 
             }
         }
         binding.ivEditFlag.setOnClickListener { view ->
             popupMenu(requireContext(), view) { statusSelected ->
-                status = statusSelected
+                taskStatus = statusSelected
             }
         }
 
@@ -160,7 +164,7 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
 
                 pickTime(childFragmentManager) { selectTime ->
                     selectedDueTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
-                    editDueDate.text = "$newDueDate $selectedDueTime"
+                    binding.tvEditDatePicker.text = "$newDueDate $selectedDueTime"
                     dueDate = "$newDueDate $selectedDueTime"
                 }
 
@@ -182,7 +186,7 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
                 title = editedTitle,
                 description = editedDescription,
                 due_date = "${dueDate ?: " "}",
-                reminder = "${reminder ?: " "}",
+                reminder = "${taskReminder ?: " "}",
                 status = taskStatus
             )
 
@@ -208,7 +212,7 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
                 title = editedTitle,
                 description = editedDescription,
                 due_date = dueDate,
-                reminder = reminder,
+                reminder = taskReminder,
                 status = taskStatus
             )
 
