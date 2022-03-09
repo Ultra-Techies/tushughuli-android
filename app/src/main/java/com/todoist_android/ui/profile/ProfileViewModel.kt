@@ -1,4 +1,4 @@
-package com.todoist_android.ui.home
+package com.todoist_android.ui.profile
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

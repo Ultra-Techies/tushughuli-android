@@ -3,13 +3,18 @@ package com.todoist_android.ui
 import android.content.Context
 import android.view.View
 import android.widget.PopupMenu
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.todoist_android.R
+import com.todoist_android.data.network.APIResource
+import com.todoist_android.ui.auth.LoginFragment
+import org.junit.jupiter.api.fail
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -120,6 +125,50 @@ fun popupMenu(context: Context, view: View, statusSelected: (String) -> Unit) {
         true
     }
     popup.show()
+}
+
+fun View.snackbar(message: String, action: (() -> Unit)? = null) {
+    val snackbar = Snackbar.make(this, message, Snackbar.LENGTH_LONG)
+        action?.let {
+            snackbar.setAction("Retry") {
+                it()
+            }
+        }
+    snackbar.show()
+}
+
+fun View.handleApiError (
+    failure: APIResource.Error,
+    action:(() -> Unit)? = null
+){
+    when {
+        failure.isNetworkError -> snackbar("Network Error", action)
+        failure.errorCode == 401 -> {
+            snackbar("Unauthorized request", action)
+        }
+        failure.errorCode == 404 -> {
+            snackbar("Resource not found", action)
+        }
+        failure.errorCode == 422 -> {
+            snackbar("Validation error", action)
+        }
+        failure.errorCode == 500 -> {
+            snackbar("Internal server error", action)
+        }
+        failure.errorCode == 503 -> {
+            snackbar("Service unavailable", action)
+        }
+        failure.errorCode == 504 -> {
+            snackbar("Gateway timeout", action)
+        }
+        failure.errorCode == 0 -> {
+            snackbar("Unknown error", action)
+        }
+        else -> {
+            val error = failure.errorBody?.string().toString()
+            snackbar(error, action)
+        }
+    }
 }
 
 

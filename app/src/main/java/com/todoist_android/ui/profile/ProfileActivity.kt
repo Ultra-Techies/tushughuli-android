@@ -1,4 +1,4 @@
-package com.todoist_android.ui.home
+package com.todoist_android.ui.profile
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +16,7 @@ import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivityProfileBinding
 import com.todoist_android.ui.SplashActivity
+import com.todoist_android.ui.handleApiError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -67,7 +68,8 @@ class ProfileActivity : AppCompatActivity() {
         viewModel.user.observe(this, Observer {
             when (it) {
                 is APIResource.Success -> {
-                    binding.tvUsername.text = it.value.display_name
+                    Log.d("ProfileActivity", "profile: ${it.value.profile_photo}")
+                    binding.tvUsername.text = it.value.username
                     binding.tvEmail.text = it.value.email
                     Picasso.get()
                         .load(it.value.profile_photo)
@@ -92,7 +94,7 @@ class ProfileActivity : AppCompatActivity() {
                     Log.d("ProfileActivity", "Loading...")
                 }
                 is APIResource.Error -> {
-                    Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
+                    binding.root.handleApiError(it)
                     Log.d("ProfileActivity", "Error: ${it.toString()}")
                 }
             }
