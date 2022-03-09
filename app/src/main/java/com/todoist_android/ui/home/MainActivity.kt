@@ -24,6 +24,7 @@ import com.todoist_android.databinding.ActivityMainBinding
 import com.todoist_android.ui.SplashActivity
 import com.todoist_android.ui.profile.ProfileActivity
 import com.todoist_android.ui.settings.SettingsActivity
+import com.todoist_android.view.handleApiError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.*
@@ -153,7 +154,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                 is APIResource.Error -> {
                     currentStatus = ""
                     binding.swipeContainer.isRefreshing = false
-                    Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
+                    binding.root.handleApiError(it)
                     Log.d("MainActivity", "Error: ${it.toString()}")
                 }
             }

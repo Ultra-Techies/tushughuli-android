@@ -16,6 +16,7 @@ import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivityProfileBinding
 import com.todoist_android.ui.SplashActivity
+import com.todoist_android.view.handleApiError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -93,7 +94,7 @@ class ProfileActivity : AppCompatActivity() {
                     Log.d("ProfileActivity", "Loading...")
                 }
                 is APIResource.Error -> {
-                    Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
+                    binding.root.handleApiError(it)
                     Log.d("ProfileActivity", "Error: ${it.toString()}")
                 }
             }

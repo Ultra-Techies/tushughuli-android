@@ -15,7 +15,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.databinding.FragmentSignupBinding
-import com.todoist_android.ui.validateEmail
+import com.todoist_android.view.handleApiError
+import com.todoist_android.view.validateEmail
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -59,7 +60,7 @@ class SignupFragment : Fragment() {
                         is APIResource.Error ->{
                             binding.progressbarTwo.visibility = View.GONE
                             binding.btnSignup.isEnabled = true
-                            Snackbar.make(binding.root,it.errorBody.toString(),Snackbar.LENGTH_SHORT).show()
+                            binding.root.handleApiError(it)
                         }
                         is APIResource.Loading -> {
                             binding.progressbarTwo.visibility = View.VISIBLE

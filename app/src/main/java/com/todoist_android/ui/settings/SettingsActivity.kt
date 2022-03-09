@@ -24,6 +24,7 @@ import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivitySettingsBinding
 import com.todoist_android.ui.SplashActivity
 import com.todoist_android.ui.profile.ProfileActivity
+import com.todoist_android.view.handleApiError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -101,7 +102,7 @@ class SettingsActivity : AppCompatActivity() {
                     disableInput(true)
                 }
                 is APIResource.Error -> {
-                    Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
+                    binding.root.handleApiError(it)
                     Log.d("SettingsActivity", "Error: ${it.toString()}")
                     disableInput(true)
                 }
@@ -118,12 +119,9 @@ class SettingsActivity : AppCompatActivity() {
                     Log.d("SettingsActivity", "Deleting...")
                 }
                 is APIResource.Error -> {
+                    binding.root.handleApiError(it)
                     if(it.errorCode == 404) {
-                        Toast.makeText(this, "User not found", Toast.LENGTH_LONG).show()
                         performDelete()
-                    } else {
-                        Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
-                        Log.d("SettingsActivity", "Error: ${it.toString()}")
                     }
                 }
             }
@@ -139,6 +137,7 @@ class SettingsActivity : AppCompatActivity() {
                             Snackbar.make(binding.root, "User updated", Snackbar.LENGTH_SHORT).show()
                         }
                         is APIResource.Error ->{
+                            binding.root.handleApiError(it)
                             disableInput(true)
                             Snackbar.make(binding.root,it.errorBody.toString(),Snackbar.LENGTH_SHORT).show()
                         }
