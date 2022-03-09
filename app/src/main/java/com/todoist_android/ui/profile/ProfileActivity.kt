@@ -69,7 +69,7 @@ class ProfileActivity : AppCompatActivity() {
             when (it) {
                 is APIResource.Success -> {
                     Log.d("ProfileActivity", "profile: ${it.value.profile_photo}")
-                    binding.tvUsername.text = it.value.display_name
+                    binding.tvUsername.text = it.value.username
                     binding.tvEmail.text = it.value.email
                     Picasso.get()
                         .load(it.value.profile_photo)

@@ -1,7 +1,14 @@
 package com.todoist_android.data.repository
 
+import androidx.lifecycle.viewModelScope
+import com.todoist_android.data.models.TodoModel
+import com.todoist_android.data.models.UserModel
 import com.todoist_android.data.network.UserApi
 import com.todoist_android.data.network.repository.BaseRepo
+import com.todoist_android.data.requests.UpdateUserRequest
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.shareIn
 import javax.inject.Inject
 
 class UserRepo @Inject constructor(
@@ -11,14 +18,9 @@ class UserRepo @Inject constructor(
 
     suspend fun getUser(id: String) = safeApiCall { api.getUser(id) }
 
-    suspend fun editUser(
-        id: String,
-        username: String,
-        password: String,
-        email: String,
-        display_name: String,
-        profile_photo: String
-    ) = safeApiCall { api.editUser(id, username, password, email, display_name,profile_photo) }
+    suspend fun updateUser(updateUserRequest: UserModel) = safeApiCall {
+        api.editUser(updateUserRequest, updateUserRequest.id!!)
+    }
 
     suspend fun deleteUser(id: String) = safeApiCall { api.deleteUser(id) }
 

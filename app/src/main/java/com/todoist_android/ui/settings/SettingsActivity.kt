@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
@@ -14,18 +15,16 @@ import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.todoist_android.R
+import com.todoist_android.data.models.UserModel
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivitySettingsBinding
 import com.todoist_android.ui.SplashActivity
 import com.todoist_android.ui.handleApiError
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Exception
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -209,30 +208,39 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    fun saveUserDetails() = lifecycleScope.launch {
+    fun saveUserDetails(updateUserRequest: UserModel) = lifecycleScope.launch {
             binding.progressbar.isVisible = true
-            val username = binding.etUsername.text.toString()
-            val email = binding.etEmail.text.toString()
-            val password = binding.etPassword.text.toString()
-            //val profilePhoto = binding.userProfilePhoto.drawable.toBitmap()
 
-            if (username.isEmpty()) {
+            if (binding.etUsername.text.toString().isEmpty()) {
                 binding.etUsername.error = "Username is required"
             }
 
-            if (email.isEmpty()) {
+            if (binding.etEmail.text.toString().isEmpty()) {
                 binding.etEmail.error = "Email is required"
             }
 
-            //TODO: backend should handle if any of the paramaters goes back as empty
-            viewModel.updateUser(
-                loggedInUserId.toString(),
-                username,
-                password,
-                email,
-                display_name = username,
-                profile_photo
-            )
+            Log.d("SettingsActivity: ", updateUserRequest.toString())
+
+            lifecycleScope.launchWhenStarted {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.updateUser(updateUserRequest).collect {
+                    when (it) {
+                        is APIResource.Success -> {
+                            binding.progressbar.isVisible = false
+                            Snackbar.make(binding.root, "User updated successfully", Snackbar.LENGTH_SHORT).show()
+                        }
+
+                        is APIResource.Error -> {
+                            binding.progressbar.isVisible = false
+                            binding.root.handleApiError(it)
+                        }
+                        is APIResource.Loading -> {
+                            binding.progressbar.isVisible = true
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -244,7 +252,15 @@ class SettingsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.saveDetails -> {
-                saveUserDetails()
+
+                val updateUserRequest = UserModel(
+                    id = loggedInUserId.toString(),
+                    username = binding.etUsername.text.toString(),
+                    email = binding.etEmail.text.toString(),
+                    password = binding.etPassword.text.toString()
+                )
+
+                saveUserDetails(updateUserRequest)
                 true
             }
             else -> super.onOptionsItemSelected(item)
