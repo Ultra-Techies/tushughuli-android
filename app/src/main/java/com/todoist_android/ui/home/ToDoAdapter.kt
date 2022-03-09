@@ -35,8 +35,12 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
         }
 
         holder.itemView.setOnClickListener {
-            val bottomSheetEditTaskFragment = BottomSheetEditTaskFragment.newInstance(item as TasksResponseItem)
-            bottomSheetEditTaskFragment.show( (holder.itemView.context as AppCompatActivity).supportFragmentManager, "edit_task" )
+            if (holder is HeaderViewHolder && item is String) {
+                //Do nothing: a cool feature to work on would be to collapse the list or expand it
+            } else {
+                val bottomSheetEditTaskFragment = BottomSheetEditTaskFragment.newInstance(item as TasksResponseItem)
+                bottomSheetEditTaskFragment.show( (holder.itemView.context as AppCompatActivity).supportFragmentManager, "edit_task" )
+            }
         }
     }
 
