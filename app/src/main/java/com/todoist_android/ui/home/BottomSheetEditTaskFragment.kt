@@ -135,6 +135,9 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
                                 .show()
                             Log.d("task", editTasksRequest.toString())
 
+                            //trigger onRefresh in MainActivity
+                            (activity as MainActivity).onRefresh()
+
                             viewLifecycleOwner.lifecycleScope.launch {
                                 delay(1000)
                                 dismiss()
@@ -175,6 +178,10 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
                                 Snackbar.LENGTH_SHORT
                             )
                                 .show()
+
+                            //trigger onRefresh in MainActivity
+                            (activity as MainActivity).onRefresh()
+
                             viewLifecycleOwner.lifecycleScope.launch {
                                 delay(1000)
                                 dismiss()
