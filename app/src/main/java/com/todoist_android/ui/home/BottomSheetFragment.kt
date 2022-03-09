@@ -16,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDE
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
+import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.requests.AddTaskRequest
@@ -115,8 +116,7 @@ class BottomSheetFragment : BottomSheetDialogFragment(), View.OnClickListener {
                         loggedInUserId = todoId
                     } ?: kotlin.run {
                         Toast.makeText(
-                            requireActivity(),
-                            "Unable to find user id",
+                            requireActivity(), getString(R.string.unable_to_find_user_id),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -175,12 +175,12 @@ class BottomSheetFragment : BottomSheetDialogFragment(), View.OnClickListener {
 
     private fun addNewTask() {
         if (binding.etTaskTitle.text.isNullOrEmpty()) {
-            binding.etTaskTitle.error = "Please enter a Task Title"
+            binding.etTaskTitle.error = getString(R.string.error_task_title)
             return
         }
 
         if (binding.editTextTaskName.text.isNullOrEmpty()) {
-            binding.editTextTaskName.error = "Please enter a Task"
+            binding.editTextTaskName.error = getString(R.string.error_task_description)
             return
         }
 

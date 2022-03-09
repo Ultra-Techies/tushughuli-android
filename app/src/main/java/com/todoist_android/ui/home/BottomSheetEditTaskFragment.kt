@@ -269,12 +269,12 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
     private fun submitEditedTask() {
         // validate
         if (binding.editTextEditTitle.text.isNullOrEmpty()) {
-            binding.editTextEditTask.error = "Please enter a Task Title"
+            binding.editTextEditTask.error = getString(R.string.error_task_title)
             return
         }
 
         if (binding.editTextEditTask.text.isNullOrEmpty()) {
-            binding.editTextEditTitle.error = "Please enter a Task"
+            binding.editTextEditTitle.error = getString(R.string.error_task_description)
             return
         }
 
