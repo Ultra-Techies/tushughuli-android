@@ -14,6 +14,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.snackbar.Snackbar
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
@@ -22,9 +25,11 @@ import com.todoist_android.databinding.ActivityMainBinding
 import com.todoist_android.ui.SplashActivity
 import com.todoist_android.ui.handleApiError
 import com.todoist_android.ui.profile.ProfileActivity
+import com.todoist_android.ui.profile.ProfileViewModel
 import com.todoist_android.ui.settings.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
 
@@ -42,6 +47,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     private val viewModel by viewModels<MainViewModel>()
 
+    private val profileViewModel by viewModels<ProfileViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -50,7 +57,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         userPreferences = UserPreferences(this)
 
         setSupportActionBar(binding.toolbar)
-        title = "Hi username"
+        title = "Hi"
 
         var currentStatus = ""
 
@@ -161,6 +168,25 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             val modalBottomSheet = BottomSheetFragment()
             modalBottomSheet.show(supportFragmentManager, BottomSheetFragment.TAG)
         }
+
+        //get user details
+        profileViewModel.getUser(loggedInUserId.toString())
+
+        profileViewModel.user.observe(this, Observer {
+            when (it) {
+                is APIResource.Success -> {
+                    title = "Hi ${it.value.username}"
+                    Log.d("MainActivity", "User: ${it}")
+                }
+                is APIResource.Loading -> {
+                    Log.d("ProfileActivity", "Loading...")
+                }
+                is APIResource.Error -> {
+                    binding.root.handleApiError(it)
+                    Log.d("ProfileActivity", "Error: ${it.toString()}")
+                }
+            }
+        })
 
     }
 
