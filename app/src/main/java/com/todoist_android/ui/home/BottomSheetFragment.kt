@@ -221,6 +221,10 @@ class BottomSheetFragment : BottomSheetDialogFragment(), View.OnClickListener {
                                 Snackbar.LENGTH_SHORT
                             )
                                 .show()
+
+                            //trigger onRefresh in MainActivity
+                            (activity as MainActivity).onRefresh()
+
                             viewLifecycleOwner.lifecycleScope.launch {
                                 delay(1000)
                                 dismiss()
