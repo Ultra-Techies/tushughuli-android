@@ -185,8 +185,8 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment() {
                 id = todoModel.id,
                 title = editedTitle,
                 description = editedDescription,
-                due_date = "${dueDate ?: " "}",
-                reminder = "${taskReminder ?: " "}",
+                due_date = dueDate ?: " ",
+                reminder = taskReminder ?: " ",
                 status = taskStatus
             )
 
