@@ -40,19 +40,13 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
             if (holder is HeaderViewHolder && item is String) {
                 //Do nothing: a cool feature to work on would be to collapse the list or expand it
             } else {
-                val bottomSheetEditTaskFragment = BottomSheetEditTaskFragment.newInstance(item as TasksResponseItem)
                 val bottomSheetEditTaskFragment = BottomSheetEditTaskFragment.newInstance(item as TasksResponseItem){
                     onEditTaskCallback?.invoke()
                 }
                 bottomSheetEditTaskFragment.show( (holder.itemView.context as AppCompatActivity).supportFragmentManager, "edit_task" )
-
-                bottomSheetEditTaskFragment.show( (holder.itemView.context as AppCompatActivity).supportFragmentManager, "edit_task" )
             }
         }
 
-        holder.itemView.tv.setOnClickListener {
-
-        }
     }
 
     override fun getItemCount() = objects.size

@@ -14,9 +14,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.snackbar.Snackbar
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
@@ -29,7 +26,6 @@ import com.todoist_android.ui.profile.ProfileViewModel
 import com.todoist_android.ui.settings.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
 
@@ -93,6 +89,10 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             when (it) {
                 is APIResource.Success -> {
                     Log.d("MainActivity", "Tasks: ${it}")
+
+                    // if objects anf final objects is not empty clear the list
+                    if ( objects.isNotEmpty() ) objects.clear()
+                    if ( finalObjects.isNotEmpty() ) finalObjects.clear()
 
                     binding.swipeContainer.isRefreshing = false
                     binding.recyclerView.removeItemDecoration(StickyHeaderItemDecoration())
