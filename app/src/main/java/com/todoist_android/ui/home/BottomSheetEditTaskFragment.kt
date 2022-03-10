@@ -39,7 +39,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickListener {
+class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSheetDialogFragment(), View.OnClickListener {
     @Inject
     lateinit var prefs: UserPreferences
 
@@ -47,23 +47,20 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
     private val viewModel: EditTaskBottomSheetViewModel by viewModels()
 
     private lateinit var todoModel: TasksResponseItem
-
-    private var selectedReminderDate: String? = null
     private var selectedDueTime: String? = null
-    private var selectedReminderTime: String? = null
     private var dueDate: String? = null
     private var newDueDate: String? = null
-    private var taskReminder: String? = null
+
     private var taskStatus = "created"
     private var userId: String? = null
 
     companion object {
-        fun newInstance(item: TasksResponseItem): BottomSheetEditTaskFragment {
+        fun newInstance(item: TasksResponseItem, refreshListCallback: ()->Unit): BottomSheetEditTaskFragment {
             val bundle = Bundle()
             bundle.apply {
                 putParcelable("data", item)
             }
-            return BottomSheetEditTaskFragment().apply {
+            return BottomSheetEditTaskFragment(refreshListCallback).apply {
                 arguments = bundle
             }
         }
@@ -108,7 +105,6 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
     }
 
     private fun setOnClickListeners(){
-        binding.ivEditReminder.setOnClickListener(this)
         binding.ivEditFlag.setOnClickListener(this)
         binding.tvEditDatePicker.setOnClickListener(this)
         binding.tvDeleteTask.setOnClickListener(this)
@@ -127,6 +123,7 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
                     when (it) {
                         is APIResource.Success -> {
                             binding.pbEditBottomSheet.visibility = GONE
+                            refreshListCallback.invoke()
                             Snackbar.make(
                                 dialog?.window!!.decorView,
                                 "Task edited successfully",
@@ -172,6 +169,7 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
                 viewModel.deleteTasks(deleteTaskRequest).collect {
                     when (it) {
                         is APIResource.Success -> {
+                            refreshListCallback.invoke()
                             Snackbar.make(
                                 dialog?.window!!.decorView,
                                 getString(R.string.task_deleted),
@@ -221,11 +219,6 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
                 dueDate = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
                 binding.tvEditDatePicker.text = dueDate
             }
-
-            reminder?.let {
-                taskReminder = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
-            }
-
             status?.let {
                 taskStatus = it
             }
@@ -263,7 +256,6 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
     override fun onClick(view: View?) {
         when (view) {
             binding.buttonEditTask -> submitEditedTask()
-            binding.ivEditReminder -> selectNewReminderDate()
             binding.ivEditFlag -> selectNewTaskStatus()
             binding.tvEditDatePicker -> selectNewDueDate()
             binding.tvDeleteTask -> deleteTask()
@@ -290,29 +282,11 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
             title = binding.editTextEditTitle.text.trim().toString(),
             description = binding.editTextEditTask.text.trim().toString(),
             due_date = dueDate,
-            reminder = taskReminder,
+//            reminder = taskReminder,
             status = taskStatus
         )
 
         editTask(editTasksRequest)
-    }
-
-    private fun selectNewReminderDate() {
-        pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
-            selectedReminderDate = selectedText
-            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-            calendar.timeInMillis = timeInMilliseconds
-            selectedReminderDate =
-                SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
-
-            pickTime(childFragmentManager) { selectTime ->
-
-                selectedReminderTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
-                Log.d("selectedReminderDate", selectedReminderTime.toString())
-                taskReminder = "$selectedReminderDate $selectedReminderTime"
-            }
-
-        }
     }
 
     private fun selectNewTaskStatus() {
@@ -349,7 +323,6 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
             title = binding.editTextEditTitle.text.trim().toString(),
             description = binding.editTextEditTask.text.trim().toString(),
             due_date = dueDate ?: " ",
-            reminder = taskReminder ?: " ",
             status = taskStatus
         )
 
