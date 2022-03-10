@@ -12,12 +12,14 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
+import com.todoist_android.data.network.NotificationService
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.responses.TasksResponseItem
 import com.todoist_android.databinding.ActivityMainBinding
@@ -112,6 +114,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
                     } else {
                         showEmptyState(GONE)
+                        startService(Intent(this, NotificationService::class.java))
                     }
                     //sort objects by it.status (progress, created, completed)
                     objects.sortBy {
