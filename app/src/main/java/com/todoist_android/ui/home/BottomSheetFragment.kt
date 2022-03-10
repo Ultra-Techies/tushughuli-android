@@ -2,6 +2,7 @@ package com.todoist_android.ui.home
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -46,8 +47,6 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     private val viewModel: BottomSheetViewModel by viewModels()
 
     private var dueDate: String? = todayDate()
-    private var reminder: String? = null
-    private var reminderTime: String? = null
     private var selectedTime: String? = null
     private var loggedInUserId: String? = null
     private var status = "created"
@@ -97,7 +96,6 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
     private fun setOnClickListeners() {
         binding.tvDatePicker.setOnClickListener(this)
-        binding.ivReminder.setOnClickListener(this)
         binding.ivFlag.setOnClickListener(this)
         binding.buttonAddTask.setOnClickListener(this)
         binding.tvEndTask.setOnClickListener(this)
@@ -128,7 +126,6 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     override fun onClick(view: View) {
         when (view) {
             binding.tvDatePicker -> selectDueDate()
-            binding.ivReminder -> selectReminderDate()
             binding.ivFlag -> selectStatus()
             binding.buttonAddTask -> addNewTask()
             binding.tvEndTask -> closeAddTaskBottomSheet()
@@ -147,20 +144,6 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
                 selectedTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
                 dateTime = "$dateTime at  $selectTime"
 
-            }
-        }
-    }
-
-
-    private fun selectReminderDate() {
-        pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
-            reminder = selectedText
-            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-            calendar.timeInMillis = timeInMilliseconds
-            reminder = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
-
-            pickTime(childFragmentManager) { selectTime ->
-                reminderTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
             }
         }
     }
@@ -192,9 +175,9 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
             id = loggedInUserId,
             description = description,
             status = status,
-            reminder = "${reminder ?: " "} ${reminderTime ?: " "}",
             due_date = "${dueDate ?: " "} ${selectedTime ?: " "}"
         )
+        Log.d("--->",taskRequest.toString())
         addTasks(taskRequest)
     }
 
