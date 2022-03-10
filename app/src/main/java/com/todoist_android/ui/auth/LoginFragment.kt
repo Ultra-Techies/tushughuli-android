@@ -17,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.databinding.FragmentLoginBinding
+import com.todoist_android.ui.handleApiError
 import com.todoist_android.ui.home.MainActivity
 import com.todoist_android.ui.validateEmail
 import dagger.hilt.android.AndroidEntryPoint
@@ -77,7 +78,7 @@ class LoginFragment : Fragment() {
                            }
                        }
                        is APIResource.Error -> {
-                           Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
+                           binding.root.handleApiError(it)
                            binding.progressbar.visibility = GONE
                            binding.buttonLogin.isEnabled = true
                        }

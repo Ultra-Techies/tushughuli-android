@@ -15,18 +15,23 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import com.todoist_android.R
-import com.todoist_android.data.models.TodoModel
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.responses.TasksResponseItem
 import com.todoist_android.databinding.ActivityMainBinding
 import com.todoist_android.ui.SplashActivity
+import com.todoist_android.ui.handleApiError
+import com.todoist_android.ui.profile.ProfileActivity
+import com.todoist_android.ui.profile.ProfileViewModel
+import com.todoist_android.ui.settings.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -42,6 +47,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     private val viewModel by viewModels<MainViewModel>()
 
+    private val profileViewModel by viewModels<ProfileViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -50,7 +57,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         userPreferences = UserPreferences(this)
 
         setSupportActionBar(binding.toolbar)
-        title = "Hi username"
+        title = "Hi"
 
         var currentStatus = ""
 
@@ -95,12 +102,10 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     }
 
                     if(objects.size == 0) {
-                        binding.emptyTag.visibility = VISIBLE
-                        binding.emptyIcon.visibility = VISIBLE
+                        showEmptyState(VISIBLE)
 
                     } else {
-                        binding.emptyTag.visibility = GONE
-                        binding.emptyIcon.visibility = GONE
+                        showEmptyState(GONE)
                     }
                     //sort objects by it.status (progress, created, completed)
                     objects.sortBy {
@@ -156,7 +161,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                 is APIResource.Error -> {
                     currentStatus = ""
                     binding.swipeContainer.isRefreshing = false
-                    Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_LONG).show()
+                    binding.root.handleApiError(it)
+                    showEmptyState(VISIBLE)
                     Log.d("MainActivity", "Error: ${it.toString()}")
                 }
             }
@@ -169,6 +175,30 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             modalBottomSheet.show(supportFragmentManager, BottomSheetFragment.TAG)
         }
 
+        //get user details
+        profileViewModel.getUser(loggedInUserId.toString())
+
+        profileViewModel.user.observe(this, Observer {
+            when (it) {
+                is APIResource.Success -> {
+                    title = "Hi ${it.value.username}"
+                    Log.d("MainActivity", "User: ${it}")
+                }
+                is APIResource.Loading -> {
+                    Log.d("ProfileActivity", "Loading...")
+                }
+                is APIResource.Error -> {
+                    binding.root.handleApiError(it)
+                    Log.d("ProfileActivity", "Error: ${it.toString()}")
+                }
+            }
+        })
+
+    }
+
+    private fun showEmptyState(visible: Int) {
+        binding.emptyTag.visibility = visible
+        binding.emptyIcon.visibility = visible
     }
 
     override fun onResume() {
@@ -192,7 +222,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main_activity, menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
 
@@ -207,10 +237,14 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                 true
             }
 
-//            R.id.action_settings -> {
-//                startActivity(Intent(this, SettingsActivity::class.java))
-//                true
-//            }
+            R.id.action_settings -> {
+                Intent(this, SettingsActivity::class.java).also {
+                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    it.putExtra("userId", loggedInUserId)
+                    startActivity(it)
+                }
+                true
+            }
 
             R.id.action_logout -> {
                 val alertDialog = AlertDialog.Builder(this)

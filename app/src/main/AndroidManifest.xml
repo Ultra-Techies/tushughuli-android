@@ -14,7 +14,7 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.Todoistandroid">
         <activity
-                android:name=".ui.home.ProfileActivity"
+                android:name=".ui.profile.ProfileActivity"
                 android:exported="true"/>
         <activity
                 android:name=".ui.SplashActivity"
@@ -31,7 +31,9 @@
         <activity
                 android:name=".ui.auth.AuthActivity"
                 android:exported="true"/>
-
+        <activity
+                android:name=".ui.settings.SettingsActivity"
+                android:exported="true"/>
         <meta-data
                 android:name="preloaded_fonts"
                 android:resource="@array/preloaded_fonts"/>

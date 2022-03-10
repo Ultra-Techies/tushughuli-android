@@ -22,6 +22,11 @@ class UserPreferences @Inject constructor(@ApplicationContext context: Context) 
             preferences[TOKEN]
         }
 
+    val notificationState: Flow<String?>
+        get() = applicationContext.dataStore.data.map { preferences ->
+            preferences[NOTIFICATION_STATE]
+        }
+
     suspend fun saveToken(todoToken: String) {
         applicationContext.dataStore.edit {
             it[TOKEN] = todoToken
@@ -34,8 +39,15 @@ class UserPreferences @Inject constructor(@ApplicationContext context: Context) 
         }
     }
 
+    suspend fun saveNotificationState(state: Boolean) {
+        applicationContext.dataStore.edit {
+            it[NOTIFICATION_STATE] = state.toString()
+        }
+    }
+
     companion object {
         private val TOKEN = stringPreferencesKey("token")
+        private val NOTIFICATION_STATE = stringPreferencesKey("notification_state")
     }
 
 }

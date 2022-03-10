@@ -4,13 +4,13 @@
                 android:id="@+id/activity_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context=".ui.home.ProfileActivity">
+                tools:context=".ui.profile.ProfileActivity">
 
     <androidx.appcompat.widget.Toolbar
             app:layout_collapseMode="pin"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="@dimen/actionBarSize"
             android:background="@color/white"
             android:padding="0dp"
             android:elevation="4dp"
@@ -100,10 +100,11 @@
                 android:layout_marginTop="20dp"
                 android:fontFamily="sans-serif-light"/>
 
-        <com.google.android.material.button.MaterialButton
+        <androidx.appcompat.widget.AppCompatButton
+                style="@style/buttonTheme"
                 android:id="@+id/buttonLogout"
                 android:layout_width="match_parent"
-                android:text="@string/logout"
+                android:text="@string/logout_cap"
                 android:fontFamily="@font/noto_sans"
                 android:layout_alignParentBottom="true"
                 android:layout_height="60dp"
