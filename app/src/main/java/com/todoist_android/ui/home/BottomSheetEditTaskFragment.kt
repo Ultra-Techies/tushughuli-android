@@ -39,7 +39,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickListener {
+class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSheetDialogFragment(), View.OnClickListener {
     @Inject
     lateinit var prefs: UserPreferences
 
@@ -58,12 +58,12 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
     private var userId: String? = null
 
     companion object {
-        fun newInstance(item: TasksResponseItem): BottomSheetEditTaskFragment {
+        fun newInstance(item: TasksResponseItem, refreshListCallback: ()->Unit): BottomSheetEditTaskFragment {
             val bundle = Bundle()
             bundle.apply {
                 putParcelable("data", item)
             }
-            return BottomSheetEditTaskFragment().apply {
+            return BottomSheetEditTaskFragment(refreshListCallback).apply {
                 arguments = bundle
             }
         }
@@ -127,6 +127,7 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
                     when (it) {
                         is APIResource.Success -> {
                             binding.pbEditBottomSheet.visibility = GONE
+                            refreshListCallback.invoke()
                             Snackbar.make(
                                 dialog?.window!!.decorView,
                                 "Task edited successfully",
@@ -169,6 +170,7 @@ class BottomSheetEditTaskFragment : BottomSheetDialogFragment(), View.OnClickLis
                 viewModel.deleteTasks(deleteTaskRequest).collect {
                     when (it) {
                         is APIResource.Success -> {
+                            refreshListCallback.invoke()
                             Snackbar.make(
                                 dialog?.window!!.decorView,
                                 getString(R.string.task_deleted),

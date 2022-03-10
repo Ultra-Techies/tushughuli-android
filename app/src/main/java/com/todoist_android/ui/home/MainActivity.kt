@@ -135,7 +135,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     }
 
                     //Setup RecyclerView
-                    binding.recyclerView.adapter = ToDoAdapter(finalObjects)
+                    var todoAdapter = ToDoAdapter(finalObjects)
+                    todoAdapter.onEditTaskCallback = {
+                        fetchTasks()
+                    }
+                    binding.recyclerView.adapter = todoAdapter
                     binding.recyclerView.addItemDecoration(StickyHeaderItemDecoration())
                 }
                 is APIResource.Loading -> {
@@ -159,7 +163,9 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         })
 
         binding.buttonNewTask.setOnClickListener {
-            val modalBottomSheet = BottomSheetFragment()
+            val modalBottomSheet = BottomSheetFragment{
+                fetchTasks()
+            }
             modalBottomSheet.show(supportFragmentManager, BottomSheetFragment.TAG)
         }
 

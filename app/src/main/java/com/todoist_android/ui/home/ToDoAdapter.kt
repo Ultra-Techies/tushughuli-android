@@ -11,6 +11,8 @@ import com.todoist_android.data.responses.TasksResponseItem
 import kotlinx.android.synthetic.main.listitem_item.view.*
 
 class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+  var onEditTaskCallback : (() -> Unit)? = null
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = objects[position]
         if (holder is ViewHolder && item is TasksResponseItem) {
@@ -40,7 +42,9 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
         }
 
         holder.itemView.tv.setOnClickListener {
-            val bottomSheetEditTaskFragment = BottomSheetEditTaskFragment.newInstance(item as TasksResponseItem)
+            val bottomSheetEditTaskFragment = BottomSheetEditTaskFragment.newInstance(item as TasksResponseItem){
+                onEditTaskCallback?.invoke()
+            }
             bottomSheetEditTaskFragment.show( (holder.itemView.context as AppCompatActivity).supportFragmentManager, "edit_task" )
         }
     }

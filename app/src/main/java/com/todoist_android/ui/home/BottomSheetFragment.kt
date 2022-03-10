@@ -38,7 +38,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class BottomSheetFragment : BottomSheetDialogFragment(), View.OnClickListener {
+class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialogFragment(), View.OnClickListener {
     @Inject
     lateinit var prefs: UserPreferences
 
@@ -219,8 +219,8 @@ class BottomSheetFragment : BottomSheetDialogFragment(), View.OnClickListener {
                                 dialog?.window!!.decorView,
                                 "Task added successfully",
                                 Snackbar.LENGTH_SHORT
-                            )
-                                .show()
+                            ).show()
+                            addNewTaskCallback.invoke()
                             viewLifecycleOwner.lifecycleScope.launch {
                                 delay(1000)
                                 dismiss()
