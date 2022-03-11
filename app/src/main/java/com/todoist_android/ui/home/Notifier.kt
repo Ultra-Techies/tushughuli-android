@@ -36,9 +36,9 @@ class Notifier(val context: Context) {
         }
     }
 
-    fun sendNotification(title: String, content: String){
+    fun sendNotification(title: String, content: String, description: String = content){
 
-        val notification = notification(title, content)
+        val notification = notification(title, content, description)
 
         with(NotificationManagerCompat.from(context)){
 
@@ -50,7 +50,7 @@ class Notifier(val context: Context) {
     }
 
 
-    private fun notification(title: String, content: String) : Notification {
+    private fun notification(title: String, content: String, description: String = content) : Notification {
 
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -64,6 +64,8 @@ class Notifier(val context: Context) {
         builder.setSmallIcon(R.drawable.logo)
         builder.setContentTitle(title)
         builder.setContentText(content)
+        builder.setStyle(NotificationCompat.BigTextStyle()
+            .bigText(description))
         builder.priority = NotificationCompat.PRIORITY_DEFAULT
         builder.setContentIntent(pendingIntent)
         return builder.build()

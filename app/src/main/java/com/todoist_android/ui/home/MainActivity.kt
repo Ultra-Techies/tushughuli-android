@@ -1,8 +1,5 @@
 package com.todoist_android.ui.home
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -11,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -33,8 +29,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -47,6 +43,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     private val objects = arrayListOf<Any>()
     private val finalObjects = arrayListOf<Any>()
+    private val filteredTasks = ArrayList<TasksResponseItem>() //This list will contain only items of type TasksResponseItem (excluding headers)
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -88,6 +85,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             binding.swipeContainer.isRefreshing = true
             finalObjects.clear()
             objects.clear()
+            filteredTasks.clear()
+
             currentStatus = ""
         }
 
@@ -100,6 +99,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     // if objects anf final objects is not empty clear the list
                     if ( objects.isNotEmpty() ) objects.clear()
                     if ( finalObjects.isNotEmpty() ) finalObjects.clear()
+                    if ( filteredTasks.isNotEmpty() ) filteredTasks.clear()
 
                     binding.swipeContainer.isRefreshing = false
                     binding.recyclerView.removeItemDecoration(StickyHeaderItemDecoration())
@@ -138,7 +138,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                                 }
                                 currentStatus = it.status
                                 finalObjects.add(it)
-                                scheduleAlert(binding.root, it as TasksResponseItem)
                             }
                             else {
                                 finalObjects.add(it)
@@ -146,6 +145,17 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                             }
                         }
                     }
+
+                    //filter finalObjects to an ArrayList of items of type TasksResponseItem
+                    finalObjects.filterIsInstance<TasksResponseItem>().forEach {
+                        Log.d("MainActivity", "FinalObjects: ${it}")
+                        //empty list of type TasksResponseItem
+
+                        filteredTasks.add(it)
+                    }
+
+                    //pass the filteredTasks to the scheduler function
+                    scheduleAlert(binding.recyclerView, filteredTasks)
 
                     //Setup RecyclerView
                     var todoAdapter = ToDoAdapter(finalObjects)
@@ -281,52 +291,16 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         }
     }
 
-    //get time difference between now(current date time) to due date of format 12/03/2022 5:10 PM
-    private fun getTimeDifference(date: String): Array<Int> {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
-        val currentDate = Date()
-        val dueDate = dateFormat.parse(date)
-        val diff = dueDate.time - currentDate.time
-        val seconds = diff / 1000
-        val minutes = seconds / 60
-        val hours = minutes / 60
-        val days = hours / 24
 
-        //position 0 is days, position 1 is hours, position 2 is minutes
-        return arrayOf(days.toInt() ,hours.toInt(), minutes.toInt())
 
-    }
-
-    fun scheduleAlert(view: View, tasksResponseItem: TasksResponseItem){
-        //Pass a taskresponseitem, compute due time and schedule a notification
-
-        var content = tasksResponseItem.description
-        var hours = getTimeDifference(tasksResponseItem.due_date!!)[1]
-        var mins = getTimeDifference(tasksResponseItem.due_date!!)[2]
-        var title = tasksResponseItem.title
-
-        if(hours == 0 && mins > 0){
-            title = "${tasksResponseItem.title} is due in $mins minutes"
-        }
-        else if(hours > 0 && mins == 0){
-            title = "${tasksResponseItem.title} is due in $hours hours"
-        }
-        else if(hours > 0 && mins > 0){
-            title = "${tasksResponseItem.title} is due in $hours hours and $mins minutes"
-        } else {
-            title = "${tasksResponseItem.title} is due"
-        }
-
-        var delay = (hours * 60) + mins
+    fun scheduleAlert(view: View, finalObjects: ArrayList<TasksResponseItem>){
         val intent = Intent(this, NotificationService::class.java)
 
-        intent.putExtra("title",title)
-        intent.putExtra("content",content)
-        intent.putExtra("delay", delay)
+        var bundle = Bundle()
+        bundle!!.putSerializable("data",finalObjects)
+        intent.putExtra("bundle",bundle)
 
-        if(tasksResponseItem.status == "progress" || tasksResponseItem.status == "created" && delay >= 0){
-            startService(intent)
-        }
+        startService(intent)
 
     }
 }
