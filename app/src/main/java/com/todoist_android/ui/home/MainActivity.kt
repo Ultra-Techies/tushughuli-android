@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -28,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -68,6 +71,9 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         }else {
             this.loggedInUserId = loggedInUserId
         }
+
+        //if notification service is running, then stop it
+        stopService(Intent(this, NotificationService::class.java))
 
         binding.swipeContainer.setOnRefreshListener(this)
         binding.swipeContainer.setColorSchemeResources(
@@ -137,6 +143,9 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                                 currentStatus = it.status
                             }
                         }
+                    }
+                    if(finalObjects.size > 0) {
+                        scheduleAlert(binding.root, finalObjects)
                     }
 
                     //Setup RecyclerView
@@ -271,5 +280,27 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         }.also {
             startActivity(it)
         }
+    }
+
+    fun scheduleAlert(view: View, finalObjects: ArrayList<Any>){
+        //We receive a list of tasks that has been sorted based on due_date (earliest to latest)
+        //We then schedule an alert for each task that's within the next 24 hours
+
+        val message = "show due task"
+        val hours = 0
+        val mins = 1
+        val delay = (hours * 60) + mins
+
+//        val notifier = Notifier(this)
+//        notifier.sendNotification(message,"")
+
+        val intent = Intent(this, NotificationService::class.java)
+
+        intent.putExtra("title",message)
+        intent.putExtra("delay", delay)
+        startService(intent)
+
+        Toast.makeText(this,"Reminder to $message set in $delay minutes", Toast.LENGTH_LONG).show()
+
     }
 }
