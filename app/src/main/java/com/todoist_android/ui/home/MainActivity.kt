@@ -1,5 +1,8 @@
 package com.todoist_android.ui.home
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,14 +15,12 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
-import com.todoist_android.data.network.NotificationService
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.responses.TasksResponseItem
 import com.todoist_android.databinding.ActivityMainBinding
@@ -30,9 +31,10 @@ import com.todoist_android.ui.profile.ProfileViewModel
 import com.todoist_android.ui.settings.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -74,9 +76,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             this.loggedInUserId = loggedInUserId
         }
 
-        //if notification service is running, then stop it
-        stopService(Intent(this, NotificationService::class.java))
-
         binding.swipeContainer.setOnRefreshListener(this)
         binding.swipeContainer.setColorSchemeResources(
             R.color.colorPrimary,
@@ -114,7 +113,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
                     } else {
                         showEmptyState(GONE)
-                        startService(Intent(this, NotificationService::class.java))
                     }
                     //sort objects by it.status (progress, created, completed)
                     objects.sortBy {
@@ -140,15 +138,13 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                                 }
                                 currentStatus = it.status
                                 finalObjects.add(it)
+                                scheduleAlert(binding.root, it as TasksResponseItem)
                             }
                             else {
                                 finalObjects.add(it)
                                 currentStatus = it.status
                             }
                         }
-                    }
-                    if(finalObjects.size > 0) {
-                        scheduleAlert(binding.root, finalObjects)
                     }
 
                     //Setup RecyclerView
@@ -285,25 +281,52 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         }
     }
 
-    fun scheduleAlert(view: View, finalObjects: ArrayList<Any>){
-        //We receive a list of tasks that has been sorted based on due_date (earliest to latest)
-        //We then schedule an alert for each task that's within the next 24 hours
+    //get time difference between now(current date time) to due date of format 12/03/2022 5:10 PM
+    private fun getTimeDifference(date: String): Array<Int> {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
+        val currentDate = Date()
+        val dueDate = dateFormat.parse(date)
+        val diff = dueDate.time - currentDate.time
+        val seconds = diff / 1000
+        val minutes = seconds / 60
+        val hours = minutes / 60
+        val days = hours / 24
 
-        val message = "show due task"
-        val hours = 0
-        val mins = 1
-        val delay = (hours * 60) + mins
+        //position 0 is days, position 1 is hours, position 2 is minutes
+        return arrayOf(days.toInt() ,hours.toInt(), minutes.toInt())
 
-//        val notifier = Notifier(this)
-//        notifier.sendNotification(message,"")
+    }
 
+    fun scheduleAlert(view: View, tasksResponseItem: TasksResponseItem){
+        //Pass a taskresponseitem, compute due time and schedule a notification
+
+        var content = tasksResponseItem.description
+        var hours = getTimeDifference(tasksResponseItem.due_date!!)[1]
+        var mins = getTimeDifference(tasksResponseItem.due_date!!)[2]
+        var title = tasksResponseItem.title
+
+        if(hours == 0 && mins > 0){
+            title = "${tasksResponseItem.title} is due in $mins minutes"
+        }
+        else if(hours > 0 && mins == 0){
+            title = "${tasksResponseItem.title} is due in $hours hours"
+        }
+        else if(hours > 0 && mins > 0){
+            title = "${tasksResponseItem.title} is due in $hours hours and $mins minutes"
+        } else {
+            title = "${tasksResponseItem.title} is due"
+        }
+
+        var delay = (hours * 60) + mins
         val intent = Intent(this, NotificationService::class.java)
 
-        intent.putExtra("title",message)
+        intent.putExtra("title",title)
+        intent.putExtra("content",content)
         intent.putExtra("delay", delay)
-        startService(intent)
 
-        Toast.makeText(this,"Reminder to $message set in $delay minutes", Toast.LENGTH_LONG).show()
+        if(tasksResponseItem.status == "progress" || tasksResponseItem.status == "created" && delay >= 0){
+            startService(intent)
+        }
 
     }
 }
