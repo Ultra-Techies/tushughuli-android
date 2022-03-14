@@ -78,7 +78,7 @@ class SettingsActivity : AppCompatActivity() {
                     binding.etUsername.setText(it.value.username)
                     binding.etEmail.setText(it.value.email)
                     Picasso.get()
-                        .load(it.value.profile_photo)
+                        .load(it.value.photo)
                         .error(R.drawable.default_profile_pic)
                         .into(binding.userProfilePhoto, object : Callback {
                             override fun onSuccess() {
