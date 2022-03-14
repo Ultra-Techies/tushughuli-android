@@ -9,6 +9,7 @@ import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import com.todoist_android.data.responses.TasksResponseItem
+import com.todoist_android.ui.getTimeDifference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -118,9 +119,9 @@ class NotificationService : Service() {
             }
         }
 
-        //wait for 60 minutes then restart service for a fresh check
+        //wait for 30 minutes then restart service for a fresh check
         GlobalScope.launch(Dispatchers.Main) {
-            delay(TimeUnit.SECONDS.toMillis(3600))
+            delay(TimeUnit.SECONDS.toMillis(1800))
             if (intent != null) {
                 onTaskRemoved(intent)
             }
@@ -135,20 +136,5 @@ class NotificationService : Service() {
         restartServiceIntent.setPackage(packageName)
         startService(restartServiceIntent)
         super.onTaskRemoved(rootIntent)
-    }
-
-    //get time difference between now(current date time) to due date of format 2022/03/11 17:10:00
-    private fun getTimeDifference(date: String): Array<Int> {
-        val dateFormat = SimpleDateFormat("yyyy/MM/dd hh:mm:ss", Locale.getDefault())
-        val currentDate = Date()
-        val dueDate = dateFormat.parse(date)
-        val diff = dueDate.time - currentDate.time
-        val seconds = diff / 1000
-        val minutes = seconds / 60
-        val hours = minutes / 60
-        val days = hours / 24
-
-        //position 0 is days, position 1 is hours, position 2 is minutes
-        return arrayOf(days.toInt() ,hours.toInt(), minutes.toInt())
     }
 }
