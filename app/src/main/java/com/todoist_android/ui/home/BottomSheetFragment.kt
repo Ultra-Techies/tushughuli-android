@@ -48,7 +48,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
     private var dueDate: String? = todayDate()
     private var selectedTime: String? = null
-    private var loggedInUserId: String? = null
+//    private var loggedInUserId: String? = null
     private var status = "created"
     private var dateTime = " "
         set(value) {
@@ -87,7 +87,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
         globalVariables()
 
-        getLoggedInUserId()
+//        getLoggedInUserId()
 
         setOnClickListeners()
 
@@ -96,7 +96,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
     private fun setOnClickListeners() {
         binding.tvDatePicker.setOnClickListener(this)
-        binding.ivFlag.setOnClickListener(this)
+//        binding.ivFlag.setOnClickListener(this)
         binding.buttonAddTask.setOnClickListener(this)
         binding.tvEndTask.setOnClickListener(this)
     }
@@ -106,27 +106,27 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
         binding.editTextTaskName.showKeyboard()
     }
 
-    private fun getLoggedInUserId() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                prefs.todoToken.collectLatest { todoId ->
-                    todoId?.let {
-                        loggedInUserId = todoId
-                    } ?: kotlin.run {
-                        Toast.makeText(
-                            requireActivity(), getString(R.string.unable_to_find_user_id),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
-        }
-    }
+//    private fun getLoggedInUserId() {
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+//                prefs.todoToken.collectLatest { todoId ->
+//                    todoId?.let {
+//                        loggedInUserId = todoId
+//                    } ?: kotlin.run {
+//                        Toast.makeText(
+//                            requireActivity(), getString(R.string.unable_to_find_user_id),
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     override fun onClick(view: View) {
         when (view) {
             binding.tvDatePicker -> selectDueDate()
-            binding.ivFlag -> selectStatus()
+//            binding.ivFlag -> selectStatus()
             binding.buttonAddTask -> addNewTask()
             binding.tvEndTask -> closeAddTaskBottomSheet()
         }
@@ -138,7 +138,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
             dateTime = selectedText
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = timeInMilliseconds
-            dueDate = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
+            dueDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
 
             pickTime(childFragmentManager) { selectTime ->
                 // format to HH:mm:ss
@@ -150,11 +150,11 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     }
 
 
-    private fun selectStatus() {
-        popupMenu(requireContext(), binding.ivFlag) { statusSelected ->
-            status = statusSelected
-        }
-    }
+//    private fun selectStatus() {
+//        popupMenu(requireContext(), binding.ivFlag) { statusSelected ->
+//            status = statusSelected
+//        }
+//    }
 
 
     private fun addNewTask() {
@@ -173,10 +173,11 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
         val taskRequest = AddTaskRequest(
             title = title,
-            id = loggedInUserId,
+//            id = loggedInUserId,
             description = description,
-            status = status,
-            due_date = "${dueDate ?: " "} ${selectedTime ?: " "}"
+//            status = status,
+            dueDate = "${dueDate ?: " "} ${selectedTime ?: " "}",
+            reminder = "${dueDate ?: " "} ${selectedTime ?: " "}"
         )
         Log.d("--->",taskRequest.toString())
         addTasks(taskRequest)

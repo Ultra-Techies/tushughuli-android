@@ -20,6 +20,7 @@ import com.todoist_android.R
 import com.todoist_android.data.models.TodoModel
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
+import com.todoist_android.data.requests.EditTaskRequest
 import com.todoist_android.data.responses.TasksResponseItem
 import com.todoist_android.databinding.FragmentBottomsheetEditTaskBinding
 import com.todoist_android.ui.formartDate
@@ -47,7 +48,7 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
 
     private lateinit var todoModel: TasksResponseItem
     private var selectedDueTime: String? = null
-    private var dueDate: String? = null
+    private var due_Date: String? = null
     private var newDueDate: String? = null
 
     private var taskStatus = "created"
@@ -111,14 +112,14 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
         binding.tvCloseEditTask.setOnClickListener(this)
     }
 
-    private fun editTask(editTasksRequest: TodoModel) {
+    private fun editTask(id: Int,editTasksRequest: EditTaskRequest) {
         binding.root.hideKeyboard()
         binding.pbEditBottomSheet.visibility = View.VISIBLE
         Snackbar.make(dialog?.window!!.decorView, "Editing your task...", Snackbar.LENGTH_LONG)
             .show()
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.editTasks(editTasksRequest).collect {
+                viewModel.editTasks(id,editTasksRequest).collect {
                     when (it) {
                         is APIResource.Success -> {
                             binding.pbEditBottomSheet.visibility = GONE
@@ -158,14 +159,14 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
         }
     }
 
-    private fun deleteTask(deleteTaskRequest: TodoModel) {
+    private fun deleteTask(id:Int) {
         binding.root.hideKeyboard()
         binding.pbEditBottomSheet.visibility = View.VISIBLE
         Snackbar.make(dialog?.window!!.decorView, "Deleting your task...", Snackbar.LENGTH_LONG)
             .show()
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.deleteTasks(deleteTaskRequest).collect {
+                viewModel.deleteTasks(id ).collect {
                     when (it) {
                         is APIResource.Success -> {
                             refreshListCallback.invoke()
@@ -175,10 +176,6 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
                                 Snackbar.LENGTH_SHORT
                             )
                                 .show()
-
-                            //trigger onRefresh in MainActivity
-                            (activity as MainActivity).onRefresh()
-
                             viewLifecycleOwner.lifecycleScope.launch {
                                 delay(1000)
                                 dismiss()
@@ -214,10 +211,13 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
                 binding.editTextEditTask.setText(it)
             }
 
-            due_date?.let {
-                dueDate = due_date
-               val formatDueDate = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
+            dueDate?.let {
+               due_Date= dueDate.toString()
+               val formatDueDate = formartDate(it, "yyyy-MM-dd HH:mm:ss", "dd-MM-yyyy h:mm a")
                 binding.tvEditDatePicker.text = formatDueDate
+            }
+            reminder?.let {
+
             }
             status?.let {
                 taskStatus = it
@@ -258,7 +258,7 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
             binding.buttonEditTask -> submitEditedTask()
             binding.ivEditFlag -> selectNewTaskStatus()
             binding.tvEditDatePicker -> selectNewDueDate()
-            binding.tvDeleteTask -> deleteTask()
+            binding.tvDeleteTask -> deleteTask(todoModel.id)
             binding.tvCloseEditTask -> closeBottomSheet()
         }
 
@@ -277,16 +277,16 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
             return
         }
 
-        val editTasksRequest = TodoModel(
-            id = todoModel.id,
+        val editTasksRequest = EditTaskRequest(
             title = binding.editTextEditTitle.text.trim().toString(),
             description = binding.editTextEditTask.text.trim().toString(),
-            due_date = dueDate,
-            status = taskStatus
+            dueDate = due_Date.toString(),
+            status = taskStatus,
+            reminder = due_Date.toString()
         )
 
         Log.d("edit task",editTasksRequest.toString())
-        editTask(editTasksRequest)
+        editTask( id = todoModel.id,editTasksRequest)
     }
 
     private fun selectNewTaskStatus() {
@@ -304,13 +304,13 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = timeInMilliseconds
             newDueDate =
-                SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
 
 
             pickTime(childFragmentManager) { selectTime ->
                 selectedDueTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
                 binding.tvEditDatePicker.text = formartDate("$newDueDate $selectedDueTime","yyyy/MM/dd HH:mm:ss","dd/MM/yyyy h:mm a" )
-                dueDate = "$newDueDate $selectedDueTime"
+               due_Date = "$newDueDate $selectedDueTime"
             }
 
 
@@ -318,17 +318,19 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
 
     }
 
-    private fun deleteTask() {
-        val deleteTaskRequest = TodoModel(
-            id = todoModel.id,
-            title = binding.editTextEditTitle.text.trim().toString(),
-            description = binding.editTextEditTask.text.trim().toString(),
-            due_date = dueDate ?: " ",
-            status = taskStatus
-        )
-
-        deleteTask(deleteTaskRequest)
-    }
+//    private fun deleteTask(id: Int) {
+////        val deleteTaskRequest = TodoModel(
+////            id = todoModel.id,
+////            title = binding.editTextEditTitle.text.trim().toString(),
+////            description = binding.editTextEditTask.text.trim().toString(),
+////            dueDate = due_Date ?: " ",
+////            reminder = due_Date?:"",
+////            status = taskStatus
+////        )
+//        val id = todoModel.id
+//
+//        deleteTask(id)
+//    }
 
     private fun closeBottomSheet() {
         dismiss()

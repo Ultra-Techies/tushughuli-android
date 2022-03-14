@@ -176,6 +176,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         //get user details
+//        profileViewModel.getUser(loggedInUserId.toString())
+
         profileViewModel.getUser(loggedInUserId.toString())
 
         profileViewModel.user.observe(this, Observer {
@@ -213,7 +215,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     private fun fetchTasks() {
         Log.d("MainActivity", "Fetching tasks...")
         //TODO: Remove this, for testing purposes only
-        viewModel.getTasks("")
+        viewModel.getTasks(4)
 
         //TODO: remove above code above and use the below code once API is ready
         //viewModel.getTasks(userId.toString())
