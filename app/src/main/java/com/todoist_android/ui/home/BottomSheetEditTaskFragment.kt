@@ -1,6 +1,5 @@
 package com.todoist_android.ui.home
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
@@ -39,7 +38,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSheetDialogFragment(), View.OnClickListener {
+class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : BottomSheetDialogFragment(), View.OnClickListener {
     @Inject
     lateinit var prefs: UserPreferences
 
@@ -216,8 +215,9 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
             }
 
             due_date?.let {
-                dueDate = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
-                binding.tvEditDatePicker.text = dueDate
+                dueDate = due_date
+               val formatDueDate = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
+                binding.tvEditDatePicker.text = formatDueDate
             }
             status?.let {
                 taskStatus = it
@@ -282,10 +282,10 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
             title = binding.editTextEditTitle.text.trim().toString(),
             description = binding.editTextEditTask.text.trim().toString(),
             due_date = dueDate,
-//            reminder = taskReminder,
             status = taskStatus
         )
 
+        Log.d("edit task",editTasksRequest.toString())
         editTask(editTasksRequest)
     }
 
@@ -296,8 +296,9 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private fun selectNewDueDate() {
+       binding.root.hideKeyboard()
+
         pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
             newDueDate = selectedText
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
@@ -308,7 +309,7 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
 
             pickTime(childFragmentManager) { selectTime ->
                 selectedDueTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
-                binding.tvEditDatePicker.text = "$newDueDate $selectedDueTime"
+                binding.tvEditDatePicker.text = formartDate("$newDueDate $selectedDueTime","yyyy/MM/dd HH:mm:ss","dd/MM/yyyy h:mm a" )
                 dueDate = "$newDueDate $selectedDueTime"
             }
 

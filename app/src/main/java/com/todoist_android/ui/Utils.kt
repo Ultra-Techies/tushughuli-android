@@ -21,6 +21,8 @@ import java.util.*
 
 const val BASE_URL = "https://621ce943768a4e1020b93731.mockapi.io/api/v1/"
 
+//const val BASE_URL ="http://192.168.0.108:8080/api"
+
 private const val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
 
 
