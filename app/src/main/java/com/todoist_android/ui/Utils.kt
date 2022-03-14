@@ -19,9 +19,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-const val BASE_URL = "https://621ce943768a4e1020b93731.mockapi.io/api/v1/"
+//const val BASE_URL = "https://621ce943768a4e1020b93731.mockapi.io/api/v1/"
 
-//const val BASE_URL ="http://192.168.0.108:8080/api"
+const val BASE_URL ="http://192.168.0.108:8080/api/"
 
 private const val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
 
@@ -120,9 +120,6 @@ fun popupMenu(context: Context, view: View, statusSelected: (String) -> Unit) {
             R.id.item_created -> {
                 statusSelected("created")
             }
-            R.id.item_progress -> {
-                statusSelected("progress")
-            }
         }
         true
     }
@@ -179,14 +176,11 @@ fun popupMenuTwo(context: Context, view: View, statusSelected: (String) -> Unit)
     popup.inflate(R.menu.set_full_status_menu)
     popup.setOnMenuItemClickListener {
         when (it.itemId) {
-            R.id.item_created_two -> {
-                statusSelected("created")
-            }
             R.id.item_progress_two -> {
                 statusSelected("progress")
             }
             R.id.item_completed ->{
-                statusSelected("Completed")
+                statusSelected("done")
             }
         }
         true
