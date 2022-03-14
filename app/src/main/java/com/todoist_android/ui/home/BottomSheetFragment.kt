@@ -138,7 +138,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
             dateTime = selectedText
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = timeInMilliseconds
-            dueDate = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
+            dueDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
 
             pickTime(childFragmentManager) { selectTime ->
                 // format to HH:mm:ss
@@ -176,7 +176,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
             id = loggedInUserId,
             description = description,
             status = status,
-            due_date = "${dueDate ?: " "} ${selectedTime ?: " "}"
+            dueDate = "${dueDate ?: " "} ${selectedTime ?: " "}"
         )
         Log.d("--->",taskRequest.toString())
         addTasks(taskRequest)

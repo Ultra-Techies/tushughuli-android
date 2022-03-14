@@ -30,13 +30,8 @@ import com.todoist_android.ui.profile.ProfileActivity
 import com.todoist_android.ui.profile.ProfileViewModel
 import com.todoist_android.ui.settings.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -182,13 +177,14 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     finalObjects.clear()
                     objects.clear()
                     currentStatus = ""
-
                     binding.recyclerView.adapter?.notifyDataSetChanged()
                 }
                 is APIResource.Error -> {
                     currentStatus = ""
                     binding.swipeContainer.isRefreshing = false
-                    binding.root.handleApiError(it)
+                    binding.root.handleApiError(it, action = {
+                        fetchTasks()
+                    })
                     showEmptyState(VISIBLE)
                     Log.d("MainActivity", "Error: ${it.toString()}")
                 }
@@ -215,7 +211,9 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     Log.d("ProfileActivity", "Loading...")
                 }
                 is APIResource.Error -> {
-                    binding.root.handleApiError(it)
+                    binding.root.handleApiError(it, action = {
+                        fetchTasks()
+                    })
                     Log.d("ProfileActivity", "Error: ${it.toString()}")
                 }
             }

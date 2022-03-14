@@ -1,7 +1,9 @@
 package com.todoist_android.data.responses
 
 data class SignupResponse(
-    val created: Boolean,
+    val email: String,
     val id: Int,
-    val username_valid: Boolean
+    val name: String,
+    val photo: String,
+    val username: String
 )

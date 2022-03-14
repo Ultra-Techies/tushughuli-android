@@ -48,15 +48,15 @@ class NotificationService : Service() {
                 Log.d("NotificationService", "Passed Data: "+tasksList.size)
 
                 //sort tasksList by due date ascending
-                tasksList.sortBy { it.due_date }
+                tasksList.sortBy { it.dueDate }
 
                 Log.d("NotificationService", "Sorted Data: $tasksList")
 
                 //loop through tasksList
                 for(i in 0 until tasksList.size){
                     var content = tasksList[i].description
-                    var hours = getTimeDifference(tasksList[i].due_date!!)[1]
-                    var mins = getTimeDifference(tasksList[i].due_date!!)[2]
+                    var hours = getTimeDifference(tasksList[i].dueDate!!)[1]
+                    var mins = getTimeDifference(tasksList[i].dueDate!!)[2]
                     var title = tasksList[i].title
 
                     if (hours == 0 && mins > 0 && mins < 60) {

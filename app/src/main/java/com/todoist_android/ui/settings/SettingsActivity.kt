@@ -36,7 +36,7 @@ class SettingsActivity : AppCompatActivity() {
     lateinit var userPreferences: UserPreferences
 
     var loggedInUserId: Int = 0
-    var profile_photo: String = "http://placeimg.com/640/480/any.jpg"
+    var profile_photo: String = "https://placeimg.com/640/480/any.jpg"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,7 +78,7 @@ class SettingsActivity : AppCompatActivity() {
                     binding.etUsername.setText(it.value.username)
                     binding.etEmail.setText(it.value.email)
                     Picasso.get()
-                        .load(it.value.profile_photo)
+                        .load(it.value.photo)
                         .error(R.drawable.default_profile_pic)
                         .into(binding.userProfilePhoto, object : Callback {
                             override fun onSuccess() {

@@ -22,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SignupFragment : Fragment() {
+    private val photoUrl: String = "https://placeimg.com/640/480/any.jpg"
     private val viewModel: AuthenticationViewModel by viewModels()
     private lateinit var binding: FragmentSignupBinding
 
@@ -42,25 +43,16 @@ class SignupFragment : Fragment() {
                 viewModel.signupResponse.collect {
                     when(it){
                         is APIResource.Success->{
-                            //check in response if username_valid is true and created is true
-                            it.value.let {
-                                if(it.username_valid && it.created){
-
-                                    Toast.makeText(requireContext(),"Signup successful! Please login",Toast.LENGTH_LONG).show()
-                                    binding.progressbarTwo.visibility = View.GONE
-                                    view.findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
-                                }else{
-                                    Snackbar.make(binding.root,"Signup Failed",Snackbar.LENGTH_SHORT).show()
-                                    binding.progressbarTwo.visibility = View.GONE
-                                    binding.btnSignup.isEnabled = true
-                                }
-                            }
-
+                            Toast.makeText(requireContext(),"Signup successful! Please login",Toast.LENGTH_LONG).show()
+                            binding.progressbarTwo.visibility = View.GONE
+                            view.findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
                         }
                         is APIResource.Error ->{
                             binding.progressbarTwo.visibility = View.GONE
                             binding.btnSignup.isEnabled = true
-                            binding.root.handleApiError(it)
+                            binding.root.handleApiError(it, action = {
+                                binding.btnSignup.performClick()
+                            })
                         }
                         is APIResource.Loading -> {
                             binding.progressbarTwo.visibility = View.VISIBLE
@@ -128,9 +120,7 @@ class SignupFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            viewModel.signUp(
-                userName,userEmail,userPassword,
-            )
+            viewModel.signUp(userName,userName,userEmail, photoUrl,userPassword)
         }
 
         binding.textViewLogin.setOnClickListener {
