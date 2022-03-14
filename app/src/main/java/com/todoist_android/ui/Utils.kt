@@ -192,6 +192,21 @@ fun popupMenuTwo(context: Context, view: View, statusSelected: (String) -> Unit)
     popup.show()
 }
 
+//get time difference between now(current date time) to due date of format 2022/03/11 17:10:00
+fun getTimeDifference(date: String): Array<Int> {
+    val dateFormat = SimpleDateFormat("yyyy/MM/dd hh:mm:ss", Locale.getDefault())
+    val currentDate = Date()
+    val dueDate = dateFormat.parse(date)
+    val diff = dueDate.time - currentDate.time
+    val seconds = diff / 1000
+    val minutes = seconds / 60
+    val hours = minutes / 60
+    val days = hours / 24
+
+    //position 0 is days, position 1 is hours, position 2 is minutes
+    return arrayOf(days.toInt() ,hours.toInt(), minutes.toInt())
+}
+
 
 
 

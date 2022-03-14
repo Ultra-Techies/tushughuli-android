@@ -1,17 +1,21 @@
 package com.todoist_android.ui.home
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.todoist_android.R
@@ -20,14 +24,21 @@ import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.responses.TasksResponseItem
 import com.todoist_android.databinding.ActivityMainBinding
 import com.todoist_android.ui.SplashActivity
+import com.todoist_android.ui.auth.AuthActivity
 import com.todoist_android.ui.handleApiError
 import com.todoist_android.ui.profile.ProfileActivity
 import com.todoist_android.ui.profile.ProfileViewModel
 import com.todoist_android.ui.settings.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -37,9 +48,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     lateinit var userPreferences: UserPreferences
 
     var loggedInUserId: Int = 0
+    var notificationState: Boolean = false
 
     private val objects = arrayListOf<Any>()
     private val finalObjects = arrayListOf<Any>()
+    private val filteredTasks = ArrayList<TasksResponseItem>() //This list will contain only items of type TasksResponseItem (excluding headers)
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -81,6 +94,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             binding.swipeContainer.isRefreshing = true
             finalObjects.clear()
             objects.clear()
+            filteredTasks.clear()
+
             currentStatus = ""
         }
 
@@ -93,6 +108,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     // if objects anf final objects is not empty clear the list
                     if ( objects.isNotEmpty() ) objects.clear()
                     if ( finalObjects.isNotEmpty() ) finalObjects.clear()
+                    if ( filteredTasks.isNotEmpty() ) filteredTasks.clear()
 
                     binding.swipeContainer.isRefreshing = false
                     binding.recyclerView.removeItemDecoration(StickyHeaderItemDecoration())
@@ -138,6 +154,17 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                             }
                         }
                     }
+
+                    //filter finalObjects to an ArrayList of items of type TasksResponseItem
+                    finalObjects.filterIsInstance<TasksResponseItem>().forEach {
+                        Log.d("MainActivity", "FinalObjects: ${it}")
+                        //empty list of type TasksResponseItem
+
+                        filteredTasks.add(it)
+                    }
+
+                    //pass the filteredTasks to the scheduler function
+                    scheduleAlert(binding.recyclerView, filteredTasks)
 
                     //Setup RecyclerView
                     var todoAdapter = ToDoAdapter(finalObjects)
@@ -194,6 +221,20 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             }
         })
 
+        //check notification_state
+        userPreferences.notificationState.asLiveData().observe(this) {
+            if (it.isNullOrEmpty()) {
+                Log.d("MainActivity", "notification state has not been initialized")
+                notificationState = false
+                stopService(Intent(this, NotificationService::class.java))
+            } else {
+                notificationState = it.toBoolean()
+                Log.d("MainActivity", "notification state: $notificationState")
+                if (!notificationState) {
+                    stopService(Intent(this, NotificationService::class.java))
+                }
+            }
+        }
     }
 
     private fun showEmptyState(visible: Int) {
@@ -271,5 +312,18 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         }.also {
             startActivity(it)
         }
+    }
+
+
+
+    fun scheduleAlert(view: View, finalObjects: ArrayList<TasksResponseItem>){
+        Log.d("MainActivity", "Notification status: $notificationState")
+        val intent = Intent(this, NotificationService::class.java)
+
+        var bundle = Bundle()
+        bundle!!.putSerializable("data",finalObjects)
+        intent.putExtra("bundle",bundle)
+
+        startService(intent)
     }
 }
