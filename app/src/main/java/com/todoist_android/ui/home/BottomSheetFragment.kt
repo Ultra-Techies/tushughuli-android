@@ -133,6 +133,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     }
 
     private fun selectDueDate() {
+        binding.root.hideKeyboard()
         pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
             dateTime = selectedText
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
