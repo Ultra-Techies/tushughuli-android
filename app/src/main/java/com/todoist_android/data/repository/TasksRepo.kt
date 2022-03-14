@@ -11,7 +11,8 @@ private val taskApi: TaskApi
 ): BaseRepo()
 {
     suspend fun addTasks(taskRequest: AddTaskRequest) = safeApiCall{
-        taskApi.addTasks(taskRequest)
+        //taskApi.addTasks(taskRequest, taskRequest.id!!) //todolist backend requires id
+        taskApi.addTasks(taskRequest) //mock API
     }
 
     suspend fun editTasks(editTasksRequest: TodoModel) = safeApiCall {
@@ -22,5 +23,7 @@ private val taskApi: TaskApi
         taskApi.deleteTasks(deleteTaskRequest,deleteTaskRequest.id!!)
     }
 
-    suspend fun getTasks(id: String) = safeApiCall { taskApi.getTasks(id) }
+    suspend fun getTasks(id: String) = safeApiCall {
+        taskApi.getTasks(id)
+    }
 }

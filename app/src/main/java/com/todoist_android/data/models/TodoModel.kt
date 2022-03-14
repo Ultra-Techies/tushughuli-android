@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
 data class TodoModel(
     var title: String? = null,
     var description: String? = null,
-    var due_date: String?= null,
+    var dueDate: String?= null,
     var id: String? = null,
     var status: String? = null
 

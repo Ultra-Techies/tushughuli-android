@@ -22,12 +22,7 @@ import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.responses.TasksResponseItem
 import com.todoist_android.databinding.FragmentBottomsheetEditTaskBinding
-import com.todoist_android.ui.formartDate
-import com.todoist_android.ui.hideKeyboard
-import com.todoist_android.ui.pickDate
-import com.todoist_android.ui.pickTime
-import com.todoist_android.ui.popupMenuTwo
-import com.todoist_android.ui.showKeyboard
+import com.todoist_android.ui.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -47,7 +42,7 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
 
     private lateinit var todoModel: TasksResponseItem
     private var selectedDueTime: String? = null
-    private var dueDate: String? = null
+    private var due_date: String? = null
     private var newDueDate: String? = null
 
     private var taskStatus = "created"
@@ -185,12 +180,7 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
                             }
                         }
                         is APIResource.Error -> {
-                            Snackbar.make(
-                                dialog?.window!!.decorView,
-                                it.errorBody.toString(),
-                                Snackbar.LENGTH_SHORT
-                            )
-                                .show()
+                            binding.root.handleApiError(it)
                         }
                         is APIResource.Loading -> {
 
@@ -214,10 +204,9 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
                 binding.editTextEditTask.setText(it)
             }
 
-            due_date?.let {
-                dueDate = due_date
-               val formatDueDate = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
-                binding.tvEditDatePicker.text = formatDueDate
+            dueDate?.let {
+                due_date = formartDate(it, "yyyy/MM/dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss")
+                binding.tvEditDatePicker.text = due_date
             }
             status?.let {
                 taskStatus = it
@@ -281,7 +270,8 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
             id = todoModel.id,
             title = binding.editTextEditTitle.text.trim().toString(),
             description = binding.editTextEditTask.text.trim().toString(),
-            due_date = dueDate,
+            dueDate = due_date,
+//            reminder = taskReminder,
             status = taskStatus
         )
 
@@ -304,13 +294,13 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = timeInMilliseconds
             newDueDate =
-                SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
 
 
             pickTime(childFragmentManager) { selectTime ->
                 selectedDueTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
-                binding.tvEditDatePicker.text = formartDate("$newDueDate $selectedDueTime","yyyy/MM/dd HH:mm:ss","dd/MM/yyyy h:mm a" )
-                dueDate = "$newDueDate $selectedDueTime"
+                binding.tvEditDatePicker.text = "$newDueDate $selectedDueTime"
+                due_date = "$newDueDate $selectedDueTime"
             }
 
 
@@ -323,7 +313,7 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
             id = todoModel.id,
             title = binding.editTextEditTitle.text.trim().toString(),
             description = binding.editTextEditTask.text.trim().toString(),
-            due_date = dueDate ?: " ",
+            dueDate = due_date ?: " ",
             status = taskStatus
         )
 

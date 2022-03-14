@@ -36,7 +36,7 @@ class SettingsActivity : AppCompatActivity() {
     lateinit var userPreferences: UserPreferences
 
     var loggedInUserId: Int = 0
-    var profile_photo: String = "http://placeimg.com/640/480/any.jpg"
+    var profile_photo: String = "https://placeimg.com/640/480/any.jpg"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,5 +1,6 @@
 package com.todoist_android.data.network
 
+import com.todoist_android.data.requests.UpdateUserRequest
 import com.todoist_android.data.responses.LoginResponse
 import com.todoist_android.data.responses.SignupResponse
 import retrofit2.http.*
@@ -17,9 +18,7 @@ interface APIAuthentication {
     @FormUrlEncoded
     @POST("/signup")
     suspend fun signup(
-        @Field("username") username: String,
-        @Field("email") email: String,
-        @Field("password") password: String
+        @Body userCreateRequest: UpdateUserRequest
     ) : SignupResponse
 
 }

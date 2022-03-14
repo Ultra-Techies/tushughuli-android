@@ -16,7 +16,7 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = objects[position]
         if (holder is ViewHolder && item is TasksResponseItem) {
-            holder.duetime.text = formatTime(item.due_date, item.status)
+            holder.duetime.text = formatTime(item.dueDate, item.status)
             holder.tv.text = item.title
             //show status_icon
             if (item.status == "created") {
@@ -53,7 +53,7 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
         if (dueDate == null) {
             return null
         }
-        val timeDifference = getTimeDifference(dueDate)
+        val timeDifference = getTimeDifference(dueDate.trim())
         return if (timeDifference == null) {
             dueDate
         } else {

@@ -9,9 +9,9 @@ import retrofit2.http.*
 
 interface UserApi {
 
-    @GET("/user/1")
+    @GET("/user/{id}")
     suspend fun getUser(
-        @Query("id") id: String,
+        @Path("id") id: String,
     ) : UserResponse
 
     @PUT("/user/{id}")
