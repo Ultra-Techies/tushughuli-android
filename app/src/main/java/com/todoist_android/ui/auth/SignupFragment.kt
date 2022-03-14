@@ -18,6 +18,8 @@ import com.todoist_android.databinding.FragmentSignupBinding
 import com.todoist_android.ui.handleApiError
 import com.todoist_android.ui.validateEmail
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -42,20 +44,12 @@ class SignupFragment : Fragment() {
                 viewModel.signupResponse.collect {
                     when(it){
                         is APIResource.Success->{
-                            //check in response if username_valid is true and created is true
-                            it.value.let {
-                                if(it.username_valid && it.created){
-
-                                    Toast.makeText(requireContext(),"Signup successful! Please login",Toast.LENGTH_LONG).show()
-                                    binding.progressbarTwo.visibility = View.GONE
-                                    view.findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
-                                }else{
-                                    Snackbar.make(binding.root,"Signup Failed",Snackbar.LENGTH_SHORT).show()
-                                    binding.progressbarTwo.visibility = View.GONE
-                                    binding.btnSignup.isEnabled = true
-                                }
+                            Toast.makeText(requireContext(),"Signup successful! Please login",Toast.LENGTH_LONG).show()
+                            binding.progressbarTwo.visibility = View.GONE
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                delay(1000)
+                                view.findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
                             }
-
                         }
                         is APIResource.Error ->{
                             binding.progressbarTwo.visibility = View.GONE
@@ -81,6 +75,8 @@ class SignupFragment : Fragment() {
             val userEmail = binding.etEmail.text.trim().toString()
             val userPassword = binding.etPassword.text.trim().toString()
             val confirmPassword = binding.etConfirmPassword.text.trim().toString()
+            val photo ="https://pixabay.com/photos/chafdin-security-metal-iron-3481377/"
+            val name = userName
 
 
             if (binding.etUsername.text.isNullOrEmpty()){
@@ -129,7 +125,7 @@ class SignupFragment : Fragment() {
             }
 
             viewModel.signUp(
-                userName,userEmail,userPassword,
+                userName,userEmail,userPassword,photo,name
             )
         }
 

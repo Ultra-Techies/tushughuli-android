@@ -56,7 +56,7 @@ class LoginFragment : Fragment() {
                            //if it.value.valid is true redirect to home
                            //else show error message
                            it.value.valid?.let {
-                               if (it) {
+//                               if (it) {
                                    //save user token or id
                                    /**
                                     * viewModel.saveAuthToken(it.value.accessToken)
@@ -71,10 +71,10 @@ class LoginFragment : Fragment() {
                                        it.putExtra("userId", userId)
                                        startActivity(it)
                                    }
-                               } else {
-                                   binding.buttonLogin.isEnabled = true
-                                   Snackbar.make(binding.root, "Account does not exist", Snackbar.LENGTH_LONG).show()
-                               }
+//                               } else {
+//                                   binding.buttonLogin.isEnabled = true
+//                                   Snackbar.make(binding.root, "Account does not exist", Snackbar.LENGTH_LONG).show()
+//                               }
                            }
                        }
                        is APIResource.Error -> {
