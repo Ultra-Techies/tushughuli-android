@@ -26,9 +26,9 @@ interface TaskApi {
     @POST("/api/tasks") //mockapi
     suspend fun addTasks(@Body tasksRequest: AddTaskRequest): AddTasksResponse //mockapi
 
-    @PUT("/tasks/{id}")
+    @PUT("/api/tasks/{id}")
     suspend fun editTasks(@Body editTasksRequest: TodoModel, @Path("id") id: String): TodoModel
 
-    @HTTP(method = "DELETE", path = "/tasks/{id}", hasBody = true)
+    @HTTP(method = "DELETE", path = "/api/tasks/{id}", hasBody = true)
     suspend fun deleteTasks(@Body deleteTaskRequest: TodoModel, @Path("id")id: String): TodoModel
 }

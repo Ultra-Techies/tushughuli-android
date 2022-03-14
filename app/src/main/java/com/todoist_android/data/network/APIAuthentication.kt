@@ -9,14 +9,14 @@ interface APIAuthentication {
 
     //Refer to: https://github.com/Ultra-Techies/backend/blob/main/endpoints/endpoints.md
 
-    @GET("/auth")
+    @GET("/api/auth")
     suspend fun login( //suspend because we will use coroutines for our network calls
         @Query("email") email: String,
         @Query("password") password: String
     ) : LoginResponse
 
-    @FormUrlEncoded
-    @POST("/signup")
+    //@FormUrlEncoded
+    @POST("/api/signup")
     suspend fun signup(
         @Body userCreateRequest: UpdateUserRequest
     ) : SignupResponse
