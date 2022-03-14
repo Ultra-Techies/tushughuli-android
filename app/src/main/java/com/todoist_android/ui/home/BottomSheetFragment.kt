@@ -177,7 +177,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
             status = status,
             due_date = "${dueDate ?: " "} ${selectedTime ?: " "}"
         )
-        Log.d("--->",taskRequest.toString())
+        Log.d("--->", taskRequest.toString())
         addTasks(taskRequest)
     }
 
@@ -192,9 +192,11 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
         binding.pbBottomSheet.visibility = VISIBLE
         Snackbar.make(dialog?.window!!.decorView, "Adding your task...", Snackbar.LENGTH_LONG)
             .show()
+
+        viewModel.addTasks(taskRequest)
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.addTasks(taskRequest).collect {
+                viewModel.addTaskObserver.collect {
                     when (it) {
                         is APIResource.Success -> {
                             binding.pbBottomSheet.visibility = GONE

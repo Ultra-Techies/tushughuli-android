@@ -117,9 +117,11 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
         binding.pbEditBottomSheet.visibility = View.VISIBLE
         Snackbar.make(dialog?.window!!.decorView, "Editing your task...", Snackbar.LENGTH_LONG)
             .show()
+
+        viewModel.editTasks(editTasksRequest)
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.editTasks(editTasksRequest).collect {
+                viewModel.editTasksObserver.collect {
                     when (it) {
                         is APIResource.Success -> {
                             binding.pbEditBottomSheet.visibility = GONE
@@ -164,9 +166,10 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
         binding.pbEditBottomSheet.visibility = View.VISIBLE
         Snackbar.make(dialog?.window!!.decorView, "Deleting your task...", Snackbar.LENGTH_LONG)
             .show()
+        viewModel.deleteTasks(deleteTaskRequest)
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.deleteTasks(deleteTaskRequest).collect {
+                viewModel.deleteTaskObserver.collect {
                     when (it) {
                         is APIResource.Success -> {
                             refreshListCallback.invoke()
