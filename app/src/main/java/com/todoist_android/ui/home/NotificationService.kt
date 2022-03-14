@@ -59,7 +59,7 @@ class NotificationService : Service() {
                     var mins = getTimeDifference(tasksList[i].due_date!!)[2]
                     var title = tasksList[i].title
 
-                    if (hours == 0 && mins > 0) {
+                    if (hours == 0 && mins > 0 && mins < 60) {
                         //check to see if mins is within 1 to 30
                         title = "${tasksList[i].title} is due in $mins mins"
                         if (mins <= 30) {
@@ -69,7 +69,7 @@ class NotificationService : Service() {
                             notifier.sendNotification(title, content.toString(), tasksList[i].description.toString())
                         }
                     }
-                    else if (hours > 0 && mins > 0) {
+                    else if (hours > 0 && mins > 0 && mins < 60) {
                         //check to see if hours is within 1 to 6
                         if (hours <= 6) {
                             title = "${tasksList[i].title} is due in $hours hours and $mins mins"
@@ -98,7 +98,7 @@ class NotificationService : Service() {
                         notifier.sendNotification(title, content.toString(), tasksList[i].description.toString())
                     }
                     else {
-                        title = "${tasksList[i].title} is due in $hours hours and $mins mins"
+                        title = "${tasksList[i].title} is due soon"
                     }
 
                     var delay = (hours * 60) + mins
