@@ -2,6 +2,7 @@ package com.todoist_android.data.repository
 
 import com.todoist_android.data.network.APIAuthentication
 import com.todoist_android.data.network.repository.BaseRepo
+import com.todoist_android.data.requests.LoginRequest
 import com.todoist_android.data.requests.UpdateUserRequest
 import javax.inject.Inject
 
@@ -12,7 +13,7 @@ class AuthRepo @Inject constructor  (
 ) : BaseRepo() {
 
     suspend fun login(email: String, password: String) = safeApiCall {
-        authApi.login(email, password)
+        authApi.login(loginRequest = LoginRequest(email, password))
     }
 
     suspend fun signup(username: String, name: String = username, email: String, photo: String, password: String) = safeApiCall {
