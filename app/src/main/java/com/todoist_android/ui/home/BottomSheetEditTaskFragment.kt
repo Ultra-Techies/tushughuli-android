@@ -23,17 +23,14 @@ import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.requests.EditTaskRequest
 import com.todoist_android.data.responses.TasksResponseItem
 import com.todoist_android.databinding.FragmentBottomsheetEditTaskBinding
-import com.todoist_android.ui.formartDate
-import com.todoist_android.ui.hideKeyboard
-import com.todoist_android.ui.pickDate
-import com.todoist_android.ui.pickTime
-import com.todoist_android.ui.popupMenuTwo
-import com.todoist_android.ui.showKeyboard
+import com.todoist_android.ui.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
@@ -182,15 +179,9 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
                             }
                         }
                         is APIResource.Error -> {
-                            Snackbar.make(
-                                dialog?.window!!.decorView,
-                                it.errorBody.toString(),
-                                Snackbar.LENGTH_SHORT
-                            )
-                                .show()
+                            binding.root.handleApiError(it)
                         }
                         is APIResource.Loading -> {
-
                         }
                     }
 
@@ -218,7 +209,7 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
             }
             reminder?.let {
 
-            }
+
             status?.let {
                 taskStatus = it
             }
@@ -283,6 +274,8 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
             dueDate = due_Date.toString(),
             status = taskStatus,
             reminder = due_Date.toString()
+            createdTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()),
+
         )
 
         Log.d("edit task",editTasksRequest.toString())
@@ -310,7 +303,8 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
             pickTime(childFragmentManager) { selectTime ->
                 selectedDueTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
                 binding.tvEditDatePicker.text = formartDate("$newDueDate $selectedDueTime","yyyy/MM/dd HH:mm:ss","dd/MM/yyyy h:mm a" )
-               due_Date = "$newDueDate $selectedDueTime"
+                binding.tvEditDatePicker.text = "$newDueDate $selectedDueTime"
+                due_date = "$newDueDate $selectedDueTime"
             }
 
 
@@ -318,19 +312,17 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
 
     }
 
-//    private fun deleteTask(id: Int) {
-////        val deleteTaskRequest = TodoModel(
-////            id = todoModel.id,
-////            title = binding.editTextEditTitle.text.trim().toString(),
-////            description = binding.editTextEditTask.text.trim().toString(),
-////            dueDate = due_Date ?: " ",
-////            reminder = due_Date?:"",
-////            status = taskStatus
-////        )
-//        val id = todoModel.id
-//
-//        deleteTask(id)
-//    }
+    private fun deleteTask() {
+        val deleteTaskRequest = TodoModel(
+            id = todoModel.id,
+            title = binding.editTextEditTitle.text.trim().toString(),
+            description = binding.editTextEditTask.text.trim().toString(),
+            dueDate = due_date ?: " ",
+            status = taskStatus
+        )
+
+        deleteTask(deleteTaskRequest)
+    }
 
     private fun closeBottomSheet() {
         dismiss()

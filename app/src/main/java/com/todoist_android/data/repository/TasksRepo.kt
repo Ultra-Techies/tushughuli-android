@@ -12,6 +12,9 @@ class TasksRepo@Inject constructor(
 private val taskApi: TaskApi
 ): BaseRepo()
 {
+    suspend fun addTasks(taskRequest: AddTaskRequest) = safeApiCall{
+        //taskApi.addTasks(taskRequest, taskRequest.id!!) //todolist backend requires id
+        taskApi.addTasks(taskRequest, taskRequest.id!!) //mock API
     suspend fun addTasks(id: Int,taskRequest: AddTaskRequest) = safeApiCall{
         taskApi.addTasks(taskRequest,id)
     }
@@ -24,5 +27,7 @@ private val taskApi: TaskApi
 
     suspend fun deleteTasks(id: Int) = safeApiCall { taskApi.deleteTasks(id) }
 
-    suspend fun getTasks(id: Int) = safeApiCall { taskApi.getTasks(id) }
+    suspend fun getTasks(id: String) = safeApiCall {
+        taskApi.getTasks(id)
+    }
 }

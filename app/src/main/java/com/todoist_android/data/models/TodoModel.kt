@@ -9,8 +9,8 @@ data class TodoModel(
     var title: String? = null,
     var description: String? = null,
     var dueDate: String?= null,
-    var reminder:String? =null,
-    var id: Int? = null,
-    var status: String? = null
+    var id: String? = null,
+    var status: String? = null,
+    var createdTime: String? = null,
 
 ):Parcelable

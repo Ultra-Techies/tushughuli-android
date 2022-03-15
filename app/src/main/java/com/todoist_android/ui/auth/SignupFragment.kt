@@ -18,12 +18,11 @@ import com.todoist_android.databinding.FragmentSignupBinding
 import com.todoist_android.ui.handleApiError
 import com.todoist_android.ui.validateEmail
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class SignupFragment : Fragment() {
+    private val photoUrl: String = "https://placeimg.com/640/480/any.jpg"
     private val viewModel: AuthenticationViewModel by viewModels()
     private lateinit var binding: FragmentSignupBinding
 
@@ -46,15 +45,14 @@ class SignupFragment : Fragment() {
                         is APIResource.Success->{
                             Toast.makeText(requireContext(),"Signup successful! Please login",Toast.LENGTH_LONG).show()
                             binding.progressbarTwo.visibility = View.GONE
-                            viewLifecycleOwner.lifecycleScope.launch {
-                                delay(1000)
-                                view.findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
-                            }
+                            view.findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
                         }
                         is APIResource.Error ->{
                             binding.progressbarTwo.visibility = View.GONE
                             binding.btnSignup.isEnabled = true
-                            binding.root.handleApiError(it)
+                            binding.root.handleApiError(it, action = {
+                                binding.btnSignup.performClick()
+                            })
                         }
                         is APIResource.Loading -> {
                             binding.progressbarTwo.visibility = View.VISIBLE
@@ -75,8 +73,6 @@ class SignupFragment : Fragment() {
             val userEmail = binding.etEmail.text.trim().toString()
             val userPassword = binding.etPassword.text.trim().toString()
             val confirmPassword = binding.etConfirmPassword.text.trim().toString()
-            val photo ="https://pixabay.com/photos/chafdin-security-metal-iron-3481377/"
-            val name = userName
 
 
             if (binding.etUsername.text.isNullOrEmpty()){
@@ -124,9 +120,7 @@ class SignupFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            viewModel.signUp(
-                userName,userEmail,userPassword,photo,name
-            )
+            viewModel.signUp(userName,userName,userEmail, photoUrl,userPassword)
         }
 
         binding.textViewLogin.setOnClickListener {

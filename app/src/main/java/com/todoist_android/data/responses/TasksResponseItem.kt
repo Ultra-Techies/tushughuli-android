@@ -6,10 +6,9 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class TasksResponseItem(
     val description: String?,
-    val title: String?,
-    var dueDate: String?,
-    val reminder: String?,
+    val dueDate: String?,
+    val id: String?,
     val status: String?,
-    val id: Int,
-
+    val reminder: String?,
+    val title: String?
 ): Parcelable

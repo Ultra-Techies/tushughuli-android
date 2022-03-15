@@ -68,11 +68,11 @@ class ProfileActivity : AppCompatActivity() {
         viewModel.user.observe(this, Observer {
             when (it) {
                 is APIResource.Success -> {
-                    Log.d("ProfileActivity", "profile: ${it.value.profile_photo}")
+                    Log.d("ProfileActivity", "profile: ${it.value.photo}")
                     binding.tvUsername.text = it.value.username
                     binding.tvEmail.text = it.value.email
                     Picasso.get()
-                        .load(it.value.profile_photo)
+                        .load(it.value.photo)
                         .error(R.drawable.default_profile_pic)
                         .into(binding.userProfilePhoto, object : Callback {
                             override fun onSuccess() {

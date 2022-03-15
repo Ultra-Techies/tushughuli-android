@@ -13,37 +13,29 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface TaskApi {
-    //    @GET("/tasks")
-//    suspend fun getTasks(
-//        @Query("id") id: String
-//    ) : TasksResponse
-    @GET("task/{id}")
+
+    @HTTP(method = "GET", path = "/api/task/{id}", hasBody = false) //todolist backend passes user id to get tasks
     suspend fun getTasks(
-        @Path("id") id: Int
-    ): TasksResponse
+        @Path("id")id: String
+    ) : TasksResponse
 
+    @POST("/api/task/add/{id}") //todolist backend passes user id to add task
+    suspend fun addTasks(@Body tasksRequest: AddTaskRequest, @Path("id") id: String): AddTasksResponse
 
-//    @POST("/tasks")
-//    suspend fun addTasks(@Body tasksRequest: AddTaskRequest): AddTasksResponse
+    @PUT("/api/task/update/{id}")
+    suspend fun editTasks(@Body editTasksRequest: TodoModel, @Path("id") id: String): TodoModel
 
-    @POST("task/add/{id}")
-    suspend fun addTasks(@Body taskRequest: AddTaskRequest, @Path("id") id: Int): AddTasksResponse
-
-
-//    @PUT("/tasks/{id}")
-//    suspend fun editTasks(@Body editTasksRequest: TodoModel, @Path("id") id: Int): TodoModel
-
+    @HTTP(method = "DELETE", path = "/api/task/delete/{id}", hasBody = true)
+    suspend fun deleteTasks(@Body deleteTaskRequest: TodoModel, @Path("id")id: String): TodoModel
     @PUT("task/update/{id}")
     suspend fun editTasks(
         @Body editTaskRequest: EditTaskRequest,
         @Path("id") id: Int
     ): EditTaskResponse
 
-//    @HTTP(method = "DELETE", path = "/tasks/{id}", hasBody = true)
-//    suspend fun deleteTasks(@Body deleteTaskRequest: TodoModel, @Path("id") id: Int): TodoModel
-
     @DELETE("task/delete/{id}")
     suspend fun deleteTasks(@Path("id") id: Int): String
+
 }
 
 

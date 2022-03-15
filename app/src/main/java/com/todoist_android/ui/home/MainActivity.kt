@@ -1,17 +1,21 @@
 package com.todoist_android.ui.home
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.todoist_android.R
@@ -20,6 +24,7 @@ import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.responses.TasksResponseItem
 import com.todoist_android.databinding.ActivityMainBinding
 import com.todoist_android.ui.SplashActivity
+import com.todoist_android.ui.auth.AuthActivity
 import com.todoist_android.ui.handleApiError
 import com.todoist_android.ui.profile.ProfileActivity
 import com.todoist_android.ui.profile.ProfileViewModel
@@ -28,6 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -37,9 +43,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     lateinit var userPreferences: UserPreferences
 
     var loggedInUserId: Int = 0
+    var notificationState: Boolean = false
 
     private val objects = arrayListOf<Any>()
     private val finalObjects = arrayListOf<Any>()
+    private val filteredTasks = ArrayList<TasksResponseItem>() //This list will contain only items of type TasksResponseItem (excluding headers)
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -81,6 +89,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             binding.swipeContainer.isRefreshing = true
             finalObjects.clear()
             objects.clear()
+            filteredTasks.clear()
+
             currentStatus = ""
         }
 
@@ -93,6 +103,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     // if objects anf final objects is not empty clear the list
                     if ( objects.isNotEmpty() ) objects.clear()
                     if ( finalObjects.isNotEmpty() ) finalObjects.clear()
+                    if ( filteredTasks.isNotEmpty() ) filteredTasks.clear()
 
                     binding.swipeContainer.isRefreshing = false
                     binding.recyclerView.removeItemDecoration(StickyHeaderItemDecoration())
@@ -107,7 +118,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     } else {
                         showEmptyState(GONE)
                     }
-                    //sort objects by it.status (progress, created, completed)
+                    //sort objects by it.status (progress, created, done)
                     objects.sortBy {
                         when (it) {
                             is TasksResponseItem -> it.status
@@ -123,7 +134,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     objects.forEach {
                         if (it is TasksResponseItem) {
                             if (it.status != currentStatus) {
-                                if(it.status!!.isBlank()){
+                                if(it.status!!.isNullOrEmpty()){
                                     finalObjects.add("Unknown Status")
                                 }else {
                                     finalObjects.add(it.status.replaceFirstChar { if (it.isLowerCase()) it.titlecase(
@@ -138,6 +149,17 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                             }
                         }
                     }
+
+                    //filter finalObjects to an ArrayList of items of type TasksResponseItem
+                    finalObjects.filterIsInstance<TasksResponseItem>().forEach {
+                        Log.d("MainActivity", "FinalObjects: ${it}")
+                        //empty list of type TasksResponseItem
+
+                        filteredTasks.add(it)
+                    }
+
+                    //pass the filteredTasks to the scheduler function
+                    scheduleAlert(binding.recyclerView, filteredTasks)
 
                     //Setup RecyclerView
                     var todoAdapter = ToDoAdapter(finalObjects)
@@ -155,13 +177,14 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     finalObjects.clear()
                     objects.clear()
                     currentStatus = ""
-
                     binding.recyclerView.adapter?.notifyDataSetChanged()
                 }
                 is APIResource.Error -> {
                     currentStatus = ""
                     binding.swipeContainer.isRefreshing = false
-                    binding.root.handleApiError(it)
+                    binding.root.handleApiError(it, action = {
+                        fetchTasks()
+                    })
                     showEmptyState(VISIBLE)
                     Log.d("MainActivity", "Error: ${it.toString()}")
                 }
@@ -176,8 +199,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         //get user details
-//        profileViewModel.getUser(loggedInUserId.toString())
-
         profileViewModel.getUser(loggedInUserId.toString())
 
         profileViewModel.user.observe(this, Observer {
@@ -190,12 +211,28 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     Log.d("ProfileActivity", "Loading...")
                 }
                 is APIResource.Error -> {
-                    binding.root.handleApiError(it)
+                    binding.root.handleApiError(it, action = {
+                        fetchTasks()
+                    })
                     Log.d("ProfileActivity", "Error: ${it.toString()}")
                 }
             }
         })
 
+        //check notification_state
+        userPreferences.notificationState.asLiveData().observe(this) {
+            if (it.isNullOrEmpty()) {
+                Log.d("MainActivity", "notification state has not been initialized")
+                notificationState = false
+                stopService(Intent(this, NotificationService::class.java))
+            } else {
+                notificationState = it.toBoolean()
+                Log.d("MainActivity", "notification state: $notificationState")
+                if (!notificationState) {
+                    stopService(Intent(this, NotificationService::class.java))
+                }
+            }
+        }
     }
 
     private fun showEmptyState(visible: Int) {
@@ -214,12 +251,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     private fun fetchTasks() {
         Log.d("MainActivity", "Fetching tasks...")
-        //TODO: Remove this, for testing purposes only
-        viewModel.getTasks(4)
-
-        //TODO: remove above code above and use the below code once API is ready
-        //viewModel.getTasks(userId.toString())
-
+        viewModel.getTasks(loggedInUserId.toString())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -273,5 +305,18 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         }.also {
             startActivity(it)
         }
+    }
+
+
+
+    fun scheduleAlert(view: View, finalObjects: ArrayList<TasksResponseItem>){
+        Log.d("MainActivity", "Notification status: $notificationState")
+        val intent = Intent(this, NotificationService::class.java)
+
+        var bundle = Bundle()
+        bundle!!.putSerializable("data",finalObjects)
+        intent.putExtra("bundle",bundle)
+
+        startService(intent)
     }
 }

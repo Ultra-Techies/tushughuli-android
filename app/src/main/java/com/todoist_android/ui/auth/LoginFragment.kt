@@ -54,10 +54,9 @@ class LoginFragment : Fragment() {
 
                            val userId = it.value.id
 
-                           //if it.value.valid is true redirect to home
-                           //else show error message
-                           it.value.id.let {
-//                               if (it) {
+                           //if it.value.id is not null or empty then user is logged in
+                           it.value.id?.let {
+                               if (it != 0) {
                                    //save user token or id
                                    /**
                                     * viewModel.saveAuthToken(it.value.accessToken)
@@ -72,10 +71,10 @@ class LoginFragment : Fragment() {
                                        it.putExtra("userId", userId)
                                        startActivity(it)
                                    }
-//                               } else {
-//                                   binding.buttonLogin.isEnabled = true
-//                                   Snackbar.make(binding.root, "Account does not exist", Snackbar.LENGTH_LONG).show()
-//                               }
+                               } else {
+                                   binding.buttonLogin.isEnabled = true
+                                   Snackbar.make(binding.root, "Account does not exist", Snackbar.LENGTH_LONG).show()
+                               }
                            }
                        }
                        is APIResource.Error -> {
@@ -124,11 +123,7 @@ class LoginFragment : Fragment() {
             }
 
             if (email.isNotEmpty() && password.isNotEmpty()){
-                val loginRequest = LoginRequest(
-                    password = password,
-                    username ="test five" )
-
-                viewModel.login(loginRequest)
+                viewModel.login(email, password)
             }
         }
 

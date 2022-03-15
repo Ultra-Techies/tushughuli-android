@@ -32,12 +32,16 @@ open class AuthenticationViewModel @Inject constructor(
     val loginResponse: SharedFlow<APIResource<LoginResponse>>
         get() = _loginResponse
 
-    fun login(loginRequest:LoginRequest) = viewModelScope.launch {
-        _loginResponse.emit(authRepo.login(loginRequest))
+
+
+    fun login(email: String, password: String) = viewModelScope.launch {
+        _loginResponse.emit(authRepo.login(email, password))
     }
 
     val signupResponse: SharedFlow<APIResource<SignupResponse>> get() = _signupResponse
 
+    fun signUp(username: String, name: String = username, email:String, photo: String, password: String ) = viewModelScope.launch {
+        _signupResponse.emit(authRepo.signup(username, name, email, photo, password))
     fun signUp(username: String,password: String,email:String, photo:String ,name: String,) = viewModelScope.launch {
         _signupResponse.emit(authRepo.signup(username,password,email, photo,name))
     }

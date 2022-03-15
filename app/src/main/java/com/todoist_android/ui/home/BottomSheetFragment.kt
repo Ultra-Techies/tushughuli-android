@@ -34,6 +34,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
@@ -48,7 +51,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
     private var dueDate: String? = todayDate()
     private var selectedTime: String? = null
-  private var loggedInUserId: String? = null
+     private var loggedInUserId: String? = null
     private var status = "created"
     private var dateTime = " "
         set(value) {
@@ -173,14 +176,13 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
         val taskRequest = AddTaskRequest(
             title = title,
-//            id = loggedInUserId,
+            id = loggedInUserId,
             description = description,
-//            status = status,
-            dueDate = "${dueDate ?: " "} ${selectedTime ?: " "}",
-            reminder = "${dueDate ?: " "} ${selectedTime ?: " "}"
+            dueDate = "${dueDate ?: " "} ${selectedTime ?: DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now())}",
+            createdTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()),
         )
         Log.d("--->",taskRequest.toString())
-        addTasks(loggedInUserId!!.toInt(),taskRequest)
+        addTasks(taskRequest)
     }
 
 

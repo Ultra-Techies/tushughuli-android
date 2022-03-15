@@ -36,7 +36,7 @@ class SettingsActivity : AppCompatActivity() {
     lateinit var userPreferences: UserPreferences
 
     var loggedInUserId: Int = 0
-    var profile_photo: String = "http://placeimg.com/640/480/any.jpg"
+    var profile_photo: String = "https://placeimg.com/640/480/any.jpg"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,7 +78,7 @@ class SettingsActivity : AppCompatActivity() {
                     binding.etUsername.setText(it.value.username)
                     binding.etEmail.setText(it.value.email)
                     Picasso.get()
-                        .load(it.value.profile_photo)
+                        .load(it.value.photo)
                         .error(R.drawable.default_profile_pic)
                         .into(binding.userProfilePhoto, object : Callback {
                             override fun onSuccess() {
@@ -114,8 +114,11 @@ class SettingsActivity : AppCompatActivity() {
         viewModel.userDelete.observe(this, Observer {
             when (it) {
                 is APIResource.Success -> {
-                    performDelete()
                     binding.progressbar.isVisible = false
+                    //if message is not null, then the user was deleted
+                    it.value.message?.let {
+                        redirectToSplash()
+                    }
                 }
                 is APIResource.Loading -> {
                     Log.d("SettingsActivity", "Deleting...")
@@ -125,7 +128,7 @@ class SettingsActivity : AppCompatActivity() {
                     binding.progressbar.isVisible = false
                     binding.root.handleApiError(it)
                     if(it.errorCode == 404) {
-                        performDelete()
+                        redirectToSplash()
                     }
                 }
             }
@@ -199,7 +202,7 @@ class SettingsActivity : AppCompatActivity() {
         binding.appNotifications.isEnabled = !b
     }
 
-    fun performDelete() = lifecycleScope.launch {
+    fun redirectToSplash() = lifecycleScope.launch {
         userPreferences.clearToken()
         Intent(this@SettingsActivity, SplashActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -255,9 +258,10 @@ class SettingsActivity : AppCompatActivity() {
 
                 val updateUserRequest = UserModel(
                     id = loggedInUserId.toString(),
-                    username = binding.etUsername.text.toString(),
-                    email = binding.etEmail.text.toString(),
-                    password = binding.etPassword.text.toString()
+                    username = binding.etUsername.text.toString().trim(),
+                    email = binding.etEmail.text.toString().trim(),
+                    password = binding.etPassword.text.toString().trim(),
+                    photo = profile_photo
                 )
 
                 saveUserDetails(updateUserRequest)
