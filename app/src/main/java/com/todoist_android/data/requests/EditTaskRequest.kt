@@ -5,6 +5,8 @@ data class EditTaskRequest(
     val description: String,
     var dueDate: String,
     val reminder: String,
+    var createdTime:String,
     val status: String,
     val title: String
 )
+
