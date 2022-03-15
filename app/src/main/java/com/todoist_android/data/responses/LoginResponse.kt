@@ -1,9 +1,9 @@
 package com.todoist_android.data.responses
 
 data class LoginResponse(
-    val email: String,
-    val id: Int,
-    val name: String,
-    val photo: String,
-    val username: String
+    val email: String? = null,
+    val id: Int? = null,
+    val name: String? = null,
+    val photo: String? = null,
+    val username: String? = null
 )
