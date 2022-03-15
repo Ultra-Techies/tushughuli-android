@@ -4,7 +4,6 @@ import com.todoist_android.data.network.APIAuthentication
 import com.todoist_android.data.requests.SignUpRequest
 import com.todoist_android.data.network.repository.BaseRepo
 import com.todoist_android.data.requests.LoginRequest
-import com.todoist_android.data.requests.LoginRequest
 import com.todoist_android.data.requests.UpdateUserRequest
 import javax.inject.Inject
 
@@ -18,8 +17,9 @@ class AuthRepo @Inject constructor  (
         authApi.login(loginRequest = LoginRequest(email, password))
     }
 
-    suspend fun signup(username: String, name: String = username, email: String, photo: String, password: String) = safeApiCall {
-        authApi.signup(userCreateRequest = UpdateUserRequest(username, name, password,email, photo))
+//    suspend fun signup(username: String, name: String = username, email: String, photo: String, password: String) = safeApiCall {
+//        authApi.signup(userCreateRequest = UpdateUserRequest(username, name, password,email, photo))
+//    }
     suspend fun signup(username: String, email: String, password: String, photo: String, name: String) = safeApiCall {
         val signUpRequest = SignUpRequest(
             username = username,

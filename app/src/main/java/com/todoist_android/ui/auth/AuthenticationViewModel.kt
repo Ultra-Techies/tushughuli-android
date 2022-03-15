@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.AuthRepo
-import com.todoist_android.data.requests.LoginRequest
 import com.todoist_android.data.responses.LoginResponse
 import com.todoist_android.data.responses.SignupResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,11 +26,10 @@ open class AuthenticationViewModel @Inject constructor(
     // use kotlin flows instead of live data
     private val _loginResponse = MutableSharedFlow<APIResource<LoginResponse>>()
 
-    private  val _signupResponse = MutableSharedFlow<APIResource<SignupResponse>>()
+    private val _signupResponse = MutableSharedFlow<APIResource<SignupResponse>>()
 
     val loginResponse: SharedFlow<APIResource<LoginResponse>>
         get() = _loginResponse
-
 
 
     fun login(email: String, password: String) = viewModelScope.launch {
@@ -40,11 +38,18 @@ open class AuthenticationViewModel @Inject constructor(
 
     val signupResponse: SharedFlow<APIResource<SignupResponse>> get() = _signupResponse
 
-    fun signUp(username: String, name: String = username, email:String, photo: String, password: String ) = viewModelScope.launch {
-        _signupResponse.emit(authRepo.signup(username, name, email, photo, password))
-    fun signUp(username: String,password: String,email:String, photo:String ,name: String,) = viewModelScope.launch {
-        _signupResponse.emit(authRepo.signup(username,password,email, photo,name))
-    }
+    fun signUp(username: String, name: String, email: String, photo: String, password: String) =
+        viewModelScope.launch {
+            _signupResponse.emit(
+                authRepo.signup(
+                    username = username,
+                    name = name,
+                    email = email,
+                    photo = photo,
+                    password = password
+                )
+            )
+        }
 
     fun saveAuthToken(token: String) = viewModelScope.launch {
         authRepo.saveToken(token)
