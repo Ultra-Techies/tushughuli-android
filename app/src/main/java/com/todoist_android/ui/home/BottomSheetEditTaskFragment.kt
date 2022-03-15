@@ -28,6 +28,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
@@ -270,7 +272,7 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
             title = binding.editTextEditTitle.text.trim().toString(),
             description = binding.editTextEditTask.text.trim().toString(),
             dueDate = due_date,
-//            reminder = taskReminder,
+            createdTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()),
             status = taskStatus
         )
 
