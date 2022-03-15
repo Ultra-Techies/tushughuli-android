@@ -12,7 +12,7 @@ private val taskApi: TaskApi
 {
     suspend fun addTasks(taskRequest: AddTaskRequest) = safeApiCall{
         //taskApi.addTasks(taskRequest, taskRequest.id!!) //todolist backend requires id
-        taskApi.addTasks(taskRequest) //mock API
+        taskApi.addTasks(taskRequest, taskRequest.id!!) //mock API
     }
 
     suspend fun editTasks(editTasksRequest: TodoModel) = safeApiCall {

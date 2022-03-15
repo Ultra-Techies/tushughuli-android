@@ -251,12 +251,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     private fun fetchTasks() {
         Log.d("MainActivity", "Fetching tasks...")
-        //TODO: Remove this, for testing purposes only
-        viewModel.getTasks("")
-
-        //TODO: remove above code above and use the below code once API is ready
-        //viewModel.getTasks(userId.toString())
-
+        viewModel.getTasks(loggedInUserId.toString())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -183,7 +183,6 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: ()->Unit ) : 
                             binding.root.handleApiError(it)
                         }
                         is APIResource.Loading -> {
-
                         }
                     }
 
