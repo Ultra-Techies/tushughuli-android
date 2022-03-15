@@ -7,7 +7,7 @@ import kotlinx.android.parcel.Parcelize
 data class TasksResponseItem(
     val description: String?,
     val dueDate: String?,
-    val id: String?,
+    val id: Int?,
     val status: String?,
     val reminder: String?,
     val title: String?
