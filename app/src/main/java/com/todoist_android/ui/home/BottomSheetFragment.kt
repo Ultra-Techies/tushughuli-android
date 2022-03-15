@@ -48,7 +48,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
     private var dueDate: String? = todayDate()
     private var selectedTime: String? = null
-//    private var loggedInUserId: String? = null
+  private var loggedInUserId: String? = null
     private var status = "created"
     private var dateTime = " "
         set(value) {
@@ -87,7 +87,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
         globalVariables()
 
-//        getLoggedInUserId()
+        getLoggedInUserId()
 
         setOnClickListeners()
 
@@ -106,22 +106,22 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
         binding.editTextTaskName.showKeyboard()
     }
 
-//    private fun getLoggedInUserId() {
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-//                prefs.todoToken.collectLatest { todoId ->
-//                    todoId?.let {
-//                        loggedInUserId = todoId
-//                    } ?: kotlin.run {
-//                        Toast.makeText(
-//                            requireActivity(), getString(R.string.unable_to_find_user_id),
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                    }
-//                }
-//            }
-//        }
-//    }
+    private fun getLoggedInUserId() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                prefs.todoToken.collectLatest { todoId ->
+                    todoId?.let {
+                        loggedInUserId = todoId
+                    } ?: kotlin.run {
+                        Toast.makeText(
+                            requireActivity(), getString(R.string.unable_to_find_user_id),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
 
     override fun onClick(view: View) {
         when (view) {
@@ -180,7 +180,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
             reminder = "${dueDate ?: " "} ${selectedTime ?: " "}"
         )
         Log.d("--->",taskRequest.toString())
-        addTasks(taskRequest)
+        addTasks(loggedInUserId!!.toInt(),taskRequest)
     }
 
 
@@ -189,14 +189,14 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     }
 
 
-    private fun addTasks(taskRequest: AddTaskRequest) {
+    private fun addTasks(id:Int,taskRequest: AddTaskRequest) {
         binding.root.hideKeyboard()
         binding.pbBottomSheet.visibility = VISIBLE
         Snackbar.make(dialog?.window!!.decorView, "Adding your task...", Snackbar.LENGTH_LONG)
             .show()
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.addTasks(taskRequest).collect {
+                viewModel.addTasks(id,taskRequest).collect {
                     when (it) {
                         is APIResource.Success -> {
                             binding.pbBottomSheet.visibility = GONE

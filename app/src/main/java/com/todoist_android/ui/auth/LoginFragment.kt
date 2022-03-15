@@ -16,6 +16,7 @@ import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
+import com.todoist_android.data.requests.LoginRequest
 import com.todoist_android.databinding.FragmentLoginBinding
 import com.todoist_android.ui.handleApiError
 import com.todoist_android.ui.home.MainActivity
@@ -55,7 +56,7 @@ class LoginFragment : Fragment() {
 
                            //if it.value.valid is true redirect to home
                            //else show error message
-                           it.value.valid?.let {
+                           it.value.id.let {
 //                               if (it) {
                                    //save user token or id
                                    /**
@@ -123,7 +124,11 @@ class LoginFragment : Fragment() {
             }
 
             if (email.isNotEmpty() && password.isNotEmpty()){
-                viewModel.login(email, password)
+                val loginRequest = LoginRequest(
+                    password = password,
+                    username ="test five" )
+
+                viewModel.login(loginRequest)
             }
         }
 

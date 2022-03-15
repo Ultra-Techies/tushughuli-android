@@ -22,7 +22,7 @@ class MainViewModel @Inject constructor(
 
     fun getTasks(id: Int) = viewModelScope.launch {
         _task.value = APIResource.Loading
-        _task.value = repository.getTasks(4)
+        _task.value = repository.getTasks(id)
     }
 
 }

@@ -13,8 +13,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BottomSheetViewModel @Inject constructor(private val tasksRepo: TasksRepo) : ViewModel() {
 
-    fun addTasks(taskRequest: AddTaskRequest) = flow {
-        val response = tasksRepo.addTasks(taskRequest)
+    fun addTasks(id:Int,taskRequest: AddTaskRequest) = flow {
+        val response = tasksRepo.addTasks(id,taskRequest)
         emit(response)
     }.shareIn(viewModelScope, SharingStarted.Lazily)
 

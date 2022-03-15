@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.AuthRepo
+import com.todoist_android.data.requests.LoginRequest
 import com.todoist_android.data.responses.LoginResponse
 import com.todoist_android.data.responses.SignupResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,8 +32,8 @@ open class AuthenticationViewModel @Inject constructor(
     val loginResponse: SharedFlow<APIResource<LoginResponse>>
         get() = _loginResponse
 
-    fun login(email: String, password: String) = viewModelScope.launch {
-        _loginResponse.emit(authRepo.login(email, password))
+    fun login(loginRequest:LoginRequest) = viewModelScope.launch {
+        _loginResponse.emit(authRepo.login(loginRequest))
     }
 
     val signupResponse: SharedFlow<APIResource<SignupResponse>> get() = _signupResponse
