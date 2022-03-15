@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     } else {
                         showEmptyState(GONE)
                     }
-                    //sort objects by it.status (progress, created, completed)
+                    //sort objects by it.status (progress, created, done)
                     objects.sortBy {
                         when (it) {
                             is TasksResponseItem -> it.status
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
                     objects.forEach {
                         if (it is TasksResponseItem) {
                             if (it.status != currentStatus) {
-                                if(it.status!!.isBlank()){
+                                if(it.status!!.isNullOrEmpty()){
                                     finalObjects.add("Unknown Status")
                                 }else {
                                     finalObjects.add(it.status.replaceFirstChar { if (it.isLowerCase()) it.titlecase(
@@ -251,12 +251,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     private fun fetchTasks() {
         Log.d("MainActivity", "Fetching tasks...")
-        //TODO: Remove this, for testing purposes only
-        viewModel.getTasks("")
-
-        //TODO: remove above code above and use the below code once API is ready
-        //viewModel.getTasks(userId.toString())
-
+        viewModel.getTasks(loggedInUserId.toString())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -25,7 +25,7 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
             else if (item.status == "progress") {
                 holder.status_icon.setImageResource(R.drawable.yellow_circle)
             }
-            else if (item.status == "completed") {
+            else if (item.status == "done") {
                 holder.status_icon.setImageResource(R.drawable.done_circle)
             }
             else {
@@ -57,7 +57,7 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
         return if (timeDifference == null) {
             dueDate
         } else {
-            if(status.toString().lowercase() == "completed") {
+            if(status.toString().lowercase() == "done") {
                 "Completed"
             }
             else if(timeDifference[0] > 0) {

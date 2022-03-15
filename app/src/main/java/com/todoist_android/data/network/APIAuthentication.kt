@@ -1,5 +1,6 @@
 package com.todoist_android.data.network
 
+import com.todoist_android.data.requests.LoginRequest
 import com.todoist_android.data.requests.UpdateUserRequest
 import com.todoist_android.data.responses.LoginResponse
 import com.todoist_android.data.responses.SignupResponse
@@ -9,10 +10,9 @@ interface APIAuthentication {
 
     //Refer to: https://github.com/Ultra-Techies/backend/blob/main/endpoints/endpoints.md
 
-    @GET("/api/auth")
-    suspend fun login( //suspend because we will use coroutines for our network calls
-        @Query("email") email: String,
-        @Query("password") password: String
+    @POST("/api/user/auth")
+    suspend fun login(
+        @Body loginRequest: LoginRequest
     ) : LoginResponse
 
     //@FormUrlEncoded

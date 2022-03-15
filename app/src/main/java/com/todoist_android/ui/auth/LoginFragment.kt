@@ -53,10 +53,9 @@ class LoginFragment : Fragment() {
 
                            val userId = it.value.id
 
-                           //if it.value.valid is true redirect to home
-                           //else show error message
-                           it.value.valid?.let {
-                               if (it) {
+                           //if it.value.id is not null or empty then user is logged in
+                           it.value.id?.let {
+                               if (it != 0) {
                                    //save user token or id
                                    /**
                                     * viewModel.saveAuthToken(it.value.accessToken)
