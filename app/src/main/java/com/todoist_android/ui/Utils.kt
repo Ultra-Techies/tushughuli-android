@@ -186,7 +186,7 @@ fun popupMenuTwo(context: Context, view: View, statusSelected: (String) -> Unit)
                 statusSelected("progress")
             }
             R.id.item_completed ->{
-                statusSelected("Completed")
+                statusSelected("done")
             }
         }
         true
