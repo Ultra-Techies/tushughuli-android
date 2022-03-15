@@ -109,5 +109,8 @@ dependencies {
 
     //Retro mock
     implementation "co.infinum:retromock:1.1.0"
+
+    // tests
+    testImplementation "io.mockk:mockk:1.12.3"
 }
 
