@@ -114,8 +114,11 @@ class SettingsActivity : AppCompatActivity() {
         viewModel.userDelete.observe(this, Observer {
             when (it) {
                 is APIResource.Success -> {
-                    performDelete()
                     binding.progressbar.isVisible = false
+                    //if message is not null, then the user was deleted
+                    it.value.message?.let {
+                        redirectToSplash()
+                    }
                 }
                 is APIResource.Loading -> {
                     Log.d("SettingsActivity", "Deleting...")
@@ -125,7 +128,7 @@ class SettingsActivity : AppCompatActivity() {
                     binding.progressbar.isVisible = false
                     binding.root.handleApiError(it)
                     if(it.errorCode == 404) {
-                        performDelete()
+                        redirectToSplash()
                     }
                 }
             }
@@ -199,7 +202,7 @@ class SettingsActivity : AppCompatActivity() {
         binding.appNotifications.isEnabled = !b
     }
 
-    fun performDelete() = lifecycleScope.launch {
+    fun redirectToSplash() = lifecycleScope.launch {
         userPreferences.clearToken()
         Intent(this@SettingsActivity, SplashActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
