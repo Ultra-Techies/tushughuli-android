@@ -255,9 +255,10 @@ class SettingsActivity : AppCompatActivity() {
 
                 val updateUserRequest = UserModel(
                     id = loggedInUserId.toString(),
-                    username = binding.etUsername.text.toString(),
-                    email = binding.etEmail.text.toString(),
-                    password = binding.etPassword.text.toString()
+                    username = binding.etUsername.text.toString().trim(),
+                    email = binding.etEmail.text.toString().trim(),
+                    password = binding.etPassword.text.toString().trim(),
+                    photo = profile_photo
                 )
 
                 saveUserDetails(updateUserRequest)

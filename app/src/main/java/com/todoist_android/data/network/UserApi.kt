@@ -14,10 +14,15 @@ interface UserApi {
         @Path("id") id: String,
     ) : UserResponse
 
+    @FormUrlEncoded
     @PUT("/api/user/{id}")
     suspend fun editUser(
-        @Body updateUserRequest: UserModel,
-        @Path("id") id: String
+        //@Body updateUserRequest: UserModel,
+        @Path("id") id: String,
+        @Field("username") username: String,
+        @Field("email") email: String,
+        @Field("photo") photo: String,
+        @Field("password") password: String
     ): UserModel
 
 
