@@ -26,7 +26,6 @@ import com.todoist_android.ui.formartDate
 import com.todoist_android.ui.hideKeyboard
 import com.todoist_android.ui.pickDate
 import com.todoist_android.ui.pickTime
-import com.todoist_android.ui.popupMenu
 import com.todoist_android.ui.showKeyboard
 import com.todoist_android.ui.todayDate
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,7 +33,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -99,7 +97,6 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
     private fun setOnClickListeners() {
         binding.tvDatePicker.setOnClickListener(this)
-//        binding.ivFlag.setOnClickListener(this)
         binding.buttonAddTask.setOnClickListener(this)
         binding.tvEndTask.setOnClickListener(this)
     }
@@ -129,7 +126,6 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     override fun onClick(view: View) {
         when (view) {
             binding.tvDatePicker -> selectDueDate()
-//            binding.ivFlag -> selectStatus()
             binding.buttonAddTask -> addNewTask()
             binding.tvEndTask -> closeAddTaskBottomSheet()
         }
@@ -153,13 +149,6 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     }
 
 
-//    private fun selectStatus() {
-//        popupMenu(requireContext(), binding.ivFlag) { statusSelected ->
-//            status = statusSelected
-//        }
-//    }
-
-
     private fun addNewTask() {
         if (binding.etTaskTitle.text.isNullOrEmpty()) {
             binding.etTaskTitle.error = getString(R.string.error_task_title)
@@ -176,13 +165,13 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
         val taskRequest = AddTaskRequest(
             title = title,
-            id = loggedInUserId,
             description = description,
+            reminder=DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()),
             dueDate = "${dueDate ?: " "} ${selectedTime ?: DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now())}",
             createdTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()),
         )
         Log.d("--->",taskRequest.toString())
-        addTasks(taskRequest)
+        addTasks(loggedInUserId!!.toInt(),taskRequest)
     }
 
 
