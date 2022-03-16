@@ -20,7 +20,7 @@ class MainViewModel @Inject constructor(
     val task: LiveData<APIResource<TasksResponse>>
         get() = _task
 
-    fun getTasks(id: String) = viewModelScope.launch {
+    fun getTasks(id: Int) = viewModelScope.launch {
         _task.value = APIResource.Loading
         _task.value = repository.getTasks(id)
     }

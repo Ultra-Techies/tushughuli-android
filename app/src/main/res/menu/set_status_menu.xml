@@ -3,7 +3,7 @@
     <item android:title="@string/created"
         android:id="@+id/item_created"/>
 
-    <item android:title="@string/in_progress"
-        android:id="@+id/item_progress"/>
+<!--    <item android:title="@string/in_progress"-->
+<!--        android:id="@+id/item_progress"/>-->
 
 </menu>

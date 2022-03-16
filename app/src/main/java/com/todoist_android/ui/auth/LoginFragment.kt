@@ -16,6 +16,7 @@ import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
+import com.todoist_android.data.requests.LoginRequest
 import com.todoist_android.databinding.FragmentLoginBinding
 import com.todoist_android.ui.handleApiError
 import com.todoist_android.ui.home.MainActivity
@@ -53,10 +54,9 @@ class LoginFragment : Fragment() {
 
                            val userId = it.value.id
 
-                           //if it.value.valid is true redirect to home
-                           //else show error message
-                           it.value.valid?.let {
-                               if (it) {
+                           //if it.value.id is not null or empty then user is logged in
+                           it.value.id?.let {
+                               if (it != 0) {
                                    //save user token or id
                                    /**
                                     * viewModel.saveAuthToken(it.value.accessToken)

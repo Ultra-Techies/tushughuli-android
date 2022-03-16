@@ -1,13 +1,14 @@
 package com.todoist_android.data.repository
 
-import com.todoist_android.data.models.TodoModel
-import com.todoist_android.data.network.APIResource
+
 import com.todoist_android.data.network.TaskApi
 import com.todoist_android.data.network.repository.BaseRepo
 import com.todoist_android.data.requests.AddTaskRequest
+import com.todoist_android.data.requests.EditTaskRequest
 import com.todoist_android.data.responses.AddTasksResponse
 import com.todoist_android.data.responses.TasksResponse
 import javax.inject.Inject
+
 
 interface TasksRepo {
     suspend fun addTasks(taskRequest: AddTaskRequest): APIResource<AddTasksResponse>
@@ -15,6 +16,13 @@ interface TasksRepo {
     suspend fun deleteTasks(editTasksRequest: TodoModel): APIResource<TodoModel>
     suspend fun getTasks(id: String): APIResource<TasksResponse>
 }
+class TasksRepo@Inject constructor(
+private val taskApi: TaskApi
+): BaseRepo()
+{
+
+    suspend fun addTasks(id: Int,taskRequest: AddTaskRequest) = safeApiCall {
+        taskApi.addTasks(taskRequest, id)
 
 class TasksRepoImpl @Inject constructor(
     private val taskApi: TaskApi
@@ -23,13 +31,13 @@ class TasksRepoImpl @Inject constructor(
         taskApi.addTasks(taskRequest)
     }
 
-    override suspend fun editTasks(editTasksRequest: TodoModel) = safeApiCall {
-        taskApi.editTasks(editTasksRequest, editTasksRequest.id!!)
+    suspend fun editTasks(id: Int,editTasksRequest: EditTaskRequest) = safeApiCall {
+        taskApi.editTasks(editTasksRequest,id)
     }
 
-    override suspend fun deleteTasks(deleteTaskRequest: TodoModel) = safeApiCall {
-        taskApi.deleteTasks(deleteTaskRequest, deleteTaskRequest.id!!)
-    }
+    suspend fun deleteTasks(id: Int) = safeApiCall { taskApi.deleteTasks(id) }
 
-    override suspend fun getTasks(id: String) = safeApiCall { taskApi.getTasks(id) }
+    suspend fun getTasks(id: Int) = safeApiCall {
+        taskApi.getTasks(id)
+    }
 }

@@ -3,11 +3,11 @@ package com.todoist_android.ui.home
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.todoist_android.R
 import com.todoist_android.data.responses.TasksResponseItem
+import com.todoist_android.ui.getTimeDifference
 import kotlinx.android.synthetic.main.listitem_item.view.*
 
 class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -16,7 +16,7 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = objects[position]
         if (holder is ViewHolder && item is TasksResponseItem) {
-            holder.duetime.text = "Time Remaining"
+            holder.duetime.text = formatTime(item.dueDate, item.status)
             holder.tv.text = item.title
             //show status_icon
             if (item.status == "created") {
@@ -25,7 +25,7 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
             else if (item.status == "progress") {
                 holder.status_icon.setImageResource(R.drawable.yellow_circle)
             }
-            else if (item.status == "completed") {
+            else if (item.status == "done") {
                 holder.status_icon.setImageResource(R.drawable.done_circle)
             }
             else {
@@ -47,6 +47,32 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
             }
         }
 
+    }
+
+    private fun formatTime(dueDate: String?, status: String?): CharSequence? {
+        if (dueDate == null) {
+            return null
+        }
+        val timeDifference = getTimeDifference(dueDate.trim())
+        return if (timeDifference == null) {
+            dueDate
+        } else {
+            if(status.toString().lowercase() == "done") {
+                "Completed"
+            }
+            else if(timeDifference[0] > 0) {
+                "Due in ${timeDifference[0]} days"
+            }
+            else if (timeDifference[1] > 0) {
+                "Due in ${timeDifference[1]} hours"
+            }
+            else if (timeDifference[2] > 0) {
+                "Due in ${timeDifference[2]} minutes"
+            }
+            else {
+                "Task is overdue"
+            }
+        }
     }
 
     override fun getItemCount() = objects.size

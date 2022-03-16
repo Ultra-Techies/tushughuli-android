@@ -1,6 +1,5 @@
 package com.todoist_android.ui.home
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
@@ -18,28 +17,25 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
-import com.todoist_android.data.models.TodoModel
-import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
+import com.todoist_android.data.requests.EditTaskRequest
 import com.todoist_android.data.responses.TasksResponseItem
 import com.todoist_android.databinding.FragmentBottomsheetEditTaskBinding
-import com.todoist_android.ui.formartDate
-import com.todoist_android.ui.hideKeyboard
-import com.todoist_android.ui.pickDate
-import com.todoist_android.ui.pickTime
-import com.todoist_android.ui.popupMenuTwo
-import com.todoist_android.ui.showKeyboard
+import com.todoist_android.ui.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSheetDialogFragment(), View.OnClickListener {
+class BottomSheetEditTaskFragment(private var refreshListCallback: () -> Unit) :
+    BottomSheetDialogFragment(), View.OnClickListener {
     @Inject
     lateinit var prefs: UserPreferences
 
@@ -55,7 +51,10 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
     private var userId: String? = null
 
     companion object {
-        fun newInstance(item: TasksResponseItem, refreshListCallback: ()->Unit): BottomSheetEditTaskFragment {
+        fun newInstance(
+            item: TasksResponseItem,
+            refreshListCallback: () -> Unit
+        ): BottomSheetEditTaskFragment {
             val bundle = Bundle()
             bundle.apply {
                 putParcelable("data", item)
@@ -102,9 +101,16 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
 
         setOnClickListeners()
 
+        editTaskListener()
+
+        errorListener()
+
+        deleteTaskListener()
+
+        deleteErrorListener()
     }
 
-    private fun setOnClickListeners(){
+    private fun setOnClickListeners() {
         binding.ivEditFlag.setOnClickListener(this)
         binding.tvEditDatePicker.setOnClickListener(this)
         binding.tvDeleteTask.setOnClickListener(this)
@@ -112,101 +118,100 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
         binding.tvCloseEditTask.setOnClickListener(this)
     }
 
-    private fun editTask(editTasksRequest: TodoModel) {
+    private fun editTaskListener() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.editResponse.collectLatest {
+                    binding.pbEditBottomSheet.visibility = GONE
+                    refreshListCallback.invoke()
+                    Snackbar.make(
+                        dialog?.window!!.decorView,
+                        "Task edited successfully",
+                        Snackbar.LENGTH_SHORT
+                    )
+                        .show()
+
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        delay(1000)
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun errorListener() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorResponse.collectLatest { message ->
+                    binding.pbEditBottomSheet.visibility = GONE
+                    Snackbar.make(
+                        dialog?.window!!.decorView,
+                        message,
+                        Snackbar.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            }
+        }
+    }
+
+    private fun editTask(id: Int, editTasksRequest: EditTaskRequest) {
         binding.root.hideKeyboard()
         binding.pbEditBottomSheet.visibility = View.VISIBLE
         Snackbar.make(dialog?.window!!.decorView, "Editing your task...", Snackbar.LENGTH_LONG)
             .show()
 
-        viewModel.editTasks(editTasksRequest)
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.editTasksObserver.collect {
-                    when (it) {
-                        is APIResource.Success -> {
-                            binding.pbEditBottomSheet.visibility = GONE
-                            refreshListCallback.invoke()
-                            Snackbar.make(
-                                dialog?.window!!.decorView,
-                                "Task edited successfully",
-                                Snackbar.LENGTH_SHORT
-                            )
-                                .show()
-                            Log.d("task", editTasksRequest.toString())
+        binding.pbEditBottomSheet.visibility = View.VISIBLE
+        viewModel.editTasks(id, editTasksRequest)
+    }
 
-                            //trigger onRefresh in MainActivity
-                            (activity as MainActivity).onRefresh()
-
-                            viewLifecycleOwner.lifecycleScope.launch {
-                                delay(1000)
-                                dismiss()
-                            }
-                        }
-
-                        is APIResource.Error -> {
-                            binding.pbEditBottomSheet.visibility = GONE
-                            Snackbar.make(
-                                dialog?.window!!.decorView,
-                                it.errorBody.toString(),
-                                Snackbar.LENGTH_SHORT
-                            )
-                                .show()
-                        }
-                        is APIResource.Loading -> {
-                            binding.pbEditBottomSheet.visibility = View.VISIBLE
-                        }
+    private fun deleteTaskListener(){
+        viewLifecycleOwner.lifecycleScope.launch{
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.deleteResponse.collectLatest {
+                    refreshListCallback.invoke()
+                    Snackbar.make(
+                        dialog?.window!!.decorView,
+                        getString(R.string.task_deleted),
+                        Snackbar.LENGTH_SHORT
+                    )
+                        .show()
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        delay(1000)
+                        dismiss()
                     }
                 }
             }
         }
     }
 
-    private fun deleteTask(deleteTaskRequest: TodoModel) {
+    private fun deleteErrorListener(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.deleteErrorResponse.collectLatest {message ->
+                    binding.pbEditBottomSheet.visibility = GONE
+                    Snackbar.make(
+                        dialog?.window!!.decorView,
+                        message,
+                        Snackbar.LENGTH_SHORT
+                    )
+                        .show()
+//                    binding.root.handleApiError(APIResource.Error())
+                }
+            }
+        }
+
+    }
+
+    private fun deleteTask(id: Int){
         binding.root.hideKeyboard()
         binding.pbEditBottomSheet.visibility = View.VISIBLE
         Snackbar.make(dialog?.window!!.decorView, "Deleting your task...", Snackbar.LENGTH_LONG)
             .show()
-        viewModel.deleteTasks(deleteTaskRequest)
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.deleteTaskObserver.collect {
-                    when (it) {
-                        is APIResource.Success -> {
-                            refreshListCallback.invoke()
-                            Snackbar.make(
-                                dialog?.window!!.decorView,
-                                getString(R.string.task_deleted),
-                                Snackbar.LENGTH_SHORT
-                            )
-                                .show()
-
-                            //trigger onRefresh in MainActivity
-                            (activity as MainActivity).onRefresh()
-
-                            viewLifecycleOwner.lifecycleScope.launch {
-                                delay(1000)
-                                dismiss()
-                            }
-                        }
-                        is APIResource.Error -> {
-                            Snackbar.make(
-                                dialog?.window!!.decorView,
-                                it.errorBody.toString(),
-                                Snackbar.LENGTH_SHORT
-                            )
-                                .show()
-                        }
-                        is APIResource.Loading -> {
-
-                        }
-                    }
-
-
-                }
-            }
-        }
-
+        viewModel.deleteTasks(id)
     }
+
 
     private fun setText() {
         todoModel.apply {
@@ -218,15 +223,18 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
                 binding.editTextEditTask.setText(it)
             }
 
-            due_date?.let {
-                dueDate = formartDate(it, "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy h:mm a")
-                binding.tvEditDatePicker.text = dueDate
+            dueDate?.let {
+                this@BottomSheetEditTaskFragment.dueDate = dueDate.toString()
+                val formatDueDate = formartDate(it, "yyyy-MM-dd HH:mm:ss", "dd-MM-yyyy h:mm a")
+                binding.tvEditDatePicker.text = formatDueDate
             }
-            status?.let {
-                taskStatus = it
+            reminder?.let {
+                status?.let {
+                    taskStatus = it
+                }
             }
-        }
 
+        }
     }
 
     private fun setUpGlobalVariables() {
@@ -261,7 +269,7 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
             binding.buttonEditTask -> submitEditedTask()
             binding.ivEditFlag -> selectNewTaskStatus()
             binding.tvEditDatePicker -> selectNewDueDate()
-            binding.tvDeleteTask -> deleteTask()
+            binding.tvDeleteTask -> deleteTask(todoModel.id!!)
             binding.tvCloseEditTask -> closeBottomSheet()
         }
 
@@ -280,39 +288,47 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
             return
         }
 
-        val editTasksRequest = TodoModel(
-            id = todoModel.id,
+        val editTasksRequest = EditTaskRequest(
             title = binding.editTextEditTitle.text.trim().toString(),
             description = binding.editTextEditTask.text.trim().toString(),
-            due_date = dueDate,
-//            reminder = taskReminder,
-            status = taskStatus
+            dueDate = dueDate.toString(),
+            status = taskStatus,
+            reminder = dueDate.toString(),
+            createdTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()),
+
         )
 
-        editTask(editTasksRequest)
+        Log.d("edit task", editTasksRequest.toString())
+        editTask( id = todoModel.id!!,editTasksRequest)
     }
 
     private fun selectNewTaskStatus() {
-            popupMenuTwo(requireContext(), binding.ivEditFlag ){ statusSelected ->
-                taskStatus = statusSelected
+        popupMenuTwo(requireContext(), binding.tvDeleteTask) { statusSelected ->
+            taskStatus = statusSelected
 
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private fun selectNewDueDate() {
+        binding.root.hideKeyboard()
+
         pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
             newDueDate = selectedText
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = timeInMilliseconds
             newDueDate =
-                SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
 
 
             pickTime(childFragmentManager) { selectTime ->
                 selectedDueTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
+                binding.tvEditDatePicker.text = formartDate(
+                    "$newDueDate $selectedDueTime",
+                    "yyyy/MM/dd HH:mm:ss",
+                    "dd/MM/yyyy h:mm a"
+                )
                 binding.tvEditDatePicker.text = "$newDueDate $selectedDueTime"
-                dueDate = "$newDueDate $selectedDueTime"
+               dueDate= "$newDueDate $selectedDueTime"
             }
 
 
@@ -320,17 +336,6 @@ class BottomSheetEditTaskFragment(var refreshListCallback: ()->Unit ) : BottomSh
 
     }
 
-    private fun deleteTask() {
-        val deleteTaskRequest = TodoModel(
-            id = todoModel.id,
-            title = binding.editTextEditTitle.text.trim().toString(),
-            description = binding.editTextEditTask.text.trim().toString(),
-            due_date = dueDate ?: " ",
-            status = taskStatus
-        )
-
-        deleteTask(deleteTaskRequest)
-    }
 
     private fun closeBottomSheet() {
         dismiss()

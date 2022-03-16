@@ -19,7 +19,12 @@ class UserRepo @Inject constructor(
     suspend fun getUser(id: String) = safeApiCall { api.getUser(id) }
 
     suspend fun updateUser(updateUserRequest: UserModel) = safeApiCall {
-        api.editUser(updateUserRequest, updateUserRequest.id!!)
+        api.editUser(
+            updateUserRequest.id!!,
+            updateUserRequest.username!!,
+            updateUserRequest.email!!,
+            updateUserRequest.photo!!,
+            updateUserRequest.password ?: "")
     }
 
     suspend fun deleteUser(id: String) = safeApiCall { api.deleteUser(id) }

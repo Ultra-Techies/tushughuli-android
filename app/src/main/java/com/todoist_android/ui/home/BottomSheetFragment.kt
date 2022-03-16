@@ -26,7 +26,6 @@ import com.todoist_android.ui.formartDate
 import com.todoist_android.ui.hideKeyboard
 import com.todoist_android.ui.pickDate
 import com.todoist_android.ui.pickTime
-import com.todoist_android.ui.popupMenu
 import com.todoist_android.ui.showKeyboard
 import com.todoist_android.ui.todayDate
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +33,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
@@ -48,7 +49,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
     private var dueDate: String? = todayDate()
     private var selectedTime: String? = null
-    private var loggedInUserId: String? = null
+     private var loggedInUserId: String? = null
     private var status = "created"
     private var dateTime = " "
         set(value) {
@@ -96,7 +97,6 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
     private fun setOnClickListeners() {
         binding.tvDatePicker.setOnClickListener(this)
-        binding.ivFlag.setOnClickListener(this)
         binding.buttonAddTask.setOnClickListener(this)
         binding.tvEndTask.setOnClickListener(this)
     }
@@ -126,18 +126,18 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     override fun onClick(view: View) {
         when (view) {
             binding.tvDatePicker -> selectDueDate()
-            binding.ivFlag -> selectStatus()
             binding.buttonAddTask -> addNewTask()
             binding.tvEndTask -> closeAddTaskBottomSheet()
         }
     }
 
     private fun selectDueDate() {
+        binding.root.hideKeyboard()
         pickDate(childFragmentManager) { selectedText, timeInMilliseconds ->
             dateTime = selectedText
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = timeInMilliseconds
-            dueDate = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(calendar.time)
+            dueDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
 
             pickTime(childFragmentManager) { selectTime ->
                 // format to HH:mm:ss
@@ -145,13 +145,6 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
                 dateTime = "$dateTime at  $selectTime"
 
             }
-        }
-    }
-
-
-    private fun selectStatus() {
-        popupMenu(requireContext(), binding.ivFlag) { statusSelected ->
-            status = statusSelected
         }
     }
 
@@ -172,13 +165,13 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
         val taskRequest = AddTaskRequest(
             title = title,
-            id = loggedInUserId,
             description = description,
-            status = status,
-            due_date = "${dueDate ?: " "} ${selectedTime ?: " "}"
+            reminder=DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()),
+            dueDate = "${dueDate ?: " "} ${selectedTime ?: DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now())}",
+            createdTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()),
         )
-        Log.d("--->", taskRequest.toString())
-        addTasks(taskRequest)
+        Log.d("--->",taskRequest.toString())
+        addTasks(loggedInUserId!!.toInt(),taskRequest)
     }
 
 
@@ -187,7 +180,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     }
 
 
-    private fun addTasks(taskRequest: AddTaskRequest) {
+    private fun addTasks(id:Int,taskRequest: AddTaskRequest) {
         binding.root.hideKeyboard()
         binding.pbBottomSheet.visibility = VISIBLE
         Snackbar.make(dialog?.window!!.decorView, "Adding your task...", Snackbar.LENGTH_LONG)
@@ -196,6 +189,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
         viewModel.addTasks(taskRequest)
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.addTasks(id,taskRequest).collect {
                 viewModel.addTaskObserver.collect {
                     when (it) {
                         is APIResource.Success -> {

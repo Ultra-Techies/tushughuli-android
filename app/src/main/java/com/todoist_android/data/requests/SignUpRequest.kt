@@ -1,9 +1,9 @@
-package com.todoist_android.data.responses
+package com.todoist_android.data.requests
 
-data class UserResponse(
+data class SignUpRequest(
     val email: String,
-    val id: Int,
     val name: String,
+    val password: String,
     val photo: String,
     val username: String
 )

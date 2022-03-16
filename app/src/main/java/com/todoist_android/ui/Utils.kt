@@ -1,6 +1,7 @@
 package com.todoist_android.ui
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
@@ -19,7 +20,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-const val BASE_URL = "https://621ce943768a4e1020b93731.mockapi.io/api/v1/"
+//const val BASE_URL = "https://621ce943768a4e1020b93731.mockapi.io/api/v1/"
+
+const val BASE_URL ="http://192.168.0.108:8080/"
+//const val BASE_URL = "https://621ce943768a4e1020b93731.mockapi.io/api/v1/"
+//const val BASE_URL = "http://192.168.100.224:8080/" //when running backend locally, use your laptop local ip address
 
 private const val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
 
@@ -31,7 +36,7 @@ fun validateEmail(email: String): Boolean {
 
 fun todayDate(): String {
     val todayDate = Calendar.getInstance().time
-    return SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(todayDate)
+    return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(todayDate)
 }
 
 
@@ -118,9 +123,6 @@ fun popupMenu(context: Context, view: View, statusSelected: (String) -> Unit) {
             R.id.item_created -> {
                 statusSelected("created")
             }
-            R.id.item_progress -> {
-                statusSelected("progress")
-            }
         }
         true
     }
@@ -177,19 +179,37 @@ fun popupMenuTwo(context: Context, view: View, statusSelected: (String) -> Unit)
     popup.inflate(R.menu.set_full_status_menu)
     popup.setOnMenuItemClickListener {
         when (it.itemId) {
-            R.id.item_created_two -> {
-                statusSelected("created")
-            }
             R.id.item_progress_two -> {
                 statusSelected("progress")
             }
             R.id.item_completed ->{
-                statusSelected("Completed")
+                statusSelected("done")
             }
         }
         true
     }
     popup.show()
+}
+
+//get time difference between now(current date time) to due date of format 2022/03/11 17:10:00
+fun getTimeDifference(date: String): Array<Int> {
+    try {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault())
+        val currentDate = Date()
+        val dueDate = dateFormat.parse(date)
+        val diff = dueDate.time - currentDate.time
+        val seconds = diff / 1000
+        val minutes = seconds / 60
+        val hours = minutes / 60
+        val days = hours / 24
+
+        //position 0 is days, position 1 is hours, position 2 is minutes
+        return arrayOf(days.toInt() ,hours.toInt(), minutes.toInt())
+    }
+    catch (e: Exception){
+        Log.e("TimeDifference", e.message.toString())
+        return arrayOf(0,0,0,0)
+    }
 }
 
 

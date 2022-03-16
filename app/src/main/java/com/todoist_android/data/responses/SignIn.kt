@@ -1,6 +1,6 @@
 package com.todoist_android.data.responses
 
-data class UserResponse(
+data class SignIn(
     val email: String,
     val id: Int,
     val name: String,
