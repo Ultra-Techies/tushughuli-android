@@ -173,6 +173,35 @@ fun View.handleApiError (
     }
 }
 
+//this will be handled by the view model
+fun parseErrors(failure: APIResource.Error) : String {
+  return  when {
+        failure.isNetworkError ->  "Network Error"
+        failure.errorCode == 401 -> {
+            ("Unauthorized request")
+        }
+        failure.errorCode == 404 -> { ("Resource not found")
+        }
+        failure.errorCode == 422 -> { ("Validation error")
+        }
+        failure.errorCode == 500 -> { ("Internal server error")
+        }
+        failure.errorCode == 503 -> {
+           ("Service unavailable")
+        }
+        failure.errorCode == 504 -> {
+         ("Gateway timeout")
+        }
+        failure.errorCode == 0 -> {
+            ("Unknown error")
+        }
+        else -> {
+            val error = failure.errorBody?.string().toString()
+       (error)
+        }
+    }
+}
+
 
 fun popupMenuTwo(context: Context, view: View, statusSelected: (String) -> Unit) {
     val popup = PopupMenu(context, view)
