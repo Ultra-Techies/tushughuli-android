@@ -3,8 +3,6 @@ package com.todoist_android.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.todoist_android.data.network.APIResource
-import com.todoist_android.data.models.TodoModel
-import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.TasksRepo
 import com.todoist_android.data.requests.EditTaskRequest
 import com.todoist_android.data.responses.EditTaskResponse
@@ -12,7 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel

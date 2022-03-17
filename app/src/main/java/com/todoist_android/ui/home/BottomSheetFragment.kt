@@ -186,10 +186,9 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
         Snackbar.make(dialog?.window!!.decorView, "Adding your task...", Snackbar.LENGTH_LONG)
             .show()
 
-        viewModel.addTasks(taskRequest)
+        viewModel.addTasks(id,taskRequest)
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.addTasks(id,taskRequest).collect {
                 viewModel.addTaskObserver.collect {
                     when (it) {
                         is APIResource.Success -> {

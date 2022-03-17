@@ -15,18 +15,14 @@ import javax.inject.Inject
 @HiltViewModel
 class BottomSheetViewModel @Inject constructor(private val tasksRepo: TasksRepo) : ViewModel() {
 
-    fun addTasks(id:Int,taskRequest: AddTaskRequest) = flow {
-        val response = tasksRepo.addTasks(id,taskRequest)
-        emit(response)
-    }.shareIn(viewModelScope, SharingStarted.Lazily)
     private val _addTaskObserver =
         MutableStateFlow<APIResource<AddTasksResponse>>(APIResource.Loading);
     val addTaskObserver = _addTaskObserver.asStateFlow()
 
-    fun addTasks(taskRequest: AddTaskRequest) {
+    fun addTasks(id: Int, taskRequest: AddTaskRequest) {
         viewModelScope.launch {
             _addTaskObserver.emit(APIResource.Loading)
-            val response = tasksRepo.addTasks(taskRequest)
+            val response = tasksRepo.addTasks(id, taskRequest)
             _addTaskObserver.emit(response);
         }
     }
