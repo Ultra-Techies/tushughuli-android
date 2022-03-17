@@ -6,6 +6,7 @@ import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.TasksRepo
 import com.todoist_android.data.requests.EditTaskRequest
 import com.todoist_android.data.responses.EditTaskResponse
+import com.todoist_android.ui.parseErrors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -38,7 +39,7 @@ class EditTaskBottomSheetViewModel@Inject constructor(private val tasksRepo: Tas
 
                 }
                 is APIResource.Error->{
-                    _errorResponse.emit(editResponse.errorBody.toString())
+                    _errorResponse.emit(parseErrors(editResponse))
                 }
             }
         }
@@ -56,7 +57,7 @@ class EditTaskBottomSheetViewModel@Inject constructor(private val tasksRepo: Tas
 
                 }
                 is APIResource.Error->{
-                    _errorResponse.emit(deleteResponse.errorBody.toString())
+                    _deleteErrorResponse.emit(parseErrors(deleteResponse))
                 }
             }
         }

@@ -18,7 +18,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
-import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.requests.AddTaskRequest
 import com.todoist_android.databinding.FragmentBottomsheetBinding
@@ -50,7 +49,6 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     private var dueDate: String? = todayDate()
     private var selectedTime: String? = null
      private var loggedInUserId: String? = null
-    private var status = "created"
     private var dateTime = " "
         set(value) {
             binding.tvDatePicker.text = value
@@ -91,6 +89,10 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
         getLoggedInUserId()
 
         setOnClickListeners()
+
+        addTaskListener()
+
+        errorListener()
 
     }
 
@@ -179,48 +181,49 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
         dismiss()
     }
 
-
-    private fun addTasks(id:Int,taskRequest: AddTaskRequest) {
-        binding.root.hideKeyboard()
-        binding.pbBottomSheet.visibility = VISIBLE
-        Snackbar.make(dialog?.window!!.decorView, "Adding your task...", Snackbar.LENGTH_LONG)
-            .show()
-
-        viewModel.addTasks(id,taskRequest)
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.addTaskObserver.collect {
-                    when (it) {
-                        is APIResource.Success -> {
-                            binding.pbBottomSheet.visibility = GONE
-                            Snackbar.make(
-                                dialog?.window!!.decorView,
-                                "Task added successfully",
-                                Snackbar.LENGTH_SHORT
-                            ).show()
-                            addNewTaskCallback.invoke()
-                            viewLifecycleOwner.lifecycleScope.launch {
-                                delay(1000)
-                                dismiss()
-                            }
-                        }
-                        is APIResource.Error -> {
-                            binding.pbBottomSheet.visibility = GONE
-                            Snackbar.make(
-                                dialog?.window!!.decorView,
-                                it.errorBody.toString(),
-                                Snackbar.LENGTH_SHORT
-                            )
-                                .show()
-                        }
-                        is APIResource.Loading -> {
-                            binding.pbBottomSheet.visibility = VISIBLE
-                        }
+    private fun addTaskListener(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.addTasksResponse.collectLatest {
+                    binding.pbBottomSheet.visibility = GONE
+                    Snackbar.make(
+                        dialog?.window!!.decorView,
+                        "Task added successfully",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                    addNewTaskCallback.invoke()
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        delay(1000)
+                        dismiss()
                     }
                 }
             }
         }
+    }
 
+    private fun errorListener() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorResponse.collectLatest { message ->
+                    binding.pbBottomSheet.visibility = GONE
+                    Snackbar.make(
+                        dialog?.window!!.decorView,
+                        message,
+                        Snackbar.LENGTH_SHORT
+                    )
+                        .show()
+                }
+
+            }
+        }
+    }
+
+    private fun addTasks( id: Int,addTaskRequest: AddTaskRequest){
+        binding.root.hideKeyboard()
+        binding.pbBottomSheet.visibility = VISIBLE
+        Snackbar.make(dialog?.window!!.decorView, "Adding your task...", Snackbar.LENGTH_LONG)
+            .show()
+        viewModel.addTasks(id, addTaskRequest)
     }
 
 
