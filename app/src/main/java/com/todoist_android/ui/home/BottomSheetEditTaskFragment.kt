@@ -197,7 +197,6 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: () -> Unit) :
                         Snackbar.LENGTH_SHORT
                     )
                         .show()
-//                    binding.root.handleApiError(APIResource.Error())
                 }
             }
         }
