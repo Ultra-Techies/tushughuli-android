@@ -5,8 +5,11 @@ import com.todoist_android.BuildConfig
 import com.todoist_android.data.network.APIAuthentication
 import com.todoist_android.data.network.TaskApi
 import com.todoist_android.data.network.UserApi
+import com.todoist_android.data.repository.AuthRepo
+import com.todoist_android.data.repository.AuthRepoImpl
 import com.todoist_android.data.repository.TasksRepo
 import com.todoist_android.data.repository.TasksRepoImpl
+import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.ui.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -73,4 +76,8 @@ object AppModule {
     @Singleton
     @Provides
     fun provideTaskRepo(taskApi: TaskApi): TasksRepo = TasksRepoImpl(taskApi)
+
+    @Singleton
+    @Provides
+    fun provideAuthRepo(authApi: APIAuthentication,userPrefs: UserPreferences): AuthRepo = AuthRepoImpl(authApi,userPrefs)
 }
