@@ -2,11 +2,12 @@ package com.todoist_android.data.repository
 
 import com.google.common.truth.Truth.assertThat
 import com.todoist_android.MainCoroutineRule
-import com.todoist_android.data.models.TodoModel
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.network.TaskApi
 import com.todoist_android.data.requests.AddTaskRequest
+import com.todoist_android.data.requests.EditTaskRequest
 import com.todoist_android.data.responses.AddTasksResponse
+import com.todoist_android.data.responses.EditTaskResponse
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -37,59 +38,65 @@ class TasksRepoTest {
     @Test
     fun `add task, return success`() = runTest {
         // given
-        val resp = AddTasksResponse(
+        val response = AddTasksResponse(
+            id = 1,
+            title = "",
             description = "",
-            due_date = "",
-            id = 0,
-            status = "",
-            title = ""
-        )
+            reminder = "", dueDate = "",
+            status = ""
 
+        )
         // when
-        coEvery { taskApi.addTasks(any()) } returns resp
+        coEvery { taskApi.addTasks(any(),1) } returns response
 
         // expect
-        val apiResponse = tasksRepo.addTasks(AddTaskRequest())
+        val apiResponse = tasksRepo.addTasks(id = 1,AddTaskRequest())
 
-        assertThat(apiResponse).isEqualTo(APIResource.Success(resp))
+        assertThat(apiResponse).isEqualTo(APIResource.Success(response))
         coVerify {
-            taskApi.addTasks(any())
+            taskApi.addTasks(any(), 1)
         }
     }
+
+
+
 
     @Test
     fun `add task, return fail`() = runTest {
         // when
-        coEvery { taskApi.addTasks(any()) } throws Exception("Something went wrong")
+        coEvery { taskApi.addTasks(any(),1) } throws Exception("Something went wrong")
 
         // expect
-        val apiResponse = tasksRepo.addTasks(AddTaskRequest())
+        val apiResponse = tasksRepo.addTasks(id = 1,AddTaskRequest())
 
         assertThat(apiResponse).isEqualTo(APIResource.Error(true, null, null))
         coVerify {
-            taskApi.addTasks(any())
+            taskApi.addTasks(any(),1)
         }
     }
 
     @Test
     fun `edit task, return success`() = runTest{
-        val editTasksRequest = TodoModel(
+        val editTasksRequest = EditTaskResponse(
             title = "now",
             description = "now now",
-            due_date = "2022-04-11 14:10:00",
-            id = "2",
+            dueDate = "2022-04-11 14:10:00",
+            id = 2,
+            reminder = "2022-04-11 14:10:00",
             status = "progress"
 
         )
         coEvery { taskApi.editTasks(any(),any()) }returns editTasksRequest
 
-        val apiResponse =tasksRepo.editTasks(TodoModel(
-            title = null,
-            description = null,
-            due_date = null,
-            id = "2",
-            status = null
-        ))
+        val apiResponse =tasksRepo.editTasks(id = 1, EditTaskRequest(
+            title = "go home",
+            description = "use a car",
+            dueDate = "2022-04-11 14:10;00",
+            status = "done",
+            createdTime = "2022-04-10 10:00:00",
+            reminder = "2022-04-10 10:00:00"
+        )
+        )
         assertThat(apiResponse).isEqualTo(APIResource.Success(editTasksRequest))
 
         coVerify {
@@ -102,13 +109,15 @@ class TasksRepoTest {
 
         coEvery { taskApi.editTasks(any(),any()) }throws Exception("Something went wrong")
 
-        val apiResponse = tasksRepo.editTasks(
-            TodoModel(
-                title = null,
-                description = null,
-                due_date = null,
-                id = "2",
-                status = null
+        val apiResponse = tasksRepo.editTasks(id = 1,
+            EditTaskRequest(
+                description = "",
+                dueDate = "",
+                reminder = "",
+                createdTime = "",
+                status = "",
+                title = ""
+
             )
         )
         assertThat(apiResponse).isEqualTo(APIResource.Error(true,null,null))
@@ -119,51 +128,27 @@ class TasksRepoTest {
 
     @Test
     fun`deleteTasks, returns Success`() = runTest {
-    val deleteTaskRequest = TodoModel(
-        title = null,
-        description = null,
-        due_date = null,
-        id = "2",
-        status = null
 
-    )
-        coEvery { taskApi.deleteTasks(any(),any()) }returns deleteTaskRequest
+        coEvery { taskApi.deleteTasks(any()) }returns String()
 
-        val apiResponse = tasksRepo.deleteTasks(
-            TodoModel(
-                title = null,
-                description = null,
-                due_date = null,
-                id = "2",
-                status = null
-
-            )
+        val apiResponse = tasksRepo.deleteTasks(id = 1
         )
-        assertThat(apiResponse).isEqualTo(APIResource.Success(deleteTaskRequest))
+        assertThat(apiResponse).isEqualTo(APIResource.Success(String()))
 
-        coVerify { taskApi.deleteTasks(any(),any()) }
+        coVerify { taskApi.deleteTasks(any()) }
 
     }
 
     @Test
     fun `deleteTasks, returns error`()= runTest {
 
-        coEvery { taskApi.deleteTasks(any(),any()) }throws Exception("Something went wrong")
+        coEvery { taskApi.deleteTasks(any()) }throws Exception("Something went wrong")
 
-        val apiResponse = tasksRepo.deleteTasks(
-            TodoModel(
-                title = null,
-                description = null,
-                due_date = null,
-                id = "2",
-                status = null
-
-            )
-        )
+        val apiResponse = tasksRepo.deleteTasks(id=1)
         assertThat(apiResponse).isEqualTo(APIResource.Error(true,null,null))
 
         coVerify {
-           taskApi.deleteTasks(any(),any())
+           taskApi.deleteTasks(any())
         }
 
 
