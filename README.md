@@ -94,7 +94,7 @@ Run the app on your emulator or device
 
 ## Contributers
 Auto-populated from:
-[contributors-img](https://contributors-img.firebaseapp.com/image?repo=droidconke/droidconKE2020App)
+[contributors-img](https://contributors-img.firebaseapp.com/image?repo=Ultra-Techies/Todolist-android)
 
 <a href="https://github.com/Ultra-Techies/Todolist-android/graphs/contributors">
   <img src="https://contributors-img.firebaseapp.com/image?repo=Ultra-Techies/Todolist-android" />
