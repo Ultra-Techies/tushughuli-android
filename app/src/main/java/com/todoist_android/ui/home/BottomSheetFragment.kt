@@ -18,7 +18,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.todoist_android.R
-import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.data.requests.AddTaskRequest
 import com.todoist_android.databinding.FragmentBottomsheetBinding
@@ -26,7 +25,6 @@ import com.todoist_android.ui.formartDate
 import com.todoist_android.ui.hideKeyboard
 import com.todoist_android.ui.pickDate
 import com.todoist_android.ui.pickTime
-import com.todoist_android.ui.popupMenu
 import com.todoist_android.ui.showKeyboard
 import com.todoist_android.ui.todayDate
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,7 +32,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -51,8 +48,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
     private var dueDate: String? = todayDate()
     private var selectedTime: String? = null
-    private var loggedInUserId: String? = null
-    private var status = "created"
+     private var loggedInUserId: String? = null
     private var dateTime = " "
         set(value) {
             binding.tvDatePicker.text = value
@@ -94,12 +90,15 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
         setOnClickListeners()
 
+        addTaskListener()
+
+        errorListener()
+
     }
 
 
     private fun setOnClickListeners() {
         binding.tvDatePicker.setOnClickListener(this)
-        binding.ivFlag.setOnClickListener(this)
         binding.buttonAddTask.setOnClickListener(this)
         binding.tvEndTask.setOnClickListener(this)
     }
@@ -129,7 +128,6 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     override fun onClick(view: View) {
         when (view) {
             binding.tvDatePicker -> selectDueDate()
-            binding.ivFlag -> selectStatus()
             binding.buttonAddTask -> addNewTask()
             binding.tvEndTask -> closeAddTaskBottomSheet()
         }
@@ -153,13 +151,6 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     }
 
 
-    private fun selectStatus() {
-        popupMenu(requireContext(), binding.ivFlag) { statusSelected ->
-            status = statusSelected
-        }
-    }
-
-
     private fun addNewTask() {
         if (binding.etTaskTitle.text.isNullOrEmpty()) {
             binding.etTaskTitle.error = getString(R.string.error_task_title)
@@ -176,13 +167,13 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
 
         val taskRequest = AddTaskRequest(
             title = title,
-            id = loggedInUserId,
             description = description,
+            reminder=DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()),
             dueDate = "${dueDate ?: " "} ${selectedTime ?: DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now())}",
             createdTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()),
         )
         Log.d("--->",taskRequest.toString())
-        addTasks(taskRequest)
+        addTasks(loggedInUserId!!.toInt(),taskRequest)
     }
 
 
@@ -190,46 +181,49 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
         dismiss()
     }
 
-
-    private fun addTasks(taskRequest: AddTaskRequest) {
-        binding.root.hideKeyboard()
-        binding.pbBottomSheet.visibility = VISIBLE
-        Snackbar.make(dialog?.window!!.decorView, "Adding your task...", Snackbar.LENGTH_LONG)
-            .show()
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.addTasks(taskRequest).collect {
-                    when (it) {
-                        is APIResource.Success -> {
-                            binding.pbBottomSheet.visibility = GONE
-                            Snackbar.make(
-                                dialog?.window!!.decorView,
-                                "Task added successfully",
-                                Snackbar.LENGTH_SHORT
-                            ).show()
-                            addNewTaskCallback.invoke()
-                            viewLifecycleOwner.lifecycleScope.launch {
-                                delay(1000)
-                                dismiss()
-                            }
-                        }
-                        is APIResource.Error -> {
-                            binding.pbBottomSheet.visibility = GONE
-                            Snackbar.make(
-                                dialog?.window!!.decorView,
-                                it.errorBody.toString(),
-                                Snackbar.LENGTH_SHORT
-                            )
-                                .show()
-                        }
-                        is APIResource.Loading -> {
-                            binding.pbBottomSheet.visibility = VISIBLE
-                        }
+    private fun addTaskListener(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.addTasksResponse.collectLatest {
+                    binding.pbBottomSheet.visibility = GONE
+                    Snackbar.make(
+                        dialog?.window!!.decorView,
+                        "Task added successfully",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                    addNewTaskCallback.invoke()
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        delay(1000)
+                        dismiss()
                     }
                 }
             }
         }
+    }
 
+    private fun errorListener() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorResponse.collectLatest { message ->
+                    binding.pbBottomSheet.visibility = GONE
+                    Snackbar.make(
+                        dialog?.window!!.decorView,
+                        message,
+                        Snackbar.LENGTH_SHORT
+                    )
+                        .show()
+                }
+
+            }
+        }
+    }
+
+    private fun addTasks( id: Int,addTaskRequest: AddTaskRequest){
+        binding.root.hideKeyboard()
+        binding.pbBottomSheet.visibility = VISIBLE
+        Snackbar.make(dialog?.window!!.decorView, "Adding your task...", Snackbar.LENGTH_LONG)
+            .show()
+        viewModel.addTasks(id, addTaskRequest)
     }
 
 

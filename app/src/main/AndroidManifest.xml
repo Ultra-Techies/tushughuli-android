@@ -20,6 +20,7 @@
                 android:name=".ui.home.NotificationService"
                 android:enabled="true"
                 android:exported="false" />
+
         <activity
                 android:name=".ui.profile.ProfileActivity"
                 android:exported="true"/>

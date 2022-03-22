@@ -5,6 +5,11 @@ import com.todoist_android.BuildConfig
 import com.todoist_android.data.network.APIAuthentication
 import com.todoist_android.data.network.TaskApi
 import com.todoist_android.data.network.UserApi
+import com.todoist_android.data.repository.AuthRepo
+import com.todoist_android.data.repository.AuthRepoImpl
+import com.todoist_android.data.repository.TasksRepo
+import com.todoist_android.data.repository.TasksRepoImpl
+import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.ui.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -14,6 +19,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import javax.inject.Singleton
 
 
@@ -39,6 +45,7 @@ object AppModule {
     @Singleton
     fun providesRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit
         .Builder()
+        .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .client(okHttpClient)
@@ -47,7 +54,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun apiService(retrofit: Retrofit): APIAuthentication = retrofit.create(APIAuthentication::class.java)
+    fun apiService(retrofit: Retrofit): APIAuthentication =
+        retrofit.create(APIAuthentication::class.java)
 
     @Singleton
     @Provides
@@ -64,4 +72,12 @@ object AppModule {
     ): TaskApi {
         return retrofit.create(TaskApi::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideTaskRepo(taskApi: TaskApi): TasksRepo = TasksRepoImpl(taskApi)
+
+    @Singleton
+    @Provides
+    fun provideAuthRepo(authApi: APIAuthentication,userPrefs: UserPreferences): AuthRepo = AuthRepoImpl(authApi,userPrefs)
 }

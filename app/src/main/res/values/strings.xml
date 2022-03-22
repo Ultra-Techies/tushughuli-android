@@ -29,7 +29,7 @@
     <string name="add_new_task">ADD NEW TASK</string>
     <string name="write_your_new_task">Write your new task</string>
     <string name="close">Close</string>
-    <string name="task_name">Task name</string>
+    <string name="task_name">Task description</string>
     <string name="today">Today</string>
     <string name="flag_icon">flag icon</string>
     <string name="reminder_icon">reminder icon</string>

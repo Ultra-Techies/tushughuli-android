@@ -1,11 +1,10 @@
 package com.todoist_android.data.responses
 
-data class AddTasksResponse(
-    val id: Int,
-    val title: String,
+data class EditTaskResponse(
     val description: String,
-    val reminder: String,
     val dueDate: String,
+    val id: Int,
+    val reminder: String,
     val status: String,
-
+    val title: String
 )
