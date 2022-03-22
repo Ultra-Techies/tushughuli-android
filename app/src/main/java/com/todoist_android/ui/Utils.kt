@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import android.view.View
 import android.widget.PopupMenu
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
@@ -14,15 +13,13 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
-import com.todoist_android.ui.auth.LoginFragment
-import org.junit.jupiter.api.fail
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 //const val BASE_URL = "https://621ce943768a4e1020b93731.mockapi.io/api/v1/"
 
-const val BASE_URL ="http://192.168.0.108:8080/"
+const val BASE_URL = "http://192.168.0.106:8080/"
 //const val BASE_URL = "https://621ce943768a4e1020b93731.mockapi.io/api/v1/"
 //const val BASE_URL = "http://192.168.100.224:8080/" //when running backend locally, use your laptop local ip address
 
@@ -131,18 +128,18 @@ fun popupMenu(context: Context, view: View, statusSelected: (String) -> Unit) {
 
 fun View.snackbar(message: String, action: (() -> Unit)? = null) {
     val snackbar = Snackbar.make(this, message, Snackbar.LENGTH_LONG)
-        action?.let {
-            snackbar.setAction("Retry") {
-                it()
-            }
+    action?.let {
+        snackbar.setAction("Retry") {
+            it()
         }
+    }
     snackbar.show()
 }
 
-fun View.handleApiError (
+fun View.handleApiError(
     failure: APIResource.Error,
-    action:(() -> Unit)? = null
-){
+    action: (() -> Unit)? = null
+) {
     when {
         failure.isNetworkError -> snackbar("Network Error", action)
         failure.errorCode == 401 -> {
@@ -174,30 +171,33 @@ fun View.handleApiError (
 }
 
 //this will be handled by the view model
-fun parseErrors(failure: APIResource.Error) : String {
-  return  when {
-        failure.isNetworkError ->  "Network Error"
+fun parseErrors(failure: APIResource.Error): String {
+    return when {
+        failure.isNetworkError -> "Network Error"
         failure.errorCode == 401 -> {
-            ("Unauthorized request")
+            "Unauthorized request"
         }
-        failure.errorCode == 404 -> { ("Resource not found")
+        failure.errorCode == 404 -> {
+            ("Resource not found")
         }
-        failure.errorCode == 422 -> { ("Validation error")
+        failure.errorCode == 422 -> {
+            ("Validation error")
         }
-        failure.errorCode == 500 -> { ("Internal server error")
+        failure.errorCode == 500 -> {
+            ("Internal server error")
         }
         failure.errorCode == 503 -> {
-           ("Service unavailable")
+            ("Service unavailable")
         }
         failure.errorCode == 504 -> {
-         ("Gateway timeout")
+            ("Gateway timeout")
         }
         failure.errorCode == 0 -> {
             ("Unknown error")
         }
         else -> {
             val error = failure.errorBody?.string().toString()
-       (error)
+            (error)
         }
     }
 }
@@ -211,7 +211,7 @@ fun popupMenuTwo(context: Context, view: View, statusSelected: (String) -> Unit)
             R.id.item_progress_two -> {
                 statusSelected("progress")
             }
-            R.id.item_completed ->{
+            R.id.item_completed -> {
                 statusSelected("done")
             }
         }
@@ -233,11 +233,10 @@ fun getTimeDifference(date: String): Array<Int> {
         val days = hours / 24
 
         //position 0 is days, position 1 is hours, position 2 is minutes
-        return arrayOf(days.toInt() ,hours.toInt(), minutes.toInt())
-    }
-    catch (e: Exception){
+        return arrayOf(days.toInt(), hours.toInt(), minutes.toInt())
+    } catch (e: Exception) {
         Log.e("TimeDifference", e.message.toString())
-        return arrayOf(0,0,0,0)
+        return arrayOf(0, 0, 0, 0)
     }
 }
 
