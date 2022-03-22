@@ -1,26 +1,34 @@
 package com.todoist_android.data.repository
 
 import com.todoist_android.data.network.APIAuthentication
+import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.requests.SignUpRequest
 import com.todoist_android.data.network.repository.BaseRepo
 import com.todoist_android.data.requests.LoginRequest
 import com.todoist_android.data.requests.UpdateUserRequest
+import com.todoist_android.data.responses.LoginResponse
+import com.todoist_android.data.responses.SignupResponse
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 //Communicates with our external data source
-class AuthRepo @Inject constructor  (
+interface AuthRepo{
+
+    suspend fun login(email: String,password: String):APIResource<LoginResponse>
+    suspend fun signup(username: String, email: String, password: String, photo: String, name: String):APIResource<SignupResponse>
+    suspend fun saveToken(token: String)
+
+}
+class AuthRepoImpl @Inject constructor  (
     private val authApi: APIAuthentication,
     private val userPrefs: UserPreferences
-) : BaseRepo() {
+) : AuthRepo,BaseRepo() {
 
-    suspend fun login(email: String, password: String) = safeApiCall {
+   override suspend fun login(email: String, password: String) = safeApiCall {
         authApi.login(loginRequest = LoginRequest(email, password))
     }
 
-//    suspend fun signup(username: String, name: String = username, email: String, photo: String, password: String) = safeApiCall {
-//        authApi.signup(userCreateRequest = UpdateUserRequest(username, name, password,email, photo))
-//    }
-    suspend fun signup(username: String, email: String, password: String, photo: String, name: String) = safeApiCall {
+    override suspend fun signup(username: String, email: String, password: String, photo: String, name: String) = safeApiCall{
         val signUpRequest = SignUpRequest(
             username = username,
             email = email,
@@ -31,7 +39,7 @@ class AuthRepo @Inject constructor  (
         authApi.signup(signUpRequest)
     }
 
-    suspend fun saveToken(token: String) {
+override suspend fun saveToken(token: String) {
         userPrefs.saveToken(token)
     }
 }
