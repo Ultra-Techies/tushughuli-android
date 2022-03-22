@@ -92,12 +92,13 @@ Run the app on your emulator or device
 - [ ] Unit Testing
 - [ ] Deploy app on [appetize.io](https://appetize.io/#howitworks)
 
-## Authors
+## Contributers
+Auto-populated from:
+[contributors-img](https://contributors-img.firebaseapp.com/image?repo=droidconke/droidconKE2020App)
 
-- [@Njumbi](https://github.com/Njumbi) - Github Username
-
-- [@malcolmmaima](https://github.com/malcolmmaima) - Github Username
-
+<a href="https://github.com/Ultra-Techies/Todolist-android/graphs/contributors">
+  <img src="https://contributors-img.firebaseapp.com/image?repo=Ultra-Techies/Todolist-android" />
+</a>
 
 ## Contributing
 
