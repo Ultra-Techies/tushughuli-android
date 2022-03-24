@@ -21,12 +21,16 @@ class SettingsViewModel @Inject constructor(private val repository: UserRepo) : 
     private val _user: MutableLiveData<APIResource<UserResponse>> = MutableLiveData()
     private val _userDelete: MutableLiveData<APIResource<UserDeleteResponse>> = MutableLiveData()
     private  val _editUserResponse = MutableSharedFlow<APIResource<UserModel>>()
+    private val _userDeleteTasks: MutableLiveData<APIResource<UserDeleteResponse>> = MutableLiveData()
 
     val user: LiveData<APIResource<UserResponse>>
         get() = _user
 
     val userDelete: LiveData<APIResource<UserDeleteResponse>>
         get() = _userDelete
+
+    val userDeleteTasks: LiveData<APIResource<UserDeleteResponse>>
+        get() = _userDeleteTasks
 
     fun getUser(id: String) = viewModelScope.launch {
         _user.value = APIResource.Loading
@@ -36,6 +40,11 @@ class SettingsViewModel @Inject constructor(private val repository: UserRepo) : 
     fun deleteUser(id: String) = viewModelScope.launch {
         _userDelete.value = APIResource.Loading
         _userDelete.value = repository.deleteUser(id)
+    }
+
+    fun deleteAllTasks(id: String) = viewModelScope.launch {
+        _userDeleteTasks.value = APIResource.Loading
+        _userDeleteTasks.value = repository.deleteAllTasks(id)
     }
 
     val editUserResponse: SharedFlow<APIResource<UserModel>> get() = _editUserResponse

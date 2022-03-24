@@ -26,4 +26,9 @@ interface UserApi {
     suspend fun deleteUser(
         @Path("id") id: String,
     ) : UserDeleteResponse
+
+    @DELETE("/api/task/deletebyuserid/{id}")
+    suspend fun deleteAllTasks(
+        @Path("id") id: String,
+    ) : UserDeleteResponse
 }
