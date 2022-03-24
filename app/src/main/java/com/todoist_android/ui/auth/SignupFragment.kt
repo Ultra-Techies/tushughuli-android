@@ -15,6 +15,7 @@ import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.databinding.FragmentSignupBinding
 import com.todoist_android.ui.handleApiError
+import com.todoist_android.ui.hideKeyboard
 import com.todoist_android.ui.validateEmail
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -57,6 +58,7 @@ class SignupFragment : Fragment() {
                             binding.root.handleApiError(it, action = {
                                 binding.btnSignup.performClick()
                             })
+
                         }
                         is APIResource.Loading -> {
                             binding.progressbarTwo.visibility = View.VISIBLE
@@ -131,6 +133,7 @@ class SignupFragment : Fragment() {
                 photo = photoUrl,
                 password = userPassword
             )
+            binding.root.hideKeyboard()
         }
 
         binding.textViewLogin.setOnClickListener {
