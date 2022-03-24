@@ -57,7 +57,7 @@ You can check out the compiled version of the app here: [appetize](https://appet
 Clone the project
 
 ```bash
-  git clone https://github.com/Ultra-Techies/Todolist-android
+  git clone https://github.com/Ultra-Techies/tushughuli-android
 ```
 
 Go to android studio compile and install dependencies
