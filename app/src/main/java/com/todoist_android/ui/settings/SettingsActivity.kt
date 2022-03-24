@@ -110,26 +110,44 @@ class SettingsActivity : AppCompatActivity() {
             }
         })
 
-        //delete user observer
-        viewModel.userDelete.observe(this, Observer {
+        //delete all user's tasks then delete user observer
+        viewModel.userDeleteTasks.observe(this, Observer {
             when (it) {
                 is APIResource.Success -> {
-                    binding.progressbar.isVisible = false
-                    //if message is not null, then the user was deleted
-                    it.value.message?.let {
-                        redirectToSplash()
-                    }
+                    //delete user
+                    viewModel.userDelete.observe(this, Observer {
+                        when (it) {
+                            is APIResource.Success -> {
+                                binding.progressbar.isVisible = false
+                                //if message is not null, then the user was deleted
+                                it.value.message?.let {
+                                    redirectToSplash()
+                                }
+                            }
+                            is APIResource.Loading -> {
+                                Log.d("SettingsActivity", "Deleting...")
+                                binding.progressbar.isVisible = true
+                            }
+                            is APIResource.Error -> {
+                                binding.progressbar.isVisible = false
+                                binding.root.handleApiError(it)
+                                if(it.errorCode == 404) {
+                                    redirectToSplash()
+                                }
+                            }
+                        }
+                    })
                 }
                 is APIResource.Loading -> {
-                    Log.d("SettingsActivity", "Deleting...")
+                    Log.d("SettingsActivity", "Loading...")
+                    disableInput(true)
                     binding.progressbar.isVisible = true
                 }
                 is APIResource.Error -> {
-                    binding.progressbar.isVisible = false
                     binding.root.handleApiError(it)
-                    if(it.errorCode == 404) {
-                        redirectToSplash()
-                    }
+                    Log.d("SettingsActivity", "Error: ${it.toString()}")
+                    disableInput(true)
+                    binding.progressbar.isVisible = false
                 }
             }
         })
@@ -180,6 +198,7 @@ class SettingsActivity : AppCompatActivity() {
                 .setTitle("Delete Account")
                 .setMessage("Are you sure you want to delete your account?")
                 .setPositiveButton("Yes") { dialog, which ->
+                    viewModel.deleteAllTasks(loggedInUserId.toString())
                     viewModel.deleteUser(loggedInUserId.toString())
                 }
                 .setNegativeButton("No") { dialog, which ->

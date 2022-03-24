@@ -29,6 +29,8 @@ class UserRepo @Inject constructor(
 
     suspend fun deleteUser(id: String) = safeApiCall { api.deleteUser(id) }
 
+    suspend fun deleteAllTasks(id: String) = safeApiCall { api.deleteAllTasks(id) }
+
     suspend fun saveNotificationState(state: Boolean) {
         userPrefs.saveNotificationState(state)
     }
