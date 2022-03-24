@@ -278,12 +278,12 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: () -> Unit) :
     private fun submitEditedTask() {
         // validate
         if (binding.editTextEditTitle.text.isNullOrEmpty()) {
-            binding.editTextEditTask.error = getString(R.string.error_task_title)
+            binding.editTextEditTitle.error = getString(R.string.error_task_title)
             return
         }
 
         if (binding.editTextEditTask.text.isNullOrEmpty()) {
-            binding.editTextEditTitle.error = getString(R.string.error_task_description)
+            binding.editTextEditTask.error = getString(R.string.error_task_description)
             return
         }
 
