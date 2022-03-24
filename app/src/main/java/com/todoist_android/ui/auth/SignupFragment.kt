@@ -22,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SignupFragment : Fragment() {
-    private val photoUrl: String = "https://placeimg.com/640/480/any.jpg"
+    private val photoUrl: String = "https://raw.githubusercontent.com/Ultra-Techies/Todolist-Frontend/develop/src/assets/images/Avatar.png"
     private val viewModel: AuthenticationViewModel by viewModels()
     private lateinit var binding: FragmentSignupBinding
 

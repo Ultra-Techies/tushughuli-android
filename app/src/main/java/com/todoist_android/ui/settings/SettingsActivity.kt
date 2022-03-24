@@ -36,7 +36,7 @@ class SettingsActivity : AppCompatActivity() {
     lateinit var userPreferences: UserPreferences
 
     var loggedInUserId: Int = 0
-    var profile_photo: String = "https://placeimg.com/640/480/any.jpg"
+    var profile_photo: String = "https://raw.githubusercontent.com/Ultra-Techies/Todolist-Frontend/develop/src/assets/images/Avatar.png"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
