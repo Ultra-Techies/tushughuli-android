@@ -49,6 +49,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
     private var dueDate: String? = todayDate()
     private var selectedTime: String? = null
      private var loggedInUserId: String? = null
+    private var isDateClicked: Boolean? = false
     private var dateTime = " "
         set(value) {
             binding.tvDatePicker.text = value
@@ -145,6 +146,7 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
                 // format to HH:mm:ss
                 selectedTime = formartDate(selectTime, "h:mm a", "HH:mm:ss")
                 dateTime = "$dateTime at  $selectTime"
+                isDateClicked = true
 
             }
         }
@@ -161,6 +163,17 @@ class BottomSheetFragment(var addNewTaskCallback : ()->Unit ) : BottomSheetDialo
             binding.editTextTaskName.error = getString(R.string.error_task_description)
             return
         }
+
+        if (isDateClicked == false){
+            binding.root.hideKeyboard()
+            Snackbar.make(
+                dialog?.window!!.decorView,
+                "Please select a due date",
+                Snackbar.LENGTH_SHORT
+            ).show()
+            return
+        }
+
 
         val description = binding.editTextTaskName.text.trim().toString()
         val title = binding.etTaskTitle.text.trim().toString()

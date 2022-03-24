@@ -111,7 +111,7 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: () -> Unit) :
     }
 
     private fun setOnClickListeners() {
-        binding.ivEditFlag.setOnClickListener(this)
+        binding.tvEditTaskStatus.setOnClickListener(this)
         binding.tvEditDatePicker.setOnClickListener(this)
         binding.tvDeleteTask.setOnClickListener(this)
         binding.buttonEditTask.setOnClickListener(this)
@@ -266,7 +266,7 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: () -> Unit) :
     override fun onClick(view: View?) {
         when (view) {
             binding.buttonEditTask -> submitEditedTask()
-            binding.ivEditFlag -> selectNewTaskStatus()
+            binding.tvEditTaskStatus -> selectNewTaskStatus()
             binding.tvEditDatePicker -> selectNewDueDate()
             binding.tvDeleteTask -> deleteTask(todoModel.id!!)
             binding.tvCloseEditTask -> closeBottomSheet()
@@ -287,6 +287,7 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: () -> Unit) :
             return
         }
 
+
         val editTasksRequest = EditTaskRequest(
             title = binding.editTextEditTitle.text.trim().toString(),
             description = binding.editTextEditTask.text.trim().toString(),
@@ -302,7 +303,7 @@ class BottomSheetEditTaskFragment(private var refreshListCallback: () -> Unit) :
     }
 
     private fun selectNewTaskStatus() {
-        popupMenuTwo(requireContext(), binding.tvDeleteTask) { statusSelected ->
+        popupMenuTwo(requireContext(), binding.tvEditTaskStatus) { statusSelected ->
             taskStatus = statusSelected
 
         }
