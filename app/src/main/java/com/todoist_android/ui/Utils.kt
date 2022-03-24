@@ -11,6 +11,8 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.todoist_android.R
 import com.todoist_android.data.network.APIResource
 import java.text.SimpleDateFormat
@@ -148,7 +150,14 @@ fun View.handleApiError(
             snackbar("Validation error", action)
         }
         failure.errorCode == 500 -> {
-            snackbar("Internal server error", action)
+            try {
+                val errorBody =
+                    Gson().fromJson(failure.errorBody?.string(), JsonObject::class.java)
+                snackbar(errorBody.get("message").asString, action)
+            } catch (e: Exception) {
+                snackbar("Internal server error", action)
+            }
+
         }
         failure.errorCode == 503 -> {
             snackbar("Service unavailable", action)
@@ -166,6 +175,7 @@ fun View.handleApiError(
     }
 }
 
+
 //this will be handled by the view model
 fun parseErrors(failure: APIResource.Error): String {
     return when {
@@ -180,7 +190,13 @@ fun parseErrors(failure: APIResource.Error): String {
             ("Validation error")
         }
         failure.errorCode == 500 -> {
-            ("Internal server error")
+            try {
+                val errorBody =
+                    Gson().fromJson(failure.errorBody?.string(), JsonObject::class.java)
+                (errorBody.get("message").asString)
+            } catch (e: Exception) {
+                ("Internal server error")
+            }
         }
         failure.errorCode == 503 -> {
             ("Service unavailable")
