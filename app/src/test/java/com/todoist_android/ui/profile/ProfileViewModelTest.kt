@@ -1,7 +1,6 @@
 package com.todoist_android.ui.profile
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.viewModelScope
 import com.todoist_android.MainCoroutineRule
 import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserRepo
