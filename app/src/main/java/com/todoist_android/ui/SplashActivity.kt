@@ -8,17 +8,24 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import com.google.android.material.snackbar.Snackbar
+import com.todoist_android.data.network.APIResource
 import com.todoist_android.data.repository.UserPreferences
 import com.todoist_android.databinding.ActivitySplashBinding
 import com.todoist_android.ui.auth.AuthActivity
 import com.todoist_android.ui.home.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.activity_splash.*
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 
+@AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
     lateinit var binding: ActivitySplashBinding
+    private val viewModel by viewModels<SplashViewModel>()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,16 +40,38 @@ class SplashActivity : AppCompatActivity() {
                     Log.d("SplashActivity", "token is not null or empty")
                     val userId: Int = it.toString().toInt()
 
-                    //count for 2 seconds then start the main activity passing the userId
-                    GlobalScope.launch(Dispatchers.Main) {
-                        delay(TimeUnit.SECONDS.toMillis(2))
-                        Intent(this@SplashActivity, MainActivity::class.java).also {
-                            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            it.putExtra("userId", userId)
-                            startActivity(it)
+                    //check to see if user still exists
+                    viewModel.getUser(userId.toString())
+
+                    viewModel.user.observe(this, Observer {
+                        when (it) {
+                            is APIResource.Success -> {
+                                Intent(this@SplashActivity, MainActivity::class.java).also {
+                                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    it.putExtra("userId", userId)
+                                    startActivity(it)
+                                }
+                            }
+                            is APIResource.Loading -> {
+                                Log.d("SplashActivity", "Loading...")
+                                progressBar.visibility = android.view.View.VISIBLE
+                            }
+                            is APIResource.Error -> {
+
+                                progressBar.visibility = android.view.View.GONE
+                                binding.root.handleApiError(it, action = {
+                                    startActivity(Intent(this@SplashActivity, SplashActivity::class.java))
+                                })
+                                GlobalScope.launch(Dispatchers.Main) {
+                                    delay(TimeUnit.SECONDS.toMillis(2))
+                                    userPreferences.clearToken();
+                                    startActivity(Intent(this@SplashActivity, AuthActivity::class.java))
+                                    finish()
+                                }
+                                Log.d("SplashActivity", "Error: ${it as APIResource.Error}")
+                            }
                         }
-                        finish()
-                    }
+                    })
                 } else {
 
                     GlobalScope.launch(Dispatchers.Main) {
