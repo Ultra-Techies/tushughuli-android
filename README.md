@@ -1,5 +1,5 @@
 
-# Todolist
+# Tushughuli
 An android application that allows users to note down their to-do lists in an organized structure. This will help the users to remain focused on their tasks and increase their productivity.
 
 # Table Of Contents
