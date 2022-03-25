@@ -115,6 +115,7 @@ class SettingsActivity : AppCompatActivity() {
             when (it) {
                 is APIResource.Success -> {
                     //delete user
+                    viewModel.deleteUser(loggedInUserId.toString())
                     viewModel.userDelete.observe(this, Observer {
                         when (it) {
                             is APIResource.Success -> {
@@ -199,7 +200,7 @@ class SettingsActivity : AppCompatActivity() {
                 .setMessage("Are you sure you want to delete your account?")
                 .setPositiveButton("Yes") { dialog, which ->
                     viewModel.deleteAllTasks(loggedInUserId.toString())
-                    viewModel.deleteUser(loggedInUserId.toString())
+
                 }
                 .setNegativeButton("No") { dialog, which ->
                     dialog.dismiss()
