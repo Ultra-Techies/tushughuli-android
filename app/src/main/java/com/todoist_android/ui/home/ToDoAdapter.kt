@@ -33,7 +33,12 @@ class ToDoAdapter (private val objects: ArrayList<Any>) : RecyclerView.Adapter<R
             }
 
         } else if (holder is HeaderViewHolder && item is String) {
-            holder.tv.text = item
+            //if item is "Created" change to "Todo"
+            if (item == "Created") {
+                holder.tv.text = "Todo"
+            } else {
+                holder.tv.text = item
+            }
         }
 
         holder.itemView.setOnClickListener {

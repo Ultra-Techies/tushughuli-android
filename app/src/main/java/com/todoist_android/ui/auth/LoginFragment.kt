@@ -37,6 +37,7 @@ class LoginFragment : Fragment() {
     ): View? {
 
         binding = FragmentLoginBinding.inflate(inflater, container, false)
+        binding.textViewForgotPassword.visibility = GONE
 
         return binding.root
     }
