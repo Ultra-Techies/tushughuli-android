@@ -97,7 +97,7 @@ All shared classes are found in the utils.
 #### App
 Entry point of our application
 
-<a href="url"><img src= height="550"  ></a>
+<a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/tushughuli-android/main/design/Tushuguli-android-architecture.jpg height="550"  ></a>
 
 ## Permissions
 
