@@ -5,27 +5,29 @@ An android application that allows users to note down their to-do lists in an or
 # Table Of Contents
 
 
-*  [About the App](#AboutTheApp)
+* [About the App](#AboutTheApp)
 
-*  [General Preview](#general-preview)
+* [General Preview](#general-preview)
 
-*  [Permissions](#permissions)
+* [Architecture](#architecture)
 
-*  [Run Poject](#run-locally)
+* [Permissions](#permissions)
 
-*  [Installation](#installation)
+* [Run Poject](#run-locally)
 
-*  [Dependencies](#dependencies)
+* [Installation](#installation)
 
-*  [To Do List](#todo)
+* [Dependencies](#dependencies)
 
-*  [Authors](#todo)
+* [To Do List](#todo)
 
-*  [Contributing](#contributing)
+* [Authors](#todo)
 
-*  [Wiki](#wiki)
+* [Contributing](#contributing)
 
-*  [License](#license)
+* [Wiki](#wiki)
+
+* [License](#license)
 ## About the App
 The app has the following key features that a user can do:
 - Sign up and login
@@ -44,6 +46,58 @@ The app has the following key features that a user can do:
 <a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/Todolist-android/main/design/Todolist%20Wire%20frame%20-%20Settings%20Screen.jpg height="550"  ></a>
 <a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/Todolist-android/main/design/Todolist%20Wire%20frame%20-%20Add%20new%20task.jpg height="550"  ></a>
 <a href="url"><img src=https://raw.githubusercontent.com/Ultra-Techies/Todolist-android/main/design/Todolist%20Wire%20frame%20-%20Add%20new%20task.jpg height="550"  ></a>
+
+## Architecture
+The app uses the MVVM architecture
+The app directory has two packages: ui and data.
+
+### Data Package:
+The data package has the following sub packages:
+
+#### Network
+It holds the classes that make the http network calls to the api endpoints
+
+#### Requests
+It contains requests that are sent to the backend.
+
+#### Responses
+It contains responses received from the network calls
+
+#### Repository
+It defines the http endpoints that need to be executed and exposes data received from the api to the ui layer.
+
+#### Di (Dependency Injection)
+It holds the app module class where we use hilt to inject our classes
+
+### UI Package:
+This layer has  the following sub packages:
+
+#### Splash Activity
+Entry screen for the user, it checks for internet connection before proceeding to the next activity
+
+#### Auth
+It has the registration and login features. Each feature has a viewmodel and a fragment.
+
+#### Home
+It has the following features:
+- Main Activity- that displays tasks
+- Bottomsheet - that allows a user to add tasks and edit tasks
+
+#### Profile
+It holds the users Information such as:
+- Username
+- Email
+
+#### Settings
+It allows a user to turn on notifications and change their information such as email and passwords.
+
+#### Utils
+All shared classes are found in the utils.
+
+#### App
+Entry point of our application
+
+<a href="url"><img src= height="550"  ></a>
 
 ## Permissions
 
