@@ -18,8 +18,7 @@ import com.todoist_android.data.network.APIResource
 import java.text.SimpleDateFormat
 import java.util.*
 
-//const val BASE_URL = "http://192.168.0.106:8080/"
-const val BASE_URL = "http://192.168.100.36:8080/" //when running backend locally, use your laptop local ip address
+const val BASE_URL = "http://34.66.84.164:8080/"
 
 private const val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
 
