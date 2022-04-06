@@ -92,36 +92,36 @@ class SettingsViewModelTest {
         }
     }
 
-    @ExperimentalTime
-    @Test
-    fun getEditUserResponse() = runTest {
-        val updateUserTestData = UserModel(
-            id = "1",
-            username = "malcolmmaima",
-            email = "malcolm@email.com",
-            photo = "https://placeimg.com/640/480/any.jpg"
-        )
-
-        // when
-        coEvery { repository.updateUser(any()) } returns APIResource.Success(updateUserTestData);
-
-        val updateUserTestRequest = UserModel(
-            id = "1",
-            username = "malcolmmaima",
-            email = "malcolm@email.com",
-            photo = "https://placeimg.com/640/480/any.jpg",
-            password = "12345"
-        )
-        //Expect
-        viewModel.editUserResponse.test(timeout = 5.seconds) {
-            viewModel.updateUser(updateUserTestRequest)
-            assertThat(awaitItem()).isEqualTo(
-                updateUserTestData
-            )
-            coVerify { repository.updateUser(any()) }
-            cancelAndConsumeRemainingEvents()
-        }
-    }
+//    @ExperimentalTime
+//    @Test
+//    fun getEditUserResponse() = runTest {
+//        val updateUserTestData = UserModel(
+//            id = "1",
+//            username = "malcolmmaima",
+//            email = "malcolm@email.com",
+//            photo = "https://placeimg.com/640/480/any.jpg"
+//        )
+//
+//        // when
+//        coEvery { repository.updateUser(any()) } returns APIResource.Success(updateUserTestData);
+//
+//        val updateUserTestRequest = UserModel(
+//            id = "1",
+//            username = "malcolmmaima",
+//            email = "malcolm@email.com",
+//            photo = "https://placeimg.com/640/480/any.jpg",
+//            password = "12345"
+//        )
+//        //Expect
+//        viewModel.editUserResponse.test(timeout = 5.seconds) {
+//            viewModel.updateUser(updateUserTestRequest)
+//            assertThat(awaitItem()).isEqualTo(
+//                updateUserTestData
+//            )
+//            coVerify { repository.updateUser(any()) }
+//            cancelAndConsumeRemainingEvents()
+//        }
+//    }
 
     @Test
     fun updateUser() {
